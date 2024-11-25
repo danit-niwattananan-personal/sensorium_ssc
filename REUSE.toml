@@ -1,0 +1,16 @@
+version = 1
+SPDX-PackageName = "sensorium"
+SPDX-PackageSupplier = "Projectpraktikum Python <python.ldv@xcit.tum.de>"
+SPDX-PackageDownloadLocation = "https://gitlab.lrz.de/ldv/teaching/python/2024"
+
+[[annotations]]
+path = [".gitignore", ".gitlab/**", "uv.lock", "**.toml", "**.yml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 Projektpraktikum Python"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["**.rst", "**/**.rst"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 Projektpraktikum Python"
+SPDX-License-Identifier = "CC-BY-SA-4.0"

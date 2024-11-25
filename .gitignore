@@ -1,0 +1,13 @@
+*.py[co]
+*.egg-info/
+__pycache__/
+
+/public/
+
+/.coverage
+/coverage.xml
+/report.xml
+
+.DS_Store
+*.sw[op]
+/.vscode

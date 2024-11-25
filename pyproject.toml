@@ -1,0 +1,111 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools-scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "sensorium"
+authors = [
+  { name = "Projectpraktikum Python", email = "python.ldv@xcit.tum.de" },
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
+]
+description = "A sensor network visualization tool."
+dependencies = []
+dynamic = ["version"]
+keywords = []
+license = { text = "Apache 2.0" }
+readme = "README.rst"
+requires-python = ">=3.10"
+
+[project.scripts]
+sensorium-client = "sensorium.client:run"
+sensorium-server = "sensorium.server:run"
+
+
+[dependency-groups]
+dev = [
+  "mypy",
+  "pytest",
+  "pytest-cov",
+  "reuse",
+  "ruff",
+  "sphinx",
+  "sphinx-autodoc-typehints",
+  "sphinx-rtd-theme",
+]
+
+
+[tool.coverage]
+report.exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if __name__ == '__main__':",
+]
+report.show_missing = true
+report.skip_covered = true
+run.branch = true
+run.source = ["src"]
+
+
+[tool.mypy]
+disallow_any_explicit = true
+explicit_package_bases = true
+mypy_path = "src"
+strict = true
+
+[[tool.mypy.overrides]]
+module = []
+ignore_missing_imports = true
+
+
+[tool.pytest.ini_options]
+addopts = ["--verbose"]
+
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "PLR2004",
+  "T201",
+  # allow asserts
+  "S101",
+  # trailing comma
+  "COM812",
+  # single line string concat
+  "ISC001",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+
+[tool.ruff.lint.flake8-quotes]
+avoid-escape = false
+inline-quotes = "single"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.setuptools_scm]
+version_scheme = "only-version"
+local_scheme = "no-local-version"
