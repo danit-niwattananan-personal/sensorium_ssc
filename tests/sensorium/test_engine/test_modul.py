@@ -1,5 +1,5 @@
 """Test Hello."""
-from engine.dummy_modul import hello
+from sensorium.engine.dummy_modul import hello
 
 
 def test_hello() -> None:
