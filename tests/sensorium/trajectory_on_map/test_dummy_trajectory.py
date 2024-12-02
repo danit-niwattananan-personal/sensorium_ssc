@@ -1,9 +1,7 @@
-"""Trajectory mapping test."""
-
-import pytest
-
-from src.sensorium.trajectory_on_map import Class1
+# Copyright 2024  Projektpraktikum Python.
+# SPDX-License-Identifier: Apache-2.0
+"""dummy module."""
 
 
-def test_class1() -> None:
-    """Test function."""
+def funtion1() -> None:
+    """Dummy function."""
