@@ -1,6 +1,7 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 """Test Hello."""
+
 from sensorium.engine.dummy_modul import hello
 
 
