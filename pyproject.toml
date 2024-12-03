@@ -23,7 +23,9 @@ classifiers = [
   "Typing :: Typed",
 ]
 description = "A sensor network visualization tool."
-dependencies = []
+dependencies = [
+    "pyside6>=6.8.1",
+]
 dynamic = ["version"]
 keywords = []
 license = { text = "Apache 2.0" }
