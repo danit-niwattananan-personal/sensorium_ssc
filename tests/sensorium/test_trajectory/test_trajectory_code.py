@@ -2,16 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test Hello."""
 
-from __future__ import annotations
-from sensorium.trajectory.trajectory_code import say_hello
+from sensorium.trajectory.trajectory_code import hello
 
 
-def test_say_hello() -> None:
-    assert (
-        say_hello() == "Hello, World!"
-    ), "The function did not return the expected output."
-
-
-if __name__ == "__main__":
-    test_say_hello()
-    print("All tests passed!")
+def test_hello() -> None:
+    """Test sayy hello."""
+    assert hello() == 'Hello, World'
