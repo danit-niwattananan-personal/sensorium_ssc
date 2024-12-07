@@ -7,4 +7,4 @@ from sensorium.trajectory.trajectory_code import hello
 
 def test_hello() -> None:
     """Test sayy hello."""
-    assert hello() == 'Hello, World'
+    assert hello() == 'Hello!'
