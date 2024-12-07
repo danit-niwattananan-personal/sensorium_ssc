@@ -6,7 +6,7 @@ from __future__ import annotations
 from sensorium.trajectory.trajectory_code import say_hello
 
 
-def test_say_hello():
+def test_say_hello() -> None:
     assert (
         say_hello() == "Hello, World!"
     ), "The function did not return the expected output."
