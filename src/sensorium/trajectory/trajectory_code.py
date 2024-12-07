@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 
-def say_hello():
+def say_hello() -> str:
     return "Hello, World!"
 
 
