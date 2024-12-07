@@ -4,5 +4,5 @@
 
 
 def hello() -> str:
-    """Says Hello."""
+    """Sayys Hello."""
     return 'Hello!'
