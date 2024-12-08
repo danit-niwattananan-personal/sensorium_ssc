@@ -3,5 +3,5 @@
 """dummy module."""
 
 
-def funtion1() -> None:
+def test_funtion1() -> None:
     """Dummy function."""

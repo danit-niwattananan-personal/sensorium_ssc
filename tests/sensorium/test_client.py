@@ -6,10 +6,6 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-# ohne "src." bekomme ich die Fehlermedlung:
-# "Cannot find implementation or library stub for module named "sensorium.server"Mypy".
-# In Ihrer Präsentation meinten Sie glaube ich, dass man das nicht so machen sollte.
-# Wie würde man den Fehler also richtig beheben?
 from src.sensorium.client import run
 
 
