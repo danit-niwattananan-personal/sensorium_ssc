@@ -1,7 +1,3 @@
+# Copyright 2024  Projektpraktikum Python.
+# SPDX-License-Identifier: Apache-2.0
 """Trajectory mapping implementation."""
-
-from .dummy_trajectory import Class1
-
-__all__ = [
-    'Class1',
-]

@@ -3,5 +3,6 @@
 """dummy module."""
 
 
-def camera_function() -> None:
+def camera_function() -> int:
     """Dummy function."""
+    return 1

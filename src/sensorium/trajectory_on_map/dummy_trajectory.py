@@ -3,6 +3,6 @@
 """dummy module."""
 
 
-def add(a: int) -> int:
-    """."""
-    return a + 1
+def trajectory_function() -> int:
+    """Dummy function."""
+    return 1
