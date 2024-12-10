@@ -38,3 +38,11 @@ def test_main_window_initialization(setup_window: tuple[QApplication, MainWindow
     menu_bar = window.menuBar()
     assert isinstance(menu_bar, QMenuBar)
     app.shutdown()
+
+def test_menu_bar(setup_window: tuple[QApplication, MainWindow]) -> None:
+    """Testet die Menüleiste."""
+    _ , window = setup_window
+    window.open_settings()
+    window.connect_server()
+    window.disconnect_server()
+    window.ask_for_data()
