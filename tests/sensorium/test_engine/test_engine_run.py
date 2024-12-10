@@ -18,7 +18,7 @@ def setup_window() -> tuple[QApplication, MainWindow]:
 
 def test_main_window_initialization(setup_window: tuple[QApplication, MainWindow]) -> None:
     """Testet die grundlegende Initialisierung des MainWindow."""
-    app , window = setup_window
+    app, window = setup_window
 
     # Überprüfen des Fenstertitels
     assert window.windowTitle() == 'Sensorium'
@@ -39,9 +39,10 @@ def test_main_window_initialization(setup_window: tuple[QApplication, MainWindow
     assert isinstance(menu_bar, QMenuBar)
     app.shutdown()
 
+
 def test_menu_bar(setup_window: tuple[QApplication, MainWindow]) -> None:
     """Testet die Menüleiste."""
-    _ , window = setup_window
+    _, window = setup_window
     window.open_settings()
     window.connect_server()
     window.disconnect_server()
