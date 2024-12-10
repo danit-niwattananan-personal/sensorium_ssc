@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """dummy module."""
 
+from sensorium.trajectory_on_map.dummy_trajectory import trajectory_function
 
-def test_funtion1() -> None:
+
+def test_trajectory_function() -> None:
     """Dummy function."""
+    assert trajectory_function() == 1
