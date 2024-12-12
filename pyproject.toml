@@ -24,7 +24,9 @@ classifiers = [
 ]
 description = "A sensor network visualization tool."
 dependencies = [
+    "open3d>=0.18.0",
     "pyside6>=6.8.1",
+    "torch>=2.5.1",
 ]
 dynamic = ["version"]
 keywords = []
