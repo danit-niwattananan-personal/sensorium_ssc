@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 
 
 # o3d.geometry.PointCloud did not pass Mypy since it can't generate stubs
-class LidarPCLoader(Dataset[ndarray]):
+class LidarPCLoader(Dataset[ndarray[float]]):
     """Lidar pointcloud loader. Inherited mostly from PyTorch Dataset."""
 
     def __init__(
