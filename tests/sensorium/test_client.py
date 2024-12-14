@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from src.sensorium.client import run
+from sensorium.client import run
 
 
 def test_entrypoint() -> None:
