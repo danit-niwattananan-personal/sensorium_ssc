@@ -1,3 +1,6 @@
+# Copyright 2024  Projektpraktikum Python.
+# SPDX-License-Identifier: Apache-2.0
+
 """Semantic Voxel Loader."""
 
 import numpy as np

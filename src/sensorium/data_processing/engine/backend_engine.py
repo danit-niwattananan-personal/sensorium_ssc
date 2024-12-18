@@ -1,3 +1,6 @@
+# Copyright 2024  Projektpraktikum Python.
+# SPDX-License-Identifier: Apache-2.0
+
 """Main engine for data processing which call unit loaders and unit processors."""
 
 import os

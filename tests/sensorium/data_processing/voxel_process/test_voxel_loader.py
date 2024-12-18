@@ -1,3 +1,6 @@
+# Copyright 2024  Projektpraktikum Python.
+# SPDX-License-Identifier: Apache-2.0
+
 """Test the semantic voxel loader. To be implemented."""
 
 
