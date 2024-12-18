@@ -1,10 +1,11 @@
 """Semantic Voxel Loader."""
 
-from numpy import ndarray
+import numpy as np
+from numpy.typing import NDArray
 from torch.utils.data import Dataset
 
 
-class SSCVoxelLoader(Dataset[ndarray]):
+class SSCVoxelLoader(Dataset[NDArray[np.float32]]):
     """Semantic Voxel Loader. Inherited mostly from PyTorch DataLoader."""
 
     def __init__(
@@ -22,7 +23,6 @@ class SSCVoxelLoader(Dataset[ndarray]):
             frame_id: The frame id.
             frequency: The frequency.
         """
-        super().__init__(data_dir, sequence_id, frame_id, frequency)
         # @Danit: Implement the loader
         self.data_dir = data_dir
         self.sequence_id = sequence_id

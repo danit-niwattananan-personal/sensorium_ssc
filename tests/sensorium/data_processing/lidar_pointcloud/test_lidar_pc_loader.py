@@ -1,13 +1,16 @@
-"""Test the lidar pointcloud loader"""
+"""Test the lidar pointcloud loader. To be implemented."""
+
 
 def test_lidar_pc_loader() -> None:
     """Lidar pointcloud loader must be able to load the data in correct format."""
-    pass
+    print('Lidar pointcloud loader must be able to load the data in correct format.')
+
 
 def test_lidar_pc_loader_with_invalid_data() -> None:
     """Lidar pointcloud loader must raise an error if the data is not in correct format."""
-    pass
+    print('Lidar pointcloud loader must raise an error if the data is not in correct format.')
+
 
 def test_lidar_pc_loader_with_invalid_frame_id() -> None:
     """Lidar pointcloud loader must raise an error if the frame_id is not in correct format."""
-    pass
+    print('Lidar pointcloud loader must raise an error if the frame_id is not in correct format.')

@@ -1,39 +1,38 @@
 """Main engine for data processing which call unit loaders and unit processors."""
 
+import os
 from pathlib import Path
 
-from torch.utils.data import DataLoader, Dataset
+import numpy as np
+from torch.utils.data import (
+    DataLoader,
+    Dataset,
+)
 
 
-class BackendEngine(DataLoader):
+class BackendEngine(DataLoader[Dataset[dict[str, np.typing.NDArray[np.float32]]]]):
     """Main engine for data processing which call unit loaders and unit processors."""
 
     def __init__(
         self,
-        cam_loader: Dataset,
-        lidar_pc_loader: Dataset,
-        trajectory_loader: Dataset,
-        voxel_loader: Dataset,
+        data_dir: str,
+        sequence_id: int,
         # **kwargs: dict,  # In case using config file to build the object
     ) -> None:
         """Initialize the BackendEngine.
 
         Args:
-            cam_loader: The camera dataset.
-            lidar_pc_loader: The lidar pointcloud dataset.
-            trajectory_loader: The trajectory dataset.
-            voxel_loader: The voxel dataset.
+            data_dir: the kitti root directory from which path to individual data type is formed.
+            sequence_id: the sequence user wants to visualize from frontend.
         """
         # @Danit: Import and use the real loaders
-        self.cam_loader = cam_loader
-        self.lidar_pc_loader = lidar_pc_loader
-        self.trajectory_loader = trajectory_loader
-        self.voxel_loader = voxel_loader
+        self.data_dir = data_dir
+        self.sequence_id = sequence_id
 
         # @Danit: Declare all meta data attributes
         self.frequency = 10  # Hz
 
-    def process(self, frame_id: int | str) -> dict:
+    def process(self, frame_id: int | str) -> dict[str, list[int] | list[float] | float | None]:
         """Call the loading methods of the loaders and pack them into a dict to be passed to COMM.
 
         Args:
@@ -44,21 +43,25 @@ class BackendEngine(DataLoader):
             the data dict should contain all data of ONLY that frame.
         """
         # Meta data
-        start_frame_id = int(frame_id)
-        start_frame_id = f'{frame_id:06d}'  # 6 digits, from 4070 to 004070
+        start_frame_id = str(frame_id)
+        start_frame_id = f'{frame_id:06d}'  # 6 digits, from 4070 to '004070'
+        sequence_id = str(self.sequence_id)
+        sequence_id = f'{sequence_id:02d}'  # 2 digits, from 1 to '01'
+
         self.files = [
-            f
-            for f in Path(self.data_dir) / self.sequence_id / str(frame_id)
-            if (curr_frame_id := int(f.name)) >= start_frame_id
+            f.split('_')[0]  # Get only base frame_id (e.g. '000000' from '000000_1_1')
+            for f in os.listdir(Path(self.data_dir) / sequence_id / str(frame_id))
+            if (curr_frame_id := int(f.split('_')[0])) >= int(start_frame_id)
         ]
         # The data itself in dict format
         frame_ids = []
         for _ in self.files:
             frame_ids.append(curr_frame_id)
-            cam_data = self.cam_loader.load(curr_frame_id)
-            lidar_pc_data = self.lidar_pc_loader.load(curr_frame_id)
-            trajectory_data = self.trajectory_loader.load(curr_frame_id)
-            voxel_data = self.voxel_loader.load(curr_frame_id)
+            # Load the data
+            cam_data = None  # self.cam_loader.load(curr_frame_id)
+            lidar_pc_data = None  # self.lidar_pc_loader.load(curr_frame_id)
+            trajectory_data = None  # self.trajectory_loader.load(curr_frame_id)
+            voxel_data = None  # self.voxel_loader.load(curr_frame_id)
 
         return {
             'frame_id': frame_ids,
@@ -69,7 +72,9 @@ class BackendEngine(DataLoader):
             'voxel': voxel_data,
         }
 
-    def calculate_timestamp(self, frame_id: int | str | list[int | str]) -> float:
+    def calculate_timestamp(
+        self, frame_id: int | str | list[int] | list[str]
+    ) -> float | list[float]:
         """Calculate the timestamp of the frame. # NOTE: Might move this to utils.
 
         Args:
@@ -82,7 +87,7 @@ class BackendEngine(DataLoader):
             return float(int(frame_id) / self.frequency)
         return [float(int(f) / self.frequency) for f in frame_id]
 
-    def collate_fn(self, data: dict[str, list[dict]]) -> list[dict]:
+    def collate_dictoflists(self, data: dict[str, list[dict[str, float]]]) -> None:
         """Collate data into a single list of dicts instead of dict of lists.
 
         Args:
@@ -98,17 +103,8 @@ class BackendEngine(DataLoader):
             assert len(v) == len(
                 data['frame_id']
             ), f'The length of {k} is not equal to the length of frame_id'
-        return [
-            {
-                'frame_id': data['frame_id'][i],
-                'timestamp': data['timestamp'][i],
-                'cam': data['cam'][i],
-                'lidar_pc': data['lidar_pc'][i],
-                'trajectory': data['trajectory'][i],
-                'voxel': data['voxel'][i],
-            }
-            for i in range(len(data['frame_id']))
-        ]
+        # to be implemented
+        print('Collating data...')
 
     def spin(self) -> None:
         """Run the engine until the datastream ends, get interrupted, or new signal is received."""

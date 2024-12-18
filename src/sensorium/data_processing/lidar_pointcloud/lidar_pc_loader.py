@@ -1,30 +1,16 @@
 """Lidar pointcloud loader."""
 
-from numpy import ndarray
-from torch.utils.data import Dataset
+from pathlib import Path
+
+import open3d as o3d  # type: ignore[import-untyped] # Ignore mypy stubs not found
 
 
 # o3d.geometry.PointCloud did not pass Mypy since it can't generate stubs
-class LidarPCLoader(Dataset[ndarray[float]]):
-    """Lidar pointcloud loader. Inherited mostly from PyTorch Dataset."""
-
-    def __init__(
-        self,
-        data_dir: str,
-        sequence_id: str,
-        frame_id: int | list[int | str],
-        frequency: float = 10.0,
-    ) -> None:
-        """Initialize the LidarPCLoader.
-
-        Args:
-            data_dir: The directory to the data.
-            sequence_id: The sequence ID.
-            frame_id: The frame ID.
-            frequency: The frequency of the data.
-        """
-        # @Danit: Implement the loader
-        self.data_dir = data_dir
-        self.sequence_id = sequence_id
-        self.frame_id = frame_id
-        self.frequency = frequency
+def load_lidar_pc(
+    data_dir: str, sequence_id: str, frame_id: int | list[int | str]
+) -> o3d.geometry.PointCloud:
+    """Load the lidar pointcloud."""
+    # @Dimitar: Implement the loader and conversion .bin -> .ply
+    pcd_path = Path(data_dir) / sequence_id / 'velodyne' / f'{frame_id}.bin'
+    # Must convert to ply first
+    return o3d.io.read_point_cloud(pcd_path)
