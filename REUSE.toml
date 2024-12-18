@@ -4,6 +4,12 @@ SPDX-PackageSupplier = "Projectpraktikum Python <python.ldv@xcit.tum.de>"
 SPDX-PackageDownloadLocation = "https://gitlab.lrz.de/ldv/teaching/python/2024"
 
 [[annotations]]
+path = ["**/kitti*/**/*.png", "**/kitti*/**/*.txt"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2004 KITTI"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
 path = [".gitignore", ".gitlab/**", "uv.lock", "**.toml", "**.yml"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2024 Projektpraktikum Python"
