@@ -7,15 +7,6 @@ import cv2
 """load images"""
 
 
-# folder_dir = 'dummy_data/kitti_sequence_00/images'
-# for images in os.listdir(folder_dir):
-#     if images.endswith('.png'):
-#         im = cv2.imread(folder_dir, cv2.IMREAD_COLOR)
-#         cv2.imshow('Window', im)
-#         cv2.waitKey(3000)
-#         cv2.destroyAllWindows()
-
-# ______________________________________________
 frame_length = 500  # change for faster/slower
 im = cv2.imread('dummy_data/kitti_sequence_00/images/1.png', cv2.IMREAD_COLOR)
 cv2.imshow('Image1', im)
