@@ -81,7 +81,7 @@ def prepare_trajectory(calib_file: str, poses_file: str) -> list:
     return trajectory
 
 
-def save_trajectory(trajectory: list, output_file: str) -> None:
+def save_trajectory(trajectory: list) -> None:  #, output_file: str) -> None:
     """
     Save the trajectory data to a file.
 
