@@ -5,8 +5,9 @@
 import numpy as np
 from numpy.linalg import inv
 from typing import Dict, List
+from numpy.typing import NDArray
 
-def parse_calibration(filename: str) -> Dict[str, np.ndarray]:
+def parse_calibration(filename: str) -> Dict[str, NDArray[np.float64]]:
     """
     Parse the calibration file to extract the transformation matrix.
 
@@ -16,12 +17,12 @@ def parse_calibration(filename: str) -> Dict[str, np.ndarray]:
     Returns:
         dict: Calibration matrices as 4x4 numpy arrays.
     """
-    calib: Dict[str, np.ndarray] = {}  # Annotated dictionary
+    calib: Dict[str, NDArray[np.float64]] = {}
     with open(filename) as calib_file:
         for line in calib_file:
             key, content = line.strip().split(':')
             values = [float(v) for v in content.strip().split()]
-            pose = np.zeros((4, 4))
+            pose = np.zeros((4, 4), dtype=np.float64)
 
             if key == 'Tr':
                 pose[0, 0:4] = values[0:4]
@@ -31,8 +32,7 @@ def parse_calibration(filename: str) -> Dict[str, np.ndarray]:
             calib[key] = pose
     return calib
 
-
-def parse_poses(filename: str, calibration: Dict[str, np.ndarray]) -> List[np.ndarray]:
+def parse_poses(filename: str, calibration: Dict[str, NDArray[np.float64]]) -> List[NDArray[np.float64]]:
     """
     Parse the poses file and transform the poses using calibration data.  
 
@@ -43,22 +43,20 @@ def parse_poses(filename: str, calibration: Dict[str, np.ndarray]) -> List[np.nd
     Returns:
         list: List of poses as 4x4 numpy arrays.
     """
-    poses: List[np.ndarray] = []  # Annotated list of numpy arrays
+    poses: List[NDArray[np.float64]] = []
     Tr = calibration['Tr']
     Tr_inv = np.linalg.inv(Tr)
     with open(filename) as file:
         for line in file:
             values = [float(v) for v in line.strip().split()]
-            pose = np.zeros((4, 4))
+            pose = np.zeros((4, 4), dtype=np.float64)
             pose[0, 0:4] = values[0:4]
             pose[1, 0:4] = values[4:8]
             pose[2, 0:4] = values[8:12]
             pose[3, 3] = 1.0
-            # Transform pose to global coordinates
             global_pose = np.matmul(Tr_inv, np.matmul(pose, Tr))
             poses.append(global_pose)
     return poses
-
 
 def prepare_trajectory(calib_file: str, poses_file: str) -> List[Dict[str, float]]:
     """
@@ -71,14 +69,12 @@ def prepare_trajectory(calib_file: str, poses_file: str) -> List[Dict[str, float
     Returns:
         list: List of trajectory points as dictionaries with (x, y, z).
     """
-    # Parse files
     calibration = parse_calibration(calib_file)
-    poses = parse_poses(poses_file, calibration)  # Extract (x, y, z) from the 4x4 pose matrices
+    poses = parse_poses(poses_file, calibration)
     trajectory: List[Dict[str, float]] = [
         {'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]} for pose in poses
     ]
     return trajectory
-
 
 def save_trajectory(trajectory: List[Dict[str, float]]) -> None:
     """
@@ -87,10 +83,10 @@ def save_trajectory(trajectory: List[Dict[str, float]]) -> None:
     Args:
         trajectory (list): The trajectory data to save.
     """
-    # import json; if this format would be necessary, it should be done before the data is saved.
-
+    # Placeholder for saving functionality, e.g., JSON serialization.
+    # import json
     # with open(output_file, 'w') as f:
-    # json.dump(trajectory, f, indent=2)
+    #     json.dump(trajectory, f, indent=2)
     # print(f'Trajectory data saved to {output_file}')
 
 if __name__ == '__main__':
