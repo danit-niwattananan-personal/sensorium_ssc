@@ -4,9 +4,9 @@
 
 import numpy as np
 from numpy.linalg import inv
+from typing import Dict, List
 
-
-def parse_calibration(filename: str) -> dict:
+def parse_calibration(filename: str) -> Dict[str, np.ndarray]:
     """
     Parse the calibration file to extract the transformation matrix.
 
@@ -16,7 +16,7 @@ def parse_calibration(filename: str) -> dict:
     Returns:
         dict: Calibration matrices as 4x4 numpy arrays.
     """
-    calib = {}
+    calib: Dict[str, np.ndarray] = {}  # Annotated dictionary
     with open(filename) as calib_file:
         for line in calib_file:
             key, content = line.strip().split(':')
@@ -32,9 +32,9 @@ def parse_calibration(filename: str) -> dict:
     return calib
 
 
-def parse_poses(filename: str, calibration: dict) -> list:
+def parse_poses(filename: str, calibration: Dict[str, np.ndarray]) -> List[np.ndarray]:
     """
-    Parse the poses file and transform the poses using calibration data.
+    Parse the poses file and transform the poses using calibration data.  
 
     Args:
         filename (str): Path to the poses file.
@@ -43,7 +43,7 @@ def parse_poses(filename: str, calibration: dict) -> list:
     Returns:
         list: List of poses as 4x4 numpy arrays.
     """
-    poses = []
+    poses: List[np.ndarray] = []  # Annotated list of numpy arrays
     Tr = calibration['Tr']
     Tr_inv = np.linalg.inv(Tr)
     with open(filename) as file:
@@ -60,7 +60,7 @@ def parse_poses(filename: str, calibration: dict) -> list:
     return poses
 
 
-def prepare_trajectory(calib_file: str, poses_file: str) -> list:
+def prepare_trajectory(calib_file: str, poses_file: str) -> List[Dict[str, float]]:
     """
     Parse calibration and poses to generate a trajectory list.
 
@@ -73,36 +73,34 @@ def prepare_trajectory(calib_file: str, poses_file: str) -> list:
     """
     # Parse files
     calibration = parse_calibration(calib_file)
-    poses = parse_poses(poses_file, calibration)
-
-    # Extract (x, y, z) from the 4x4 pose matrices
-    trajectory = [{'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]} for pose in poses]
-
+    poses = parse_poses(poses_file, calibration)  # Extract (x, y, z) from the 4x4 pose matrices
+    trajectory: List[Dict[str, float]] = [
+        {'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]} for pose in poses
+    ]
     return trajectory
 
 
-def save_trajectory(trajectory: list) -> None:  #, output_file: str) -> None:
+def save_trajectory(trajectory: List[Dict[str, float]]) -> None:
     """
     Save the trajectory data to a file.
 
     Args:
         trajectory (list): The trajectory data to save.
-        output_file (str): Path to the output file.
     """
-    # import json; if it this format woulb be necessary to be done before the data is being put in the communication module
+    # import json; if this format would be necessary, it should be done before the data is saved.
 
     # with open(output_file, 'w') as f:
     # json.dump(trajectory, f, indent=2)
-    # print(f'Trajectory data saved to {output_file}')
+    # print(f'Trajectory data saved to {output_file}'
 
 
 if __name__ == '__main__':
-    # actual file paths
+    # Example file paths
     calib_file = 'path_to_calib.txt'
     poses_file = 'path_to_poses.txt'
 
     trajectory = prepare_trajectory(calib_file, poses_file)
 
-    # Save to a file
-    # #output_file = 'trajectory.json'
-    save_trajectory(trajectory)  # , output_file)
+    # Save to a file (uncomment to use in real scenarios)
+    # output_file = 'trajectory.json'
+    # save_trajectory(trajectory)
