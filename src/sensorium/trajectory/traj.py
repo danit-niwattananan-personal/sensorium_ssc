@@ -91,8 +91,7 @@ def save_trajectory(trajectory: List[Dict[str, float]]) -> None:
 
     # with open(output_file, 'w') as f:
     # json.dump(trajectory, f, indent=2)
-    # print(f'Trajectory data saved to {output_file}'
-
+    # print(f'Trajectory data saved to {output_file}')
 
 if __name__ == '__main__':
     # Example file paths
@@ -104,3 +103,4 @@ if __name__ == '__main__':
     # Save to a file (uncomment to use in real scenarios)
     # output_file = 'trajectory.json'
     # save_trajectory(trajectory)
+
