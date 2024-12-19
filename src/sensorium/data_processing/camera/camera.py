@@ -2,37 +2,27 @@
 # SPDX-License-Identifier: Apache-2.0
 """Camera."""
 
+import os
+
 import cv2
 
-"""load images"""
+
+def load_images() -> None:
+    """Load images."""
+    frame_length = 500  # change for faster/slower
+    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/'
+    'camera/dummy_data/kitti_sequence_00/images/'
+
+    image_paths = [os.path.join(dir1, file) for file in sorted(os.listdir(dir1))]  # noqa: PTH118
+    # image_paths = [Path(dir1) / file for file in sorted(os.listdir(dir1))]  # noqa: ERA001
+
+    for path in image_paths:
+        im = cv2.imread(path, cv2.IMREAD_COLOR)
+        cv2.imshow('Camera', im)
+        cv2.waitKey(frame_length)
 
 
-frame_length = 500  # change for faster/slower
-im = cv2.imread('dummy_data/kitti_sequence_00/images/1.png', cv2.IMREAD_COLOR)
-cv2.imshow('Image1', im)
-cv2.waitKey(frame_length)
-cv2.destroyAllWindows()
+load_images()
 
-im = cv2.imread('dummy_data/kitti_sequence_00/images/2.png', cv2.IMREAD_COLOR)
-cv2.imshow('Image2', im)
-cv2.waitKey(frame_length)
-cv2.destroyAllWindows()
 
-im = cv2.imread('dummy_data/kitti_sequence_00/images/3.png', cv2.IMREAD_COLOR)
-cv2.imshow('Image3', im)
-cv2.waitKey(frame_length)
-cv2.destroyAllWindows()
-
-im = cv2.imread('dummy_data/kitti_sequence_00/images/4.png', cv2.IMREAD_COLOR)
-cv2.imshow('Image4', im)
-cv2.waitKey(frame_length)
-cv2.destroyAllWindows()
-
-im = cv2.imread('dummy_data/kitti_sequence_00/images/5.png', cv2.IMREAD_COLOR)
-cv2.imshow('Image5', im)
-cv2.waitKey(frame_length)
-cv2.destroyAllWindows()
-
-im = cv2.imread('dummy_data/kitti_sequence_00/images/6.png', cv2.IMREAD_COLOR)
-cv2.imshow('Image6', im)
-cv2.waitKey(0)  # wait for a key press to close the window
+# os.path.join(ROOT_PATH, "folder") = Path(ROOT_PATH) / "folder" / "file.py"
