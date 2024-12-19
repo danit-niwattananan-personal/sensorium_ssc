@@ -89,12 +89,12 @@ def save_trajectory(trajectory: List[Dict[str, float]]) -> None:
     #     json.dump(trajectory, f, indent=2)
     # print(f'Trajectory data saved to {output_file}')
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # Example file paths
-    calib_file = 'path_to_calib.txt'
-    poses_file = 'path_to_poses.txt'
+   # calib_file = 'path_to_calib.txt'
+   # poses_file = 'path_to_poses.txt'
 
-    trajectory = prepare_trajectory(calib_file, poses_file)
+   # trajectory = prepare_trajectory(calib_file, poses_file)
 
     # Save to a file (uncomment to use in real scenarios)
     # output_file = 'trajectory.json'
