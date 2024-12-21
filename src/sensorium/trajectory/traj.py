@@ -6,7 +6,6 @@ from collections.abc import Mapping
 from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
-from typing import list, dict
 
 
 def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
