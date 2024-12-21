@@ -23,7 +23,7 @@ def parse_calibration(filename: str) -> Dict[str, NDArray[np.float64]]:
         for line in calib_file:
             key, content = line.strip().split(':')
             values = [float(v) for v in content.strip().split()]
-            pose = np.zeros((4, 4))
+            pose = np.zeros((4, 4), dtype=np.float64)
             if key == 'Tr':
                 pose[0, 0:4] = values[0:4]
                 pose[1, 0:4] = values[4:8]
@@ -51,7 +51,7 @@ def parse_poses(filename: str, calibration: Dict[str, NDArray[np.float64]]) -> L
     with open(filename) as file:
         for line in file:
             values = [float(v) for v in line.strip().split()]
-            pose = np.zeros((4, 4))
+            pose = np.zeros((4, 4), dtype=np.float64)
             pose[0, 0:4] = values[0:4]
             pose[1, 0:4] = values[4:8]
             pose[2, 0:4] = values[8:12]
