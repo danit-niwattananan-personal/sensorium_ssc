@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Trajectory Server Functions."""
 
+from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
-from pathlib import Path
+
 
 def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
     """
@@ -23,6 +24,7 @@ def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
             calib[key] = np.array([float(x) for x in content.split()])
     return calib
 
+
 def parse_poses(filename: str, calibration: dict[str, NDArray[np.float64]]) -> list[NDArray[np.float64]]:
     """
     Parse the poses file and transform the poses using calibration data.
@@ -37,13 +39,14 @@ def parse_poses(filename: str, calibration: dict[str, NDArray[np.float64]]) -> l
     poses = []
     tr = calibration['Tr']
     tr_inv = np.linalg.inv(tr)
-    
+
     with Path(filename).open() as file:
         for line in file:
             values = [float(v) for v in line.strip().split()]
             pose = np.array(values).reshape(4, 4)
             poses.append(np.dot(tr_inv, pose))
     return poses
+
 
 def prepare_trajectory(calib_file: str, poses_file: str) -> list[dict[str, float]]:
     """
@@ -58,9 +61,10 @@ def prepare_trajectory(calib_file: str, poses_file: str) -> list[dict[str, float
     """
     calibration = parse_calibration(calib_file)
     poses = parse_poses(poses_file, calibration)
-    
+
     # Direct return, no need for assignment to `trajectory`
     return [{'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]} for pose in poses]
+
 
 def save_trajectory(trajectory: list[dict[str, float]]) -> None:
     """
