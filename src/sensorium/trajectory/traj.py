@@ -5,7 +5,7 @@
 import numpy as np
 from numpy.linalg import inv
 from numpy.typing import NDArray
-from typing import Mapping
+from typing import List, Mapping
 
 
 def parse_calibration(filename: str) -> Mapping[str, NDArray[np.float64]]:
