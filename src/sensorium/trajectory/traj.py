@@ -44,7 +44,7 @@ def parse_poses(filename: str, calibration: dict) -> list:
     """
     poses = []
     tr = calibration['Tr']
-    tr_inv = np.linalg.inv(Tr)
+    tr_inv = np.linalg.inv(tr)
 
     with open(filename) as file:
         for line in file:
