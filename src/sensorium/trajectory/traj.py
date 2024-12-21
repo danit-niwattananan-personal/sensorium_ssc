@@ -6,7 +6,7 @@ import numpy as np
 from numpy.linalg import inv
 
 
-def parse_calibration(filename: str) -> dict:
+def parse_calibration(filename: str) -> dict[str, np.ndarray]:
     """
     Parse the calibration file to extract the transformation matrix.
 
@@ -31,7 +31,7 @@ def parse_calibration(filename: str) -> dict:
     return calib
 
 
-def parse_poses(filename: str, calibration: dict) -> list:
+def parse_poses(filename: str, calibration: dict[str, np.ndarray]) -> list[np.ndarray]:
     """
     Parse the poses file and transform the poses using calibration data.
 
@@ -60,7 +60,7 @@ def parse_poses(filename: str, calibration: dict) -> list:
     return poses
 
 
-def prepare_trajectory(calib_file: str, poses_file: str) -> list:
+def prepare_trajectory(calib_file: str, poses_file: str) -> list[np.ndarray]:
     """
     Parse calibration and poses to generate a trajectory list.
 
@@ -81,7 +81,7 @@ def prepare_trajectory(calib_file: str, poses_file: str) -> list:
     return trajectory
 
 
-def save_trajectory(trajectory: list) -> None:
+def save_trajectory(trajectory: list[np.ndarray]) -> None:
     """
     Placeholder for saving the trajectory data.
 
