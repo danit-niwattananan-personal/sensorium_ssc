@@ -5,10 +5,10 @@
 import numpy as np
 from numpy.linalg import inv
 from numpy.typing import NDArray
-from typing import List, Dict
+from typing import Mapping
 
 
-def parse_calibration(filename: str) -> Dict[str, NDArray[np.float64]]:
+def parse_calibration(filename: str) -> Mapping[str, NDArray[np.float64]]:
     """
     Parse the calibration file to extract the transformation matrix.
 
@@ -33,7 +33,7 @@ def parse_calibration(filename: str) -> Dict[str, NDArray[np.float64]]:
     return calib
 
 
-def parse_poses(filename: str, calibration: Dict[str, NDArray[np.float64]]) -> List[NDArray[np.float64]]:
+def parse_poses(filename: str, calibration: Mapping[str, NDArray[np.float64]]) -> List[NDArray[np.float64]]:
     """
     Parse the poses file and transform the poses using calibration data.
 
