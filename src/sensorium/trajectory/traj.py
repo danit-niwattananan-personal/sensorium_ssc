@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Trajectory Server Functions."""
 
-from collections.abc import Mapping
 from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
