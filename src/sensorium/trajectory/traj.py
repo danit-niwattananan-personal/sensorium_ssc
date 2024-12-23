@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Trajectory Server Functions."""
 
+from pathlib import Path
+
 import numpy as np
 from numpy.typing import NDArray
-
-from pathlib import Path
 
 def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
     """Parse the calibration file to extract the transformation matrix.
