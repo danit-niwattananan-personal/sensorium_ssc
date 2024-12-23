@@ -1930,5 +1930,6 @@ wheels = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "numpy" }]
+
+requires-dist = [{ name = "numpy", specifier = ">=2.2.0" }]
 
