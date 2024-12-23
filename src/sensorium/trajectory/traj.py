@@ -4,6 +4,7 @@
 
 import numpy as np
 from numpy.typing import NDArray
+
 from pathlib import Path
 
 def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
