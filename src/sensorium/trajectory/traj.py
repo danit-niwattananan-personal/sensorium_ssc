@@ -26,8 +26,7 @@ def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
 
 
 def parse_poses(
-filename: str,
-calibration: dict[str, NDArray[np.float64]]
+    filename: str, calibration: dict[str, NDArray[np.float64]]
 ) -> list[NDArray[np.float64]]:
     """Parse the poses file and transform the poses using calibration data.
 
@@ -50,9 +49,7 @@ calibration: dict[str, NDArray[np.float64]]
     return poses
 
 
-def prepare_trajectory(
-calib_file: str,
-poses_file: str) -> list[dict[str, float]]:
+def prepare_trajectory(calib_file: str, poses_file: str) -> list[dict[str, float]]:
     """Parse calibration and poses to generate a trajectory list.
 
     Args:
@@ -74,9 +71,3 @@ def save_trajectory(trajectory: list[dict[str, float]]) -> None:
     Args:
         trajectory (list): The trajectory data to save.
     """
-
-
-
-
-
-
