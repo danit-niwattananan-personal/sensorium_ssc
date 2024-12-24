@@ -28,6 +28,7 @@ dependencies = [
     "opencv-python>=4.10.0.84",
     "pathlib>=1.0.1",
     "pyside6>=6.8.1",
+    "pytest-qt>=4.4.0",
 ]
 dynamic = ["version"]
 keywords = []
