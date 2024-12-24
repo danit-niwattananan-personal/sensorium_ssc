@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle('Sensorium')
         self.setGeometry(100, 100, 800, 600)
-        self.setMinimumSize(800,600)
+        self.setMinimumSize(800, 600)
 
         # Zentrale Widget
         central_widget = QWidget()
