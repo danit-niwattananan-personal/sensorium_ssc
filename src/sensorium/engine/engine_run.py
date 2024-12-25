@@ -1,7 +1,7 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 
-"""GUI."""
+"""Beschreibung der Gui des Clients."""
 
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
@@ -20,13 +20,13 @@ from sensorium.engine.visualization_gui import VisualisationGui
 
 
 class MainWindow(QMainWindow):
-    """MainWindow."""
+    """Code für das Hauptfenster."""
 
     def __init__(self) -> None:
         """Aufbau der einzelnen Elemente des MainWindow."""
         super().__init__()
         self.setWindowTitle('Sensorium')
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(300, 200, 800, 600)
         self.setMinimumSize(800, 600)
 
         # Zentrale Widget
@@ -38,7 +38,11 @@ class MainWindow(QMainWindow):
 
         # Ordner
         self.left_column = QLabel('Ordner')
-        self.left_column.setStyleSheet('background-color: lightgray; padding: 10px;')
+        self.left_column.setStyleSheet(
+            'background-color: lightgray; '
+            'padding: 10px; '
+            'border-radius: 15px; '
+        )
         self.left_column.setFixedWidth(200)
         main_layout.addWidget(self.left_column)
 
