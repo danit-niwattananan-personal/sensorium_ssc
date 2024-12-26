@@ -24,10 +24,9 @@ classifiers = [
 ]
 description = "A sensor network visualization tool."
 dependencies = [
-    "open3d>=0.18.0",
     "opencv-python>=4.10.0.84",
     "pathlib>=1.0.1",
-    "pyproject-toml>=0.1.0",
+    "pygfx>=0.6.0",
     "pyside6>=6.8.1",
 ]
 dynamic = ["version"]
