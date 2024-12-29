@@ -3,20 +3,19 @@
 """Camera."""
 
 import os
+from pathlib import Path
 
 import cv2
 
 
 def load_images() -> None:
     """Load images."""
-    frame_length = 500  # change for faster/slower
-    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/'
-    'camera/dummy_data/kitti_sequence_00/images/'
-
-    image_paths = [os.path.join(dir1, file) for file in sorted(os.listdir(dir1))]
+    frame_length = 300  # change for faster/slower
+    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_data/images'
+    image_paths = [Path(dir1) / file for file in sorted(os.listdir(dir1))]
 
     for path in image_paths:
-        im = cv2.imread(path, cv2.IMREAD_COLOR)
+        im = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
         cv2.imshow('Camera', im)
         cv2.waitKey(frame_length)
 
