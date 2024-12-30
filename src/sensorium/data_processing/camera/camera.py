@@ -11,7 +11,7 @@ import cv2
 def load_images() -> None:
     """Load images."""
     frame_length = 300  # change for faster/slower
-    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_data/images'
+    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
     image_paths = [Path(dir1) / file for file in sorted(os.listdir(dir1))]
 
     for path in image_paths:
