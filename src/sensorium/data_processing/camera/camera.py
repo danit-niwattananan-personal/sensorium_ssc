@@ -8,16 +8,13 @@ from pathlib import Path
 import cv2
 
 
-def load_images() -> None:
-    """Load images."""
-    frame_length = 300  # change for faster/slower
-    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
-    image_paths = [Path(dir1) / file for file in sorted(os.listdir(dir1))]
+def load_images(dir: str) -> list:
+    """Read images.
 
-    for path in image_paths:
-        im = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
-        cv2.imshow('Camera', im)
-        cv2.waitKey(frame_length)
+    Dir is the path to the image directory.
+    The function returns a list with all frames.
+    """
+    dir = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
+    image_paths = [Path(dir) / file for file in sorted(os.listdir(dir))]
 
-
-load_images()
+    return [cv2.imread(str(path), cv2.IMREAD_UNCHANGED) for path in image_paths]

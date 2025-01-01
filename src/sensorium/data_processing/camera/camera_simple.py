@@ -1,10 +1,16 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 
-"""A function that reads and shows each frame individually.
+"""First function function  reads and shows each frame individually.
+
+Second function  reads and shows all frames in a loop.
 
 Left for testing. Should be later removed.
+
 """
+
+import os
+from pathlib import Path
 
 import cv2
 
@@ -18,9 +24,9 @@ def camera_function() -> None:
     cv2.waitKey(frame_length)
     cv2.destroyAllWindows()
 
-    # # Using cv2.imwrite() method for saving the image in the current folder
-    # filename = 'Frame2.jpg'
-    # cv2.imwrite(filename, im)
+    # Using cv2.imwrite() method for saving the image in the current folder
+    filename = 'Frame2.jpg'
+    cv2.imwrite(filename, im)
 
     im = cv2.imread('dummy_kitti/images/03.png', cv2.IMREAD_COLOR)
     cv2.imshow('Image3', im)
@@ -68,3 +74,18 @@ def camera_function() -> None:
 
 
 camera_function()
+
+
+def load_images() -> None:
+    """Load images."""
+    frame_length = 300  # change for faster/slower
+    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
+    image_paths = [Path(dir1) / file for file in sorted(os.listdir(dir1))]
+
+    for path in image_paths:
+        im = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
+        cv2.imshow('Camera', im)
+        cv2.waitKey(frame_length)
+
+
+load_images()
