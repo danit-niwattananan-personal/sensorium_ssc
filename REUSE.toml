@@ -4,7 +4,6 @@ SPDX-PackageSupplier = "Projectpraktikum Python <python.ldv@xcit.tum.de>"
 SPDX-PackageDownloadLocation = "https://gitlab.lrz.de/ldv/teaching/python/2024"
 
 [[annotations]]
-<<<<<<< HEAD
 path = ["**/kitti*/**/*.png", "**/kitti*/**/*.txt"]
 path = ["**/kitti*/**/*.png", "**/kitti*/**/*.txt", "test_calib.txt", "test_poses.txt"]
 precedence = "aggregate"
