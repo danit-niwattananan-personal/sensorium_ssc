@@ -70,7 +70,6 @@ class LaunchWindow(QMainWindow):
         self.process: QProcess = QProcess(self)
         self.process.readyReadStandardOutput.connect(self.read_output)
 
-
     def log(self, message: str) -> None:
         """Log messages to the comment box."""
         self.comment_box.append(message)
