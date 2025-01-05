@@ -12,9 +12,10 @@ from sensorium.launch.launch import LaunchWindow
 @pytest.fixture
 def app() -> QApplication:
     """Fixture to create a QApplication instance."""
-    if not QApplication.instance():
-        return QApplication([])
-    return QApplication.instance()
+    instance = QApplication.instance()
+    if not isinstance(instance, QApplication):
+        instance = QApplication([])
+    return instance
 
 
 @pytest.fixture
