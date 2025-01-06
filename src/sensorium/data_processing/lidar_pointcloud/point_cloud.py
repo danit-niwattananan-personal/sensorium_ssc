@@ -38,9 +38,8 @@ def read_labels(path: str) -> NDArray[np.uint16]:
                     and each entry is a label (uint16) corresponding to a class.
     """
     # Read the .label file which contains the labels for each point (uint16)
-    labels = np.fromfile(path, dtype=np.uint16)
 
-    return labels
+    return np.fromfile(path, dtype=np.uint16)
 
 
 def get_cmap() -> dict[int, list[int]]:
@@ -85,8 +84,7 @@ def get_cmap() -> dict[int, list[int]]:
         256: [255, 0, 0],  # moving-on-rails
         257: [250, 80, 100],  # moving-bus
         258: [180, 30, 80],  # moving-truck
-        259: [255, 0, 0],  # moving-other-vehicle
-    }
+        259: [255, 0, 0],  # moving-other-vehicle}
     return colors
 
 
