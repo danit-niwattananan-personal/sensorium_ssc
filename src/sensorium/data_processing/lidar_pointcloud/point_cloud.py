@@ -44,7 +44,6 @@ def read_labels(path: str) -> NDArray[np.uint16]:
 
 def get_cmap() -> dict[int, list[int]]:
     """Returns the color map for the provided classes in the dataset."""
-
     # color map (BGR format)
     return {
         0: [0, 0, 0],  # unlabeled
