@@ -84,7 +84,8 @@ def get_cmap() -> dict[int, list[int]]:
         256: [255, 0, 0],  # moving-on-rails
         257: [250, 80, 100],  # moving-bus
         258: [180, 30, 80],  # moving-truck
-        259: [255, 0, 0],  # moving-other-vehicle}
+        259: [255, 0, 0],  # moving-other-vehicle
+}
     return colors
 
 
