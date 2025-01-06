@@ -8,8 +8,6 @@ from numpy.typing import NDArray
 
 def read_point_cloud(path: str) -> NDArray[np.float32]:
     """Reads point cloud data from a .bin file in the Semantic KITTI format.
-    
-    Returns the x, y, z coordinates of the points.
 
     Args:
         path (str): The path to the .bin file containing point cloud data.
@@ -25,9 +23,8 @@ def read_point_cloud(path: str) -> NDArray[np.float32]:
     point_cloud = point_cloud.reshape(-1, 4)
 
     # Extract only the x, y, z coordinates (first 3 columns)
-    xyz_coordinates = point_cloud[:, :3]
 
-    return xyz_coordinates
+    return point_cloud[:, :3]
 
 
 def read_labels(path: str) -> NDArray[np.uint16]:
