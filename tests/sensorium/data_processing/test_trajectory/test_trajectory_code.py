@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test Hello."""
 
-from sensorium.trajectory.trajectory_code import hello
+from sensorium.data_processing.trajectory.trajectory_code import hello
 
 
 def test_hello() -> None:
