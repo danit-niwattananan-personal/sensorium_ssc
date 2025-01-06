@@ -44,7 +44,7 @@ def read_labels(path: str) -> NDArray[np.uint16]:
 
 def get_cmap() -> dict[int, list[int]]:
     """Returns the color map for the provided classes in the dataset."""
-    
+
     # color map (BGR format)
     return {
         0: [0, 0, 0],  # unlabeled
@@ -81,7 +81,8 @@ def get_cmap() -> dict[int, list[int]]:
         257: [250, 80, 100],  # moving-bus
         258: [180, 30, 80],  # moving-truck
         259: [255, 0, 0],  # moving-other-vehicle
-}
+    }
+
 
 def read_labels_and_colors(path: str) -> tuple[NDArray[np.uint32], NDArray[np.uint8]]:
     """Reads .label file and returns the label IDs and their corresponding colors.
@@ -101,4 +102,3 @@ def read_labels_and_colors(path: str) -> tuple[NDArray[np.uint32], NDArray[np.ui
     label_colors = np.array([cmap.get(label, [0, 0, 0]) for label in labels], dtype=np.uint8)
 
     return labels, label_colors  # Return labels and their BGR color values
-
