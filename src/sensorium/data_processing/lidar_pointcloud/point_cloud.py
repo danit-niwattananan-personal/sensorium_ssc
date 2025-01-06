@@ -43,14 +43,10 @@ def read_labels(path: str) -> NDArray[np.uint16]:
 
 
 def get_cmap() -> dict[int, list[int]]:
-    """Returns the custom color map for the provided classes in the dataset.
-
-    Returns:
-        np.ndarray: A (number of classes, 3) array where each row contains
-        the BGR color for a class.
-    """
+    """Returns the color map for the provided classes in the dataset."""
+    
     # color map (BGR format)
-    colors = {
+    return {
         0: [0, 0, 0],  # unlabeled
         1: [0, 0, 255],  # outlier
         10: [245, 150, 100],  # car
@@ -86,19 +82,17 @@ def get_cmap() -> dict[int, list[int]]:
         258: [180, 30, 80],  # moving-truck
         259: [255, 0, 0],  # moving-other-vehicle
 }
-    return colors
-
 
 def read_labels_and_colors(path: str) -> tuple[NDArray[np.uint32], NDArray[np.uint8]]:
-    """Reads .label file and returns the label IDs and their corresponding color values.
+    """Reads .label file and returns the label IDs and their corresponding colors.
 
     Args:
         path (str): The path to the .label file.
 
     Returns:
         tuple: A tuple containing:
-            - labels (np.ndarray): A numpy array of label IDs.
-            - label_colors (np.ndarray): A numpy array of the corresponding BGR color values.
+             - labels (np.ndarray): A numpy array of label IDs.
+             - label_colors (np.ndarray): A numpy array of the corresponding BGR colors.
     """
     labels = np.fromfile(path, dtype=np.uint32)  # Read labels as uint32
     cmap = get_cmap()  # Retrieve the color map as a dictionary
@@ -107,3 +101,4 @@ def read_labels_and_colors(path: str) -> tuple[NDArray[np.uint32], NDArray[np.ui
     label_colors = np.array([cmap.get(label, [0, 0, 0]) for label in labels], dtype=np.uint8)
 
     return labels, label_colors  # Return labels and their BGR color values
+
