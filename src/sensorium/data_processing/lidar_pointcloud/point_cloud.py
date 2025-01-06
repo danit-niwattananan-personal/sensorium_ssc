@@ -8,6 +8,7 @@ from numpy.typing import NDArray
 
 def read_point_cloud(path: str) -> NDArray[np.float32]:
     """Reads point cloud data from a .bin file in the Semantic KITTI format.
+    
     Returns the x, y, z coordinates of the points.
 
     Args:
@@ -49,7 +50,8 @@ def get_cmap() -> dict[int, list[int]]:
     """Returns the custom color map for the provided classes in the dataset.
 
     Returns:
-        np.ndarray: A (number of classes, 3) array where each row contains the BGR color for a class.
+        np.ndarray: A (number of classes, 3) array where each row contains
+        the BGR color for a class.
     """
     # color map (BGR format)
     colors = {
