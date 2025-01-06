@@ -5,6 +5,7 @@
 import numpy as np
 from numpy.typing import NDArray
 
+
 def read_point_cloud(path: str) -> NDArray[np.float32]:
     """Reads point cloud data from a .bin file in the Semantic KITTI format.
     Returns the x, y, z coordinates of the points.
@@ -105,8 +106,6 @@ def read_labels_and_colors(path: str) -> tuple[NDArray[np.uint32], NDArray[np.ui
     cmap = get_cmap()  # Retrieve the color map as a dictionary
 
     # Map labels to colors, defaulting to black `[0, 0, 0]` if label is missing
-    label_colors = np.array(
-        [cmap.get(label, [0, 0, 0]) for label in labels], dtype=np.uint8
-    )
+    label_colors = np.array([cmap.get(label, [0, 0, 0]) for label in labels], dtype=np.uint8)
 
     return labels, label_colors  # Return labels and their BGR color values
