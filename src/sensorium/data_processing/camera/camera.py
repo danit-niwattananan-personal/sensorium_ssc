@@ -6,11 +6,12 @@ import os
 from pathlib import Path
 
 import cv2
+from cv2.typing import MatLike
 
 dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
 
 
-def load_images(directory: str) -> list:
+def load_images(directory: str) -> list[MatLike]:
     """Read images.
 
     Dir is the path to the image directory.
