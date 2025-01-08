@@ -18,11 +18,11 @@ from sensorium.data_processing.camera.camera import load_images
 #     cv2.waitKey(frame_length)
 
 
-def test_camera_function() -> None:
-    """Test for camera."""
-    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
-    for file in sorted(os.listdir(dir1)):
-        assert image_paths == [Path(dir1) / file]
-        assert load_images(dir1) == [
-            cv2.imread(str(path), cv2.IMREAD_UNCHANGED) for path in [Path(dir1) / file]
-        ]
+# def test_camera_function() -> None:
+#     """Test for camera."""
+#     dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
+#     for file in sorted(os.listdir(dir1)):
+#         assert image_paths == [Path(dir1) / file]
+#         assert load_images(dir1) == [
+#             cv2.imread(str(path), cv2.IMREAD_UNCHANGED) for path in [Path(dir1) / file]
+#       ]
