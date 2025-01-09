@@ -1,3 +1,4 @@
+# Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 """Test Camera."""
 
@@ -6,6 +7,11 @@ import os
 import cv2
 
 from sensorium.data_processing.camera.camera import load_images
+
+# def test_load_images(tmp_path: Path) -> None:
+#     im = cv2.imread('dummy_data/kitti_sequence_00/images/1.png', cv2.IMREAD_COLOR)
+#     tmp_path = cv2.imwrite('im', )
+
 
 # # for testing that the function works:
 # def iterate(list1) -> list:
