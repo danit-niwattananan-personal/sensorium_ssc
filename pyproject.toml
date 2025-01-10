@@ -32,7 +32,8 @@ dependencies = [
     "numpy>=2.2.0",
     "types-pyyaml>=6.0.12.20241230",
     "protobuf>=4.21.0",
-    "websockets>=11.0"
+    "websockets>=11.0",
+    "pygfx>=0.6.0",
 ]
 dynamic = ["version"]
 keywords = []
