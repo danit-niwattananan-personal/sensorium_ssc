@@ -24,11 +24,10 @@ class PointcloudVis(QtWidgets.QWidget):
         self.frame_number = 0
         self.is_animating = False
         self.waiting_for_new_file = False
-        self.color_map = self.get_colormap()
 
-        self.directory = Path()
+        self.directory = ''
         self.label_directory = Path()
-        self.color_map = Path()
+        self.config_file = Path()
 
         self.setup_gui()
         self.setup_canvas()
@@ -67,39 +66,40 @@ class PointcloudVis(QtWidgets.QWidget):
         self.canvas.request_draw(self.animate)
 
         layout = self.layout()
-        layout.addWidget(self.canvas, stretch=1)
+        if layout is not None:
+            layout.addWidget(self.canvas, 1)
 
     def setup_timers_and_watcher(self) -> None:
-        """."""
+        """Set up timers and file system watcher."""
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.load_next_frame)
-        self.animation_timer.setInterval(10)
+        self.animation_timer.setInterval(100)
 
         self.file_watcher = QtCore.QFileSystemWatcher(self)
         self.file_watcher.directoryChanged.connect(self.directory_changed)
 
-    def get_colormap(self) -> dict:
+    def get_colormap(self) -> dict[int, list[float]]:
         """."""
-        with Path.open(r'C:\Users\wich_\Desktop\semantic-kitti-all.yaml') as file:
+        with Path(self.config_file).open('r', encoding='utf-8') as file:
             data = yaml.safe_load(file)
         return data['color_map']
 
-    def load_positions(self, frame_number: int) -> np.ndarray:
-        """."""
+    def load_positions(self) -> np.ndarray[np.float32]:
         """Loads the coordinates for the positions of the points from one .bin file."""
-        path = self.directory / f'{frame_number:06d}.bin'
+        path = f'{self.directory}/{self.frame_number:06d}.bin'
         points = np.fromfile(path, dtype=np.float32).reshape(-1, 4)
         return points[:, :3]
 
-    def load_colors(self) -> np.ndarray:
+    def load_colors(self) -> np.ndarray[np.float32]:
         """."""
-        path = self.label_directory / f'{self.frame_number:06d}.label'
+        path = f'{self.label_directory}/{self.frame_number:06d}.label'
         ids = np.fromfile(path, dtype=np.uint32)
         semantic_ids = ids & 0xFFFF
-        max_class_id = max(self.color_map.keys()) + 1
+        color_map = self.get_colormap()
+        max_class_id = max(color_map.keys()) + 1
         color_map_array = np.zeros((max_class_id, 3), dtype=np.float32)
 
-        for key, value in self.color_map.items():
+        for key, value in color_map.items():
             color_map_array[key] = value
         return color_map_array[semantic_ids]
 
@@ -128,9 +128,9 @@ class PointcloudVis(QtWidgets.QWidget):
 
     def update_scene(self) -> None:
         """."""
-        if (self.directory / f'{self.frame_number:06d}.bin').exists():
-            positions = self.load_positions(self.frame_number)
-            colors = self.load_colors(self.frame_number)
+        if Path(f'{self.directory}/{self.frame_number:06d}.bin').exists():
+            positions = self.load_positions()
+            colors = self.load_colors()
             sizes = np.full((positions.shape[0],), 0.03, dtype=np.float32)
             positions = np.ascontiguousarray(positions)
             colors = np.ascontiguousarray(colors)
@@ -181,9 +181,9 @@ class PointcloudVis(QtWidgets.QWidget):
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     pointcloud = PointcloudVis()
-    pointcloud.color_map = Path(r'C:\Users\wich_\Desktop\semantic-kitti-all.yaml')
-    pointcloud.directory = Path(r'C:\Users\wich_\Desktop\velodyne\00')
-    pointcloud.label_directory = Path(r'C:\Users\wich_\Desktop\data_odometry_labels\00\labels')
+    pointcloud.config_file = r'C:\Users\wich_\Desktop\semantic-kitti-all.yaml'
+    pointcloud.directory = r'C:\Users\wich_\Desktop\velodyne\00'
+    pointcloud.label_directory = r'C:\Users\wich_\Desktop\data_odometry_labels\00\labels'
     pointcloud.file_watcher.addPath(str(pointcloud.directory))
     pointcloud.show()
     app.exec()
