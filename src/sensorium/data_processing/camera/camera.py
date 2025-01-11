@@ -8,9 +8,6 @@ from pathlib import Path
 import cv2
 from cv2.typing import MatLike
 
-dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images/'
-desired_frame = '02.png'
-
 
 def load_frame(directory: str, desired: str) -> list[MatLike]:
     """Read only one desired frame and return it in a list."""
@@ -23,5 +20,14 @@ def load_frame(directory: str, desired: str) -> list[MatLike]:
     raise RuntimeError(msg)
 
 
+def load_single_img(directory: str, frame_id: str) -> MatLike:
+    """Read only one desired frame and return it in a list."""
+    img_path = str(Path(directory) / f'{frame_id}.png')
+    return cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+
+
 # Initialize function in the following way:
-load_frame(dir1, desired_frame)
+if __name__ == '__main__':
+    dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images/'
+    desired_frame = '02.png'
+    load_frame(dir1, desired_frame)
