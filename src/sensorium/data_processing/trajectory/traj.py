@@ -64,7 +64,7 @@ def get_position_at_frame(calib_file: str, poses_file: str, frame_index: int) ->
     calibration = parse_calibration(calib_file)
     poses = parse_poses(poses_file, calibration)
 
-    error_message = 'Frame index out of range.'
+    error_message = 'Frame Index out of range.'
 
     # Ensure the requested frame index is valid
     if frame_index < 0 or frame_index >= len(poses):
