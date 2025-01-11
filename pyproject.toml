@@ -35,9 +35,6 @@ dependencies = [
     "pygfx>=0.6.0",
     "wgpu>=0.19.3",
     "mayavi>=4.8.2",
-    "torch>=2.5.1",
-    "torchvision>=0.20.1",
-    "torchaudio>=2.5.1",
     "numpy==2.0.0",
     "numba==0.60.0",
 ]
