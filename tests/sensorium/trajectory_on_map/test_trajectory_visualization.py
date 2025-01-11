@@ -6,7 +6,7 @@ from unittest.mock import mock_open, patch
 
 from PySide6 import QtGui, QtWidgets
 
-from sensorium.trajectory_on_map.dummy_trajectory import Trajectory
+from sensorium.trajectory_on_map.trajectory_visualization import Trajectory
 
 
 def test_draw_line() -> None:
