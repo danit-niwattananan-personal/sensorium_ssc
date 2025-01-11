@@ -15,6 +15,7 @@ Code adapted from Symphonies. Remove GPU C++ code.
 """
 
 import numpy as np
+from numba import prange
 from numpy.typing import NDArray
 
 
@@ -74,7 +75,7 @@ class TSDFVolume:
         vol_origin = vol_origin.astype(np.float32)
         vox_coords = vox_coords.astype(np.float32)
         cam_pts = np.empty_like(vox_coords, dtype=np.float32)
-        for i in range(vox_coords.shape[0]):
+        for i in prange(vox_coords.shape[0]):
             for j in range(3):
                 cam_pts[i, j] = vol_origin[j] + vox_size * vox_coords[i, j] + vox_size * offsets[j]
         return cam_pts
@@ -89,7 +90,7 @@ class TSDFVolume:
         fx, fy = intr[0, 0], intr[1, 1]
         cx, cy = intr[0, 2], intr[1, 2]
         pix = np.empty((cam_pts.shape[0], 2), dtype=np.int64)
-        for i in range(cam_pts.shape[0]):
+        for i in prange(cam_pts.shape[0]):
             pix[i, 0] = int(np.round((cam_pts[i, 0] * fx / cam_pts[i, 2]) + cx))
             pix[i, 1] = int(np.round((cam_pts[i, 1] * fy / cam_pts[i, 2]) + cy))
         return pix
