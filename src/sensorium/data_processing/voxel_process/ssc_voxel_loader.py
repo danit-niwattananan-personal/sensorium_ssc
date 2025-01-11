@@ -41,7 +41,7 @@ def load_ssc_voxel(
     frame_id = frame_id.split('_')[0]
 
     # Construct the path
-    label_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.bin'
+    label_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.label'
     invalid_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.invalid'
 
     # Check if path exists
@@ -51,7 +51,7 @@ def load_ssc_voxel(
 
     # Load using API
     label = semkitti_io.read_label_semantickitti(str(label_path))
-    invalid = semkitti_io.read_label_semantickitti(str(invalid_path))
+    invalid = semkitti_io.read_invalid_semantickitti(str(invalid_path))
 
     # Remap the label
     label = remap_lut[label.astype(np.uint16)].astype(np.float32)
@@ -59,8 +59,8 @@ def load_ssc_voxel(
     return label.reshape((256, 256, 32)).astype(np.uint8)
 
 
-def load_lidar2cam_extrinsic(calib_path: str) -> NDArray[np.float64]:
-    """Load the lidar to camera extrinsic matrix."""
+def read_calib(calib_path: str) -> dict[str, NDArray[np.float64]]:
+    """Load the camera intrinsic and extrinsic matrices."""
     calib_data = {}
     with Path(calib_path).open() as f:
         for line in f:
@@ -69,9 +69,11 @@ def load_lidar2cam_extrinsic(calib_path: str) -> NDArray[np.float64]:
             key, value = line.strip().split(':', 1)
             calib_data[key] = np.array([float(v) for v in value.split()])
 
-    t_velo_2_cam = np.identity(4)
-    t_velo_2_cam[:3, :4] = calib_data['Tr'].reshape(3, 4)
-    return t_velo_2_cam
+    ret = {}
+    ret['P2'] = calib_data['P2'].reshape(3, 4)  # 3x4 projection matrix for left camera
+    ret['Tr'] = np.identity(4)
+    ret['Tr'][:3, :4] = calib_data['Tr'].reshape(3, 4)
+    return ret
 
 
 def vox2pix(
