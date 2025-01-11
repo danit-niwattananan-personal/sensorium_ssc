@@ -35,6 +35,7 @@ dependencies = [
     "websockets>=11.0",
     "pygfx>=0.6.0",
     "wgpu>=0.19.3",
+    "mayavi>=4.8.2",
 ]
 dynamic = ["version"]
 keywords = []
