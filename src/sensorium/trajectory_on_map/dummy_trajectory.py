@@ -33,7 +33,7 @@ class Trajectory(QtWidgets.QWidget):
         with Path('trajectory.txt').open() as f:
             self.coord_dict = [json.loads(line.strip()) for line in f]
         self.coordinates = self.get_coordinates()
-        self.previous_point = None
+        self.previous_point: list[int] = []
         self.current_position_marker = self.scene.addEllipse(
             0,
             0,
