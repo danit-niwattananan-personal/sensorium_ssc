@@ -58,7 +58,7 @@ def get_position_at_frame(calib_file: str, poses_file: str, frame_index: int) ->
         frame_index (int): The frame number for which to get the position.
 
     Returns:
-        dict: A dictionary containing {"x": float, "y": float, "z": float}.
+        dict: A dictionary containing {'x': float, 'y': float, 'z': float}.
     """
     # Load calibration and poses
     calibration = parse_calibration(calib_file)
@@ -66,7 +66,7 @@ def get_position_at_frame(calib_file: str, poses_file: str, frame_index: int) ->
 
     # Ensure the requested frame index is valid
     if frame_index < 0 or frame_index >= len(poses):
-        raise IndexError("Frame index out of range.")
+        raise IndexError('Frame index out of range.')
 
     # Extract the (x, y, z) coordinates for the requested frame
     pose = poses[frame_index]
