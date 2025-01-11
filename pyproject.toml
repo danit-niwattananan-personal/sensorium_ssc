@@ -80,7 +80,7 @@ mypy_path = "src"
 strict = true
 
 [[tool.mypy.overrides]]
-module = []
+module = ["mayavi", "mayavi.api"]
 ignore_missing_imports = true
 
 
