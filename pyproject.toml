@@ -29,7 +29,6 @@ dependencies = [
     "pathlib>=1.0.1",
     "pyside6>=6.8.1",
     "pytest-qt>=4.4.0",
-    "numpy>=2.2.0",
     "types-pyyaml>=6.0.12.20241230",
     "protobuf>=4.21.0",
     "websockets>=11.0",
@@ -39,6 +38,8 @@ dependencies = [
     "torch>=2.5.1",
     "torchvision>=0.20.1",
     "torchaudio>=2.5.1",
+    "numpy==2.0",
+    "numba==0.60.0",
 ]
 dynamic = ["version"]
 keywords = []
