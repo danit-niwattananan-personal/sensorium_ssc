@@ -52,10 +52,6 @@ class Trajectory(QtWidgets.QWidget):
 
     def draw_line(self) -> None:
         """."""
-        if self.frame_number >= len(self.coordinates) - 1:
-            self.animation_timer.stop()
-            return
-
         scale_factor = 1
         coords = self.coordinates[:, :2] * scale_factor
         current_point = coords[self.frame_number]
