@@ -37,6 +37,7 @@ dependencies = [
     "wgpu>=0.19.3",
     "mayavi>=4.8.2",
     "torch>=2.5.1",
+    "torchvision>=0.20.1",
 ]
 dynamic = ["version"]
 keywords = []
