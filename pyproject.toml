@@ -36,6 +36,7 @@ dependencies = [
     "pygfx>=0.6.0",
     "wgpu>=0.19.3",
     "mayavi>=4.8.2",
+    "torch>=2.5.1",
 ]
 dynamic = ["version"]
 keywords = []
