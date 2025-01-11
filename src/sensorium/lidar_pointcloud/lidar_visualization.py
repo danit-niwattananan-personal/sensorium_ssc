@@ -60,16 +60,15 @@ class PointcloudVis(QtWidgets.QWidget):
     def setup_canvas(self) -> None:
         """."""
         self.canvas = WgpuCanvas(parent=self)
-        self.layout().addWidget(self.canvas)
         self.renderer = gfx.WgpuRenderer(self.canvas)
         self.scene = gfx.Scene()
         self.camera = gfx.OrthographicCamera(100, 100)
         self.canvas.request_draw(self.animate)
 
         layout = self.layout()
-        layout: QtWidgets.QVBoxLayout = self.layout()
         if layout is not None:
             layout.addWidget(self.canvas, 1)
+            layout.setStretch(layout.count() - 1, 1)
 
     def setup_timers_and_watcher(self) -> None:
         """Set up timers and file system watcher."""
@@ -83,28 +82,27 @@ class PointcloudVis(QtWidgets.QWidget):
     def get_colormap(self) -> dict[int, list[float]]:
         """."""
         with Path(self.config_file).open('r', encoding='utf-8') as file:
-            data: dict = yaml.safe_load(file)
-            color_map: dict[int, list[float]] = data['color_map']
-        return color_map
+            data = yaml.safe_load(file)
+        return data['color_map']
 
-    def load_positions(self) -> np.ndarray[tuple[int, ...], np.float32]:
+    def load_positions(self) -> np.ndarray[tuple[int, ...], float]:
         """Loads the coordinates for the positions of the points from one .bin file."""
         path = f'{self.directory}/{self.frame_number:06d}.bin'
-        points = np.fromfile(path, dtype=np.float32).reshape(-1, 4)
+        points = np.fromfile(path, np.float32).reshape(-1, 4)
         return points[:, :3]
 
-    def load_colors(self) -> np.ndarray[tuple[int, ...], np.float32]:
+    def load_colors(self) -> np.ndarray[tuple[int, ...], float]:
         """."""
         path = f'{self.label_directory}/{self.frame_number:06d}.label'
         ids = np.fromfile(path, dtype=np.uint32)
         semantic_ids = ids & 0xFFFF
         color_map = self.get_colormap()
         max_class_id = max(color_map.keys()) + 1
-        color_map_array = np.zeros((max_class_id, 3), dtype=np.float32)
+        color_map_array = np.zeros((max_class_id, 3), np.float32)
 
         for key, value in color_map.items():
             color_map_array[key] = value
-        return np.asarray(color_map_array[semantic_ids], dtype=np.float32)
+        return np.asarray(color_map_array[semantic_ids], np.float32)
 
     def jump_forwards(self) -> None:
         """Skip 10 frames forwards."""
@@ -134,10 +132,10 @@ class PointcloudVis(QtWidgets.QWidget):
         if Path(f'{self.directory}/{self.frame_number:06d}.bin').exists():
             positions = self.load_positions()
             colors = self.load_colors()
-            sizes = np.full((positions.shape[0],), 0.03, dtype=np.float32)
-            positions = np.ascontiguousarray(positions)
-            colors = np.ascontiguousarray(colors)
-            sizes = np.ascontiguousarray(sizes)
+            sizes = np.full((positions.shape[0]), 0.03, dtype=np.float32)
+            positions = np.ascontiguousarray(positions, dtype=np.float32)
+            colors = np.ascontiguousarray(colors, dtype=np.float32)
+            sizes = np.ascontiguousarray(sizes, dtype=np.float32)
             positions = gfx.Buffer(positions, force_contiguous=True)
             colors = gfx.Buffer(colors, force_contiguous=True)
             sizes = gfx.Buffer(sizes, force_contiguous=True)
