@@ -13,6 +13,24 @@ import os
 from pathlib import Path
 
 import cv2
+import numpy as np
+
+
+def camera() -> None:
+    """Testing creation of image that is only red."""
+    height = 600
+    width = 600
+    im_red = np.zeros((height, width, 3), np.uint8)
+    im_red[:, :, 0] = 0
+    im_red[:, :, 1] = 0
+    im_red[:, :, 2] = 255
+
+    cv2.imshow(' Image', im_red)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+camera()
 
 
 def camera_function() -> None:

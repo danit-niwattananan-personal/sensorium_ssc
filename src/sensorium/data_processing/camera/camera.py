@@ -8,15 +8,20 @@ from pathlib import Path
 import cv2
 from cv2.typing import MatLike
 
-dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
+dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images/'
+desired_frame = '02.png'
 
 
-def load_images(directory: str) -> list[MatLike]:
-    """Read images.
-
-    Dir is the path to the image directory.
-    The function returns a list with all frames.
-    """
+def load_frame(directory: str, desired: str) -> list[MatLike]:
+    """Read only one desired frame and return it in a list."""
     image_paths = [Path(directory) / file for file in sorted(os.listdir(directory))]
+    msg = 'Error'
 
-    return [cv2.imread(str(path), cv2.IMREAD_UNCHANGED) for path in image_paths]
+    for path in image_paths:
+        if path.match(desired):
+            return [cv2.imread(str(path), cv2.IMREAD_UNCHANGED)]
+    raise RuntimeError(msg)
+
+
+# Initialize function in the following way:
+load_frame(dir1, desired_frame)
