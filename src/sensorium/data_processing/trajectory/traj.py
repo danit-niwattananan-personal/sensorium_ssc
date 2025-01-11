@@ -49,25 +49,25 @@ def parse_poses(
     return poses
 
 
-def prepare_trajectory(calib_file: str, poses_file: str) -> list[dict[str, float]]:
-    """Parse calibration and poses to generate a trajectory list.
+def get_position_at_frame(calib_file: str, poses_file: str, frame_index: int) -> dict[str, float]:
+    """Retrieve the (x, y, z) position for a specific frame.
 
     Args:
         calib_file (str): Path to the calibration file.
         poses_file (str): Path to the poses file.
+        frame_index (int): The frame number for which to get the position.
 
     Returns:
-        list: List of trajectory points as dictionaries with (x, y, z).
+        dict: A dictionary containing {"x": float, "y": float, "z": float}.
     """
+    # Load calibration and poses
     calibration = parse_calibration(calib_file)
     poses = parse_poses(poses_file, calibration)
 
-    return [{'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]} for pose in poses]
+    # Ensure the requested frame index is valid
+    if frame_index < 0 or frame_index >= len(poses):
+        raise IndexError("Frame index out of range.")
 
-
-def save_trajectory(trajectory: list[dict[str, float]]) -> None:
-    """Placeholder for saving the trajectory data.
-
-    Args:
-        trajectory (list): The trajectory data to save.
-    """
+    # Extract the (x, y, z) coordinates for the requested frame
+    pose = poses[frame_index]
+    return {'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]}
