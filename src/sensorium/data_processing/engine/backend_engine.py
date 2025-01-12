@@ -32,6 +32,8 @@ class BackendEngine:
         data_dir: str,
         *,
         verbose: bool = False,
+        *,
+        verbose: bool = False,
         # **kwargs: dict,  # In case using config file to build the object
     ) -> None:
         """Initialize the BackendEngine.
@@ -39,9 +41,11 @@ class BackendEngine:
         Args:
             data_dir: the kitti root directory from which path to individual data type is formed.
             verbose: whether to print debug messages.
+            verbose: whether to print debug messages.
         """
         # @Danit: Import and use the real loaders
         self.data_dir = data_dir
+        self.verbose = verbose
         self.verbose = verbose
 
         # @Danit: Declare all meta data attributes
@@ -63,6 +67,7 @@ class BackendEngine:
         """Call the loading methods of the loaders and pack them into a dict to be passed to COMM.
 
         Args:
+            sequence_id: the id of the sequence folder
             sequence_id: the id of the sequence folder
             frame_id: The id of the frame to be processed.
 
