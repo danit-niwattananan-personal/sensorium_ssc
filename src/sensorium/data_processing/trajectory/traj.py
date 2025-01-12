@@ -46,17 +46,11 @@ def parse_poses(
     """
     poses = []
     tr = calibration['Tr']
-    print(f'Tr: {tr}')
     tr_inv = np.linalg.inv(tr)
-    print(f'Tr_inv: {tr_inv}')
 
     with Path(filename).open() as file:
-        count = 0
         for line in file:
             values = [float(v) for v in line.strip().split()]
-            if count == 0:
-                print(f'Values: {values}')
-                count += 1
 
             pose = np.zeros((4, 4))
             pose[0, 0:4] = values[0:4]
