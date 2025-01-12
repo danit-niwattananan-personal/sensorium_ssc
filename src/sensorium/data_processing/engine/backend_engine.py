@@ -5,24 +5,6 @@
 
 from pathlib import Path
 
-import numpy as np
-import yaml
-from cv2.typing import MatLike
-from numpy.typing import NDArray
-
-import sensorium.data_processing.utils.io_data as semkitti_io
-from sensorium.data_processing.camera.camera import load_single_img
-from sensorium.data_processing.lidar_pointcloud.point_cloud import (
-    read_labels_and_colors,
-    read_point_cloud,
-)
-from sensorium.data_processing.trajectory.traj import get_framepos_from_list, parse_poses
-from sensorium.data_processing.voxel_process.ssc_voxel_loader import (
-    load_ssc_voxel,
-    read_calib,
-    vox2pix,
-)
-
 
 class BackendEngine:
     """Main engine for data processing which call unit loaders and unit processors."""
@@ -46,60 +28,8 @@ class BackendEngine:
 
         # @Danit: Declare all meta data attributes
         self.frequency = 10  # Hz
-        self.voxel_origin = np.array((0, -25.6, -2))
-        self.voxel_size = 0.2
-        self.scene_size = (51.2, 51.2, 6.4)
-        self.scene_dim = tuple(int(dim / self.voxel_size) for dim in self.scene_size)
-        self.img_shape = (1220, 370)
 
-    def process_static_data(
-        self,
-        sequence_id: int | str,
-    ) -> dict[str, str | list[NDArray[np.float64]] | NDArray[np.float64] | NDArray[np.bool_]]:
-        """Process the data that takes long time, but only needs to be done once every sequence."""
-        # Meta data
-        sequence_id = f'{int(sequence_id):02d}'  # 2 digits, from 1 to '01'
-        calib_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'calib.txt')
-        poses_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt')
-
-        # Calculate all static data
-        all_calibs = read_calib(calib_file_path)
-        cam_intrinsic = all_calibs['P2']
-        t_velo_2_cam = all_calibs['Tr']  # cam_pose
-        cam_k = cam_intrinsic[:3, :3]
-        # NOTE: This code takes way too long to calculate for every frame
-        # Solution: calculate once and save it as attribute of class, or use a cache
-        _, fov_mask, _ = vox2pix(
-            t_velo_2_cam, cam_k, self.voxel_origin, self.img_shape, self.scene_size
-        )
-
-        # NOTE: the calib_file and calibration_file contains information about sequence_id
-        poses = parse_poses(poses_file_path, all_calibs)
-
-        return {
-            'sequence_id': sequence_id,
-            'fov_mask': fov_mask,
-            't_velo_2_cam': t_velo_2_cam,
-            'poses': poses,
-        }
-
-    def process(
-        self,
-        sequence_id: int | str,
-        frame_id: int | str,
-    ) -> dict[
-        str,
-        (
-            str
-            | list[float]
-            | float
-            | NDArray[np.float64]
-            | NDArray[np.float32]
-            | NDArray[np.bool_]
-            | MatLike
-            | None
-        ),
-    ]:
+    def process(self, frame_id: int | str) -> dict[str, list[int] | list[float] | float | None]:
         """Call the loading methods of the loaders and pack them into a dict to be passed to COMM.
 
         Args:
@@ -113,92 +43,31 @@ class BackendEngine:
         # Meta data
         start_frame_id = str(frame_id)
         start_frame_id = f'{frame_id:06d}'  # 6 digits, from 4070 to '004070'
-        sequence_id = f'{int(sequence_id):02d}'  # 2 digits, from 1 to '01'
+        sequence_id = str(self.sequence_id)
+        sequence_id = f'{sequence_id:02d}'  # 2 digits, from 1 to '01'
 
-        # If the sequence_id is changed or static data is not available, reprocess static data
-        try:
-            is_seq_id_equal = sequence_id == self.static_data['sequence_id']  # type: ignore[has-type]
-        except AttributeError:
-            is_seq_id_equal = False
-
-        if not is_seq_id_equal:
-            if self.verbose:
-                print(f'Processing static data for sequence {sequence_id} at frame {frame_id} ...')
-            self.static_data = self.process_static_data(sequence_id=sequence_id)
-
-        # Load the image
-        image_2_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_2'
-        image_3_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_3'
-        image_2_frame = load_single_img(str(image_2_dir), start_frame_id)
-        image_3_frame = load_single_img(str(image_3_dir), start_frame_id)
-        if self.verbose:
-            print('Images loaded')
-
-        # Load the lidar point cloud and panoptic ground truth
-        lidar_pc_path = str(
-            Path(self.data_dir) / 'sequences' / sequence_id / 'velodyne' / f'{start_frame_id}.bin'
-        )
-        lidar_label_path = str(
-            Path(self.data_dir) / 'sequences' / sequence_id / 'labels' / f'{start_frame_id}.label'
-        )
-        lidar_pc = read_point_cloud(lidar_pc_path)
-        pc_labels, pc_label_colors = read_labels_and_colors(lidar_label_path)
-        if self.verbose:
-            print('Lidar point cloud loaded')
-
-        # Load the trajectory
-        trajectory_data_dict = get_framepos_from_list(
-            self.static_data['poses'],  # type: ignore[arg-type]
-            int(start_frame_id),
-        )
-        xyz = np.array(
-            [trajectory_data_dict['x'], trajectory_data_dict['y'], trajectory_data_dict['z']]
-        )
-        if self.verbose:
-            print(f'Trajectory loaded with x,y,z: {xyz}')
-
-        # Load the voxel
-        sequence_path = str(Path(self.data_dir) / 'sequences')
-        # Check if frame_id is divisible by 5
-        try:
-            self._check_arguments(frame_id=start_frame_id)
-            # If yes, load the voxel
-            try:  # Check if config file exists and load the voxel
-                voxel_data = load_ssc_voxel(
-                    sequence_path,
-                    sequence_id,
-                    start_frame_id,
-                    semkitti_io.get_remap_lut(
-                        str(Path(Path.cwd()) / 'configs' / 'vox_semantic_kitti.yaml')
-                    ),
-                )
-            except FileNotFoundError as e:
-                _error_msg = """Make sure that 1) data exists, 2) execute this file from the root
-                directory of project, 3) the config file is in b/config/vox_semantic_kitti.yaml"""
-                raise ImportError(_error_msg) from e
-
-        except ValueError:
-            # If no, assign None to voxel_related data
-            voxel_data = None
-
-        if self.verbose:
-            print('Voxel loaded')
+        self.files = [
+            f.split('_')[0]  # Get only base frame_id (e.g. '000000' from '000000_1_1')
+            for f in os.listdir(Path(self.data_dir) / sequence_id / str(frame_id))
+            if (curr_frame_id := int(f.split('_')[0])) >= int(start_frame_id)
+        ]
+        # The data itself in dict format
+        frame_ids = []
+        for _ in self.files:
+            frame_ids.append(curr_frame_id)
+            # Load the data
+            cam_data = None  # self.cam_loader.load(curr_frame_id)
+            lidar_pc_data = None  # self.lidar_pc_loader.load(curr_frame_id)
+            trajectory_data = None  # self.trajectory_loader.load(curr_frame_id)
+            voxel_data = None  # self.voxel_loader.load(curr_frame_id)
 
         return {
-            'frame_id': start_frame_id,  # for checking error after transmission
-            'sequence_id': sequence_id,  # for checking error after transmission
-            'timestamp': self.calculate_timestamp(start_frame_id),
-            'image_2': image_2_frame,
-            'image_3': image_3_frame,
-            'lidar_pc': lidar_pc,
-            'lidar_pc_labels': pc_labels,
-            'lidar_pc_label_colors': pc_label_colors,
-            'trajectory': xyz,
+            'frame_id': frame_ids,
+            'timestamp': self.calculate_timestamp(frame_ids),
+            'cam': cam_data,
+            'lidar_pc': lidar_pc_data,
+            'trajectory': trajectory_data,
             'voxel': voxel_data,
-            # NOTE: type: ignore[dict-item] is required since process_static_data
-            # has different item types
-            'fov_mask': self.static_data['fov_mask'],  # type: ignore[dict-item]
-            't_velo_2_cam': self.static_data['t_velo_2_cam'],  # type: ignore[dict-item]
         }
 
     def calculate_timestamp(
@@ -246,31 +115,3 @@ class BackendEngine:
             raise ValueError(_frame_id_error)
         # Also check if sequence is in range 0 to 20
         # Check if path exists
-
-
-def main() -> None:
-    """Main function."""
-    print('Loading config. Make sure you execute this script at directory root of project.')
-    config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
-    with Path(config_path).open() as stream:
-        backend_config = yaml.safe_load(stream)
-    import time
-
-    start_time = time.time()
-    data_dir = backend_config['backend_engine']['data_dir']
-    backend_engine = BackendEngine(data_dir=data_dir, verbose=True)
-    backend_engine.process(sequence_id=0, frame_id=0)
-    print(f'Loaded data for sequence {0} and frame {0} ...')
-    end_time = time.time()
-    print(f'Time taken: {end_time - start_time:.4f} seconds')
-
-    # Load another frame
-    start_time = time.time()
-    backend_engine.process(sequence_id=0, frame_id=5)
-    print(f'Loaded data for sequence {0} and frame {5} ...')
-    end_time = time.time()
-    print(f'Time taken: {end_time - start_time:.4f} seconds')
-
-
-if __name__ == '__main__':
-    main()
