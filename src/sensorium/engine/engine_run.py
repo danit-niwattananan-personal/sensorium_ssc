@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QApplication,
+    QDialog,
     QHBoxLayout,
     QLabel,
     QMainWindow,
@@ -16,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from sensorium.engine.settings import open_settings_window
+
 
 class MainWindow(QMainWindow):
     """MainWindow."""
@@ -78,10 +80,10 @@ class MainWindow(QMainWindow):
         ask_data_menu.addAction(ask_data_action)
         ask_data_menu.addAction(ask_4_new_data)
 
-    def open_settings(self) -> None:
+    def open_settings(self) -> QDialog:
         """Hier werden die Einstellungen geöffnet."""
         print('Einstellungen geöffnet')
-        print('Einstellungen geöffnet')
+        return open_settings_window()
 
     def connect_server(self) -> None:
         """Hier wird später das Pop-Up für den Aufbau der Verbindung geöffnet."""
