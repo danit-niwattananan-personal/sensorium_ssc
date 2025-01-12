@@ -15,7 +15,7 @@ Code adapted from Symphonies. Remove GPU C++ code.
 """
 
 import numpy as np
-from numba import prange
+from numba import njit, prange
 from numpy.typing import NDArray
 
 
@@ -65,6 +65,7 @@ class TSDFVolume:
         )
 
     @staticmethod
+    @njit(parallel=True)  # type: ignore[misc]
     def vox2world(
         vol_origin: NDArray[np.float64],
         vox_coords: NDArray[np.float32],
@@ -81,6 +82,7 @@ class TSDFVolume:
         return cam_pts
 
     @staticmethod
+    @njit(parallel=True)  # type: ignore[misc]
     def cam2pix(
         cam_pts: NDArray[np.float32],
         intr: NDArray[np.float64],
