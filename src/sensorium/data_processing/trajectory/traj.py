@@ -47,7 +47,7 @@ def parse_poses(
 
     with Path(filename).open() as file:
         for line in file:
-            values = np.array[float(v) for v in line.strip().split()]
+            values = np.array([float(v) for v in line.strip().split()])
             
             if len(values) == 12:
                 pose = values.reshape(3, 4)
