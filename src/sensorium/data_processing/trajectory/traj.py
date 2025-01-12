@@ -23,11 +23,10 @@ def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
             key, content = line.strip().split(':')
             values = np.array([float(x) for x in content.split()])
             
-            if key == 'Tr':
-                if len(values) == 12:
-                    matrix = values.reshape(3, 4)
-                    bottom_row = np.array([[0.0, 0.0, 0.0, 1.0]])
-                    calib[key] = np.vstack((matrix, bottom_row))
+            if key == 'Tr' and len(values) == 12:
+                matrix = values.reshape(3, 4)
+                bottom_row = np.array([[0.0, 0.0, 0.0, 1.0]])
+                calib[key] = np.vstack((matrix, bottom_row))
     return calib
 
 def parse_poses(
@@ -48,7 +47,7 @@ def parse_poses(
 
     with Path(filename).open() as file:
         for line in file:
-            values = [float(v) for v in line.strip().split()]
+            values = np.array[float(v) for v in line.strip().split()]
             
             if len(values) == 12:
                 pose = values.reshape(3, 4)
