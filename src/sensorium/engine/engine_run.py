@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from sensorium.engine.settings import open_settings_window
 
 class MainWindow(QMainWindow):
     """MainWindow."""
@@ -78,7 +79,8 @@ class MainWindow(QMainWindow):
         ask_data_menu.addAction(ask_4_new_data)
 
     def open_settings(self) -> None:
-        """Hier wird später das fenster für die Einstellungen geöffnet."""
+        """Hier werden die Einstellungen geöffnet."""
+        print('Einstellungen geöffnet')
         print('Einstellungen geöffnet')
 
     def connect_server(self) -> None:
