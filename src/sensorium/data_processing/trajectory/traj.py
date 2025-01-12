@@ -17,17 +17,19 @@ def parse_calibration(filename: str) -> dict[str, NDArray[np.float64]]:
     Returns:
         dict: Calibration matrices as 4x4 numpy arrays.
     """
-    calib = {}
-    with Path(filename).open() as calib_file:
-        for line in calib_file:
-            key, content = line.strip().split(':')
-            values = np.array([float(x) for x in content.split()])
+    calib_data = {}
+    with Path(filename).open() as f:
+        for line in f:
+            if line == '\n':
+                break
+            key, value = line.strip().split(':', 1)
+            calib_data[key] = np.array([float(v) for v in value.split()])
 
-            if key == 'Tr' and len(values) == 12:
-                matrix = values.reshape(3, 4)
-                bottom_row = np.array([[0.0, 0.0, 0.0, 1.0]])
-                calib[key] = np.vstack((matrix, bottom_row))
-    return calib
+    ret = {}
+    ret['P2'] = calib_data['P2'].reshape(3, 4)  # 3x4 projection matrix for left camera
+    ret['Tr'] = np.identity(4)
+    ret['Tr'][:3, :4] = calib_data['Tr'].reshape(3, 4)
+    return ret
 
 
 def parse_poses(
@@ -44,17 +46,25 @@ def parse_poses(
     """
     poses = []
     tr = calibration['Tr']
+    print(f'Tr: {tr}')
     tr_inv = np.linalg.inv(tr)
+    print(f'Tr_inv: {tr_inv}')
 
     with Path(filename).open() as file:
+        count = 0
         for line in file:
-            values = np.array([float(v) for v in line.strip().split()])
+            values = [float(v) for v in line.strip().split()]
+            if count == 0:
+                print(f'Values: {values}')
+                count += 1
 
-            if len(values) == 12:
-                pose = values.reshape(3, 4)
-                bottom_row = np.array([[0.0, 0.0, 0.0, 1.0]])
-                pose = np.vstack((pose, bottom_row))
-                poses.append(np.dot(tr_inv, pose))
+            pose = np.zeros((4, 4))
+            pose[0, 0:4] = values[0:4]
+            pose[1, 0:4] = values[4:8]
+            pose[2, 0:4] = values[8:12]
+            pose[3, 3] = 1.0
+
+        poses.append(tr_inv @ (pose @ tr))
 
     return poses
 
