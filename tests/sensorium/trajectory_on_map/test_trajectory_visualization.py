@@ -19,17 +19,11 @@ def test_draw_line() -> None:
         widget = Trajectory()
 
         widget.previous_point = [0, 0]
-        print(widget.previous_point[0], widget.previous_point[1])
 
         widget.frame_number = 1
         widget.view = QtWidgets.QGraphicsView()
         widget.scene = QtWidgets.QGraphicsScene()
         widget.view.setScene(widget.scene)
-
-        scale_factor = 1
-        coords = widget.coordinates[:, :2] * scale_factor
-        current_point = coords[widget.frame_number]
-        print(current_point[0], current_point[1])
 
         widget.current_position_marker = widget.scene.addEllipse(
             0,
@@ -41,9 +35,5 @@ def test_draw_line() -> None:
         )
 
         widget.draw_line()
-
-        items = widget.scene.items()
-        print(items)
-
-        assert len(items) > 0
+        assert len(widget.scene.items()) == 2
     app.quit()

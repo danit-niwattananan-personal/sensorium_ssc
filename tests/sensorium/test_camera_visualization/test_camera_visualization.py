@@ -33,5 +33,6 @@ def test_update_image() -> None:
             )
             camera_widget.update_image()
             assert camera_widget.frame_id == 1
+
     finally:
         app.shutdown()

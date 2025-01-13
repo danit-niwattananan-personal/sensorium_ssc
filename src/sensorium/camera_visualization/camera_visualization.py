@@ -29,9 +29,11 @@ class CameraWidget(QMainWindow):
         self.timer.start(100)
         self.frame_id = 0
 
-    def request_image_array(self, frame_id: int, seg_id: int) -> tuple[int, int, str]:
+    def request_image_array(
+        self, frame_id: int, seg_id: int, data_mode: int
+    ) -> tuple[int, int, int]:
         """."""
-        return seg_id, frame_id, 'camera'
+        return seg_id, frame_id, data_mode
 
     def setup_lable(self) -> None:
         """."""
