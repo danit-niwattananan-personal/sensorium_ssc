@@ -10,14 +10,13 @@ from sensorium.trajectory_on_map.trajectory_visualization import Trajectory
 
 
 def test_draw_line() -> None:
-    """Test if draw_line adds a QGraphicsLineItem when previous_point is not None."""
-    # Mock file reading
+    """."""
     with patch(
         'pathlib.Path.open',
         mock_open(read_data='{"x": 0, "y": 0, "z": 0}\n{"x": 1, "y": 1, "z": 1}\n'),
     ):
-        app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])  # Create QApplication
-        widget = Trajectory()  # Create the widget
+        app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+        widget = Trajectory()
 
         widget.previous_point = [0, 0]
         print(widget.previous_point[0], widget.previous_point[1])
@@ -47,4 +46,4 @@ def test_draw_line() -> None:
         print(items)
 
         assert len(items) > 0
-        app.quit()
+    app.quit()
