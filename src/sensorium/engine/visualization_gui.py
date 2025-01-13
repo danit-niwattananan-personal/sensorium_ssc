@@ -54,7 +54,6 @@ class VisualisationGui(QMainWindow):
         widget3 = QLabel('Widget 3')
         widget4 = QLabel('Widget 4')
 
-
         grid_layout.addWidget(widget1, 0, 0)
         grid_layout.addWidget(widget2, 0, 1)
         grid_layout.addWidget(widget3, 1, 0)
