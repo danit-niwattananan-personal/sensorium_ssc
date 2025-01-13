@@ -20,28 +20,32 @@ class CameraWidget(QMainWindow):
             r'C:\Users\wich_\Desktop\2011_09_26\2011_09_26_drive_0035_sync\image_00\data'
         )
         sample_img = cv2.imread(self.img_directory + '/' + '0000000000.png')
-        height, width = sample_img.shape[:2]
+        self._height, self._width = sample_img.shape[:2]
 
-        scale_factor = 0.5
-        width = int(width * scale_factor)
-        height = int(height * scale_factor)
-        self.setWindowTitle('Video')
-        self.setGeometry(100, 100, width, height)
-
-        self.label = QLabel(self)
-        self.label.setGeometry(0, 0, width, height)
+        self.setup_lable()
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_image)
         self.timer.start(100)
-        self.frame_number = 0
+        self.frame_id = 0
 
-    def request_image_array(self) -> None:
+    def request_image_array(self, frame_id: int, seg_id: int) -> tuple[int, int, str]:
         """."""
+        return seg_id, frame_id, 'camera'
+
+    def setup_lable(self) -> None:
+        """."""
+        scale_factor = 0.3
+        width = int(self._width * scale_factor)
+        height = int(self._height * scale_factor)
+        self.setWindowTitle('Video')
+        self.setGeometry(100, 100, width, height)
+        self.label = QLabel(self)
+        self.label.setGeometry(0, 0, width, height)
 
     def update_image(self) -> None:
         """."""
-        pixmap = QPixmap(self.img_directory + '/' + f'{self.frame_number:010d}.png')
+        pixmap = QPixmap(self.img_directory + '/' + f'{self.frame_id:010d}.png')
         self.label.setPixmap(
             pixmap.scaled(
                 self.label.width(),
@@ -50,7 +54,10 @@ class CameraWidget(QMainWindow):
             )
         )
 
-        self.frame_number += 1
+        self.frame_id += 1
+
+        if self.frame_id == 100:
+            self.frame_id = 0
 
 
 if __name__ == '__main__':
