@@ -3,7 +3,6 @@
 
 """GUI."""
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QApplication,
@@ -17,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from sensorium.engine.settings import open_settings_window
+from sensorium.engine.visualization_gui import VisualisationGui
 
 
 class MainWindow(QMainWindow):
@@ -47,9 +47,8 @@ class MainWindow(QMainWindow):
         main_layout.addLayout(right_layout)
 
         # Platzhalter-Label für Videoplayer
-        placeholder = QLabel('Hier kommt der Videoplayer')
-        placeholder.setAlignment(Qt.AlignCenter)  # type: ignore[attr-defined]
-        right_layout.addWidget(placeholder, stretch=1)
+        videoplayer = VisualisationGui()
+        right_layout.addWidget(videoplayer, stretch=1)
 
         # Menüleiste
         menu_bar = QMenuBar(self)
