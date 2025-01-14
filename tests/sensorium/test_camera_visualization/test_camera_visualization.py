@@ -13,7 +13,7 @@ from sensorium.camera_visualization.camera_visualization import (
 )
 
 
-def test_update_image() -> None:
+def test_show_image() -> None:
     """."""
     app = QApplication([])
     try:
@@ -24,14 +24,14 @@ def test_update_image() -> None:
             mock_pixmap_instance.scaled.return_value = QPixmap()
             mock_pixmap.return_value = mock_pixmap_instance
 
-            camera_widget.update_image()
+            camera_widget.show_image()
             assert camera_widget.frame_id == 0
             mock_pixmap_instance.scaled.assert_called_once_with(
                 camera_widget.label.width(),
                 camera_widget.label.height(),
                 Qt.AspectRatioMode.KeepAspectRatio,
             )
-            camera_widget.update_image()
+            camera_widget.show_image()
             assert camera_widget.frame_id == 1
 
     finally:
