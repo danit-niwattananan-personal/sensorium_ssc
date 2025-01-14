@@ -8,6 +8,8 @@ from pathlib import Path
 import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from sensorium.launch.launch import get_traj_data  # type: ignore  # noqa: PGH003
+
 
 class Trajectory(QtWidgets.QWidget):
     """."""
@@ -32,8 +34,8 @@ class Trajectory(QtWidgets.QWidget):
 
         with Path('trajectory.txt').open() as f:
             self.coord_dict = [json.loads(line.strip()) for line in f]
-        self.coordinates = self.get_coordinates()
         self.previous_point: list[int] = []
+
         self.current_position_marker = self.scene.addEllipse(
             0,
             0,
@@ -50,10 +52,12 @@ class Trajectory(QtWidgets.QWidget):
         z = np.array([coord['z'] for coord in self.coord_dict])
         return np.column_stack((x, y, z))
 
-    def draw_line(self) -> None:
+    def draw_line(self, frame_id: int, seq_id: int) -> None:
         """."""
+        coords = get_traj_data(frame_id, seq_id)
+        # coords = self.get_coordinates()  # noqa: ERA001
         scale_factor = 1
-        coords = self.coordinates[:, :2] * scale_factor
+        coords = coords * scale_factor
         current_point = coords[self.frame_number]
 
         if self.previous_point is not None:

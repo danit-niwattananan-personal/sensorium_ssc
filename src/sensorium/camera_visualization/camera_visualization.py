@@ -9,6 +9,11 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
 
+from sensorium.launch.launch import (  # type: ignore  # noqa: PGH003
+    get_camera2_data,
+    get_camera3_data,
+)
+
 
 class CameraWidget(QMainWindow):
     """."""
@@ -25,15 +30,9 @@ class CameraWidget(QMainWindow):
         self.setup_lable()
 
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_image)
+        self.timer.timeout.connect(self.draw_image)
         self.timer.start(100)
         self.frame_id = 0
-
-    def request_image_array(
-        self, frame_id: int, seg_id: int, data_mode: int
-    ) -> tuple[int, int, int]:
-        """."""
-        return seg_id, frame_id, data_mode
 
     def setup_lable(self) -> None:
         """."""
@@ -45,9 +44,13 @@ class CameraWidget(QMainWindow):
         self.label = QLabel(self)
         self.label.setGeometry(0, 0, width, height)
 
-    def update_image(self) -> None:
+    def draw_image(self, frame_id: int, seq_id: int, *, left: bool) -> None:
         """."""
-        pixmap = QPixmap(self.img_directory + '/' + f'{self.frame_id:010d}.png')
+        if left:
+            pixmap = QPixmap(get_camera2_data(frame_id, seq_id))
+        else:
+            pixmap = QPixmap(get_camera3_data(frame_id, seq_id))
+        # pixmap = QPixmap(self.img_directory + '/' + f'{self.frame_id:010d}.png')  # noqa: ERA001
         self.label.setPixmap(
             pixmap.scaled(
                 self.label.width(),

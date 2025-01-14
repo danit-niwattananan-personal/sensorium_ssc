@@ -12,6 +12,8 @@ import yaml
 from PySide6 import QtCore, QtWidgets
 from wgpu.gui.qt import WgpuCanvas  # type: ignore[import-untyped]
 
+# from sensorium.launch.launch import get_lidar_data  # noqa: ERA001
+
 
 class PointcloudVis(QtWidgets.QWidget):
     """Widget for visualizing and controlling the LiDAR pointcloud scene."""
@@ -52,11 +54,11 @@ class PointcloudVis(QtWidgets.QWidget):
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
-        layout.addWidget(self.button)
-        layout.addWidget(self.animate_button)
-        layout.addWidget(self.forward_button)
-        layout.addWidget(self.backward_button)
-        layout.addWidget(self.status_bar)
+        layout.addWidget(self.button, 0)
+        layout.addWidget(self.animate_button, 0)
+        layout.addWidget(self.forward_button, 0)
+        layout.addWidget(self.backward_button, 0)
+        layout.addWidget(self.status_bar, 0)
 
     def setup_canvas(self) -> None:
         """."""
@@ -65,8 +67,10 @@ class PointcloudVis(QtWidgets.QWidget):
         self.scene = gfx.Scene()
         self.camera = gfx.OrthographicCamera(100, 100)
         self.canvas.request_draw(self.animate)
-
         layout = self.layout()
+        self.canvas.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         if layout is not None:
             layout.addWidget(self.canvas)
 
@@ -74,7 +78,7 @@ class PointcloudVis(QtWidgets.QWidget):
         """Set up timers and file system watcher."""
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.load_next_frame)
-        self.animation_timer.setInterval(100)
+        self.animation_timer.setInterval(1)
 
         self.file_watcher = QtCore.QFileSystemWatcher(self)
         self.file_watcher.directoryChanged.connect(self.directory_changed)
@@ -91,7 +95,30 @@ class PointcloudVis(QtWidgets.QWidget):
         points = np.fromfile(path, np.float32).reshape(-1, 4)
         return points[:, :3]
 
-    def load_colors(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+    def load_colors_gradient(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+        """Creates a gradient color map based on the z-values of the points.
+
+        Args:
+            self.
+
+        Returns:
+            np.ndarray[tuple[int, ...], np.dtype[np.float32]]: Array withe rbg values of the points.
+        """
+        positions = self.load_positions()
+
+        z_values = positions[:, 2]
+        z_min = np.percentile(z_values, 10)
+        z_max = np.percentile(z_values, 90)
+        z_values_clipped = np.clip(z_values, z_min, z_max)
+        normalized_z = (z_values_clipped - z_min) / (z_max - z_min)
+        colors = np.zeros((len(normalized_z), 3), dtype=np.float32)
+
+        colors[:, 0] = 1  # red
+        colors[:, 1] = 0.80 - normalized_z  # green
+        colors[:, 2] = 0  # blue
+        return colors
+
+    def load_colors_ground_truth(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """."""
         path = f'{self.label_directory}/{self.frame_number:06d}.label'
         ids = np.fromfile(path, dtype=np.uint32)
@@ -128,10 +155,11 @@ class PointcloudVis(QtWidgets.QWidget):
             self.animation_timer.stop()
 
     def update_scene(self) -> None:
-        """."""
+        """Method to update the scene with the current frame."""
         if Path(f'{self.directory}/{self.frame_number:06d}.bin').exists():
+            # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
             positions = self.load_positions()
-            colors = self.load_colors()
+            colors = self.load_colors_gradient()
             positions = np.ascontiguousarray(positions, dtype=np.float32)
             colors = np.ascontiguousarray(colors, dtype=np.float32)
             sizes = np.ascontiguousarray(
@@ -153,7 +181,7 @@ class PointcloudVis(QtWidgets.QWidget):
             self.canvas.update()
             self.status_bar.showMessage(f'Frame: {self.frame_number}')
             # calculating FPS for testing
-            self.frame_count += 1
+
             current_time = time.time()
             elapsed_time = current_time - self.start_time
             if elapsed_time >= 5.0:
@@ -177,6 +205,7 @@ class PointcloudVis(QtWidgets.QWidget):
 
     def animate(self) -> None:
         """."""
+        self.frame_count += 1
         self.renderer.render(self.scene, self.camera)
 
 
