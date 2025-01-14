@@ -20,7 +20,10 @@ class CameraWidget(QMainWindow):
             r'C:\Users\wich_\Desktop\2011_09_26\2011_09_26_drive_0035_sync\image_00\data'
         )
         sample_img = cv2.imread(self.img_directory + '/' + '0000000000.png')
+        print(sample_img)
         self._height, self._width = sample_img.shape[:2]
+        print(sample_img.shape)
+        print(self._height, self._width)
 
         self.setup_lable()
 
