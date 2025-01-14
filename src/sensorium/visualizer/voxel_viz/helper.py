@@ -81,6 +81,9 @@ def draw_semantic_voxel(
         vox_origin: the origin coordinate of the voxel
         fov_mask: the field of view mask
         figure: the mayavi figure
+
+    Returns:
+        img: the image of the voxel's visualization
     """
     # Set meta data of the voxel
     img_size = (1220, 370)  # for SemanticKITTI dataset.
@@ -169,4 +172,6 @@ def draw_semantic_voxel(
 
     plt_plot.scene.camera.zoom(1.3)
 
-    return figure
+    img = mlab.screenshot(figure)
+    mlab.clf(figure)
+    return img
