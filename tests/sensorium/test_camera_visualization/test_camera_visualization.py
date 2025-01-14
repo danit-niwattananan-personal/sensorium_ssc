@@ -19,20 +19,24 @@ def test_show_image() -> None:
     try:
         camera_widget = CameraWidget()
         camera_widget.frame_id = 99
-        with patch('sensorium.camera_visualization.camera_visualization.QPixmap') as mock_pixmap:
-            mock_pixmap_instance = Mock(spec=QPixmap)
-            mock_pixmap_instance.scaled.return_value = QPixmap()
-            mock_pixmap.return_value = mock_pixmap_instance
+        with patch('sensorium.camera_visualization.camera_visualization.cv2.imread') as mock_imread:
+            mock_imread.return_value = Mock(shape=(480, 640, 3))
+            with patch(
+                'sensorium.camera_visualization.camera_visualization.QPixmap'
+            ) as mock_pixmap:
+                mock_pixmap_instance = Mock(spec=QPixmap)
+                mock_pixmap_instance.scaled.return_value = QPixmap()
+                mock_pixmap.return_value = mock_pixmap_instance
 
-            camera_widget.show_image()
-            assert camera_widget.frame_id == 0
-            mock_pixmap_instance.scaled.assert_called_once_with(
-                camera_widget.label.width(),
-                camera_widget.label.height(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-            )
-            camera_widget.show_image()
-            assert camera_widget.frame_id == 1
+                camera_widget.show_image()
+                assert camera_widget.frame_id == 0
+                mock_pixmap_instance.scaled.assert_called_once_with(
+                    camera_widget.label.width(),
+                    camera_widget.label.height(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                )
+                camera_widget.show_image()
+                assert camera_widget.frame_id == 1
 
     finally:
         app.shutdown()
