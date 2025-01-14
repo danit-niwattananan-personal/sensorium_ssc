@@ -20,7 +20,9 @@ def test_show_image() -> None:
         camera_widget = CameraWidget()
         camera_widget.frame_id = 99
         with patch('sensorium.camera_visualization.camera_visualization.cv2.imread') as mock_imread:
-            mock_imread.return_value = Mock(shape=(480, 640, 3))
+            mock_img = Mock()
+            mock_img.shape = (480, 640, 3)
+            mock_imread.return_value = mock_img
             with patch(
                 'sensorium.camera_visualization.camera_visualization.QPixmap'
             ) as mock_pixmap:
