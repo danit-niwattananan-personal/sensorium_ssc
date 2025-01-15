@@ -5,7 +5,7 @@
 import sys
 
 import cv2
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
 
@@ -24,11 +24,6 @@ class CameraWidget(QMainWindow):
 
         self.setup_lable()
 
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.show_image)
-        self.timer.start(100)
-        self.frame_id = 0
-
     def setup_lable(self) -> None:
         """."""
         scale_factor = 0.3
@@ -39,9 +34,10 @@ class CameraWidget(QMainWindow):
         self.label = QLabel(self)
         self.label.setGeometry(0, 0, width, height)
 
-    def show_image(self) -> None:
+    def show_image(self, frame_id: int) -> None:
         """."""
-        pixmap = QPixmap(self.img_directory + '/' + f'{self.frame_id:010d}.png')
+        pixmap = QPixmap(f'{self.img_directory}/{frame_id:010d}.png')
+
         self.label.setPixmap(
             pixmap.scaled(
                 self.label.width(),
@@ -49,11 +45,6 @@ class CameraWidget(QMainWindow):
                 Qt.AspectRatioMode.KeepAspectRatio,
             )
         )
-
-        self.frame_id += 1
-
-        if self.frame_id == 100:
-            self.frame_id = 0
 
 
 if __name__ == '__main__':

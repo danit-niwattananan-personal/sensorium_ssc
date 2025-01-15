@@ -24,17 +24,19 @@ class Trajectory(QtWidgets.QWidget):
 
         self.frame_number = 0
 
-        self.animation_timer = QtCore.QTimer(self)
-        self.animation_timer.timeout.connect(self.draw_line)
-        self.animation_timer.setInterval(1)
+        # self.animation_timer = QtCore.QTimer(self)
+        # self.animation_timer.timeout.connect(self.draw_line)
+        # self.animation_timer.setInterval(1)
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.view)
         self.setLayout(layout)
 
-        with Path('trajectory.txt').open() as f:
+        with Path(
+            r'C:\Users\wich_\ppp_project\b\src\sensorium\trajectory_on_map\trajectory.txt'
+        ).open() as f:
             self.coord_dict = [json.loads(line.strip()) for line in f]
-        self.previous_point: list[int] = []
+        self.previous_point = np.zeros(3)
 
         self.current_position_marker = self.scene.addEllipse(
             0,
@@ -52,14 +54,13 @@ class Trajectory(QtWidgets.QWidget):
         z = np.array([coord['z'] for coord in self.coord_dict])
         return np.column_stack((x, y, z))
 
-    def draw_line(self) -> None:
+    def draw_line(self, frame_id: int) -> None:
         """."""
         # coords = get_traj_data(frame_id, seq_id)# noqa: ERA001
         coords = self.get_coordinates()
         scale_factor = 1
         coords = coords * scale_factor
-        current_point = coords[self.frame_number]
-
+        current_point = coords[frame_id]
         if self.previous_point is not None:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
             line = QtWidgets.QGraphicsLineItem(
@@ -92,5 +93,5 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     window = Trajectory()
     window.show()
-    window.animation_timer.start()
+    # window.animation_timer.start()
     app.exec()
