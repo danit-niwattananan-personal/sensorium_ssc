@@ -9,7 +9,7 @@ from typing import cast
 import numpy as np
 import pygfx as gfx  # type: ignore[import-untyped]
 import yaml
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtWidgets
 from wgpu.gui.qt import WgpuCanvas  # type: ignore[import-untyped]
 
 # from sensorium.launch.launch import get_lidar_data  # noqa: ERA001
@@ -22,43 +22,22 @@ class PointcloudVis(QtWidgets.QWidget):
         """Initialize the PointcloudVis class."""
         super().__init__(None)
         self.resize(640, 480)
-
+        self.directory = r'C:\Users\wich_\Desktop\velodyne\00'
         self.pcd = None
         self.frame_number = 0
         self.is_animating = False
         self.waiting_for_new_file = False
 
-        self.directory = ''
         self.label_directory = ''
         self.config_file = ''
 
-        self.setup_gui()
         self.setup_canvas()
-        self.setup_timers_and_watcher()
 
         self.frame_count = 0
 
         self.start_time = time.time()
-
-    def setup_gui(self) -> None:
-        """."""
-        self.button = QtWidgets.QPushButton('Load next frame', self)
-        self.button.clicked.connect(self.load_next_frame)
-        self.animate_button = QtWidgets.QPushButton('Animation (On/Off)', self)
-        self.animate_button.clicked.connect(self.toggle_animation)
-        self.forward_button = QtWidgets.QPushButton('Jump Forwards', self)
-        self.forward_button.clicked.connect(self.jump_forwards)
-        self.backward_button = QtWidgets.QPushButton('Jump Backwards', self)
-        self.backward_button.clicked.connect(self.jump_backwards)
-        self.status_bar = QtWidgets.QStatusBar(self)
-
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
-        layout.addWidget(self.button, 0)
-        layout.addWidget(self.animate_button, 0)
-        layout.addWidget(self.forward_button, 0)
-        layout.addWidget(self.backward_button, 0)
-        layout.addWidget(self.status_bar, 0)
 
     def setup_canvas(self) -> None:
         """."""
@@ -74,24 +53,15 @@ class PointcloudVis(QtWidgets.QWidget):
         if layout is not None:
             layout.addWidget(self.canvas)
 
-    def setup_timers_and_watcher(self) -> None:
-        """Set up timers and file system watcher."""
-        self.animation_timer = QtCore.QTimer(self)
-        self.animation_timer.timeout.connect(self.load_next_frame)
-        self.animation_timer.setInterval(1)
-
-        self.file_watcher = QtCore.QFileSystemWatcher(self)
-        self.file_watcher.directoryChanged.connect(self.directory_changed)
-
     def get_colormap(self) -> dict[str, list[float]]:
         """."""
         with Path(self.config_file).open('r', encoding='utf-8') as file:
             data = yaml.safe_load(file)
         return cast(dict[str, list[float]], data['color_map'])
 
-    def load_positions(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+    def load_positions(self, frame_id: int) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """Loads the coordinates for the positions of the points from one .bin file."""
-        path = f'{self.directory}/{self.frame_number:06d}.bin'
+        path = f'{self.directory}/{frame_id:06d}.bin'
         points = np.fromfile(path, np.float32).reshape(-1, 4)
         return points[:, :3]
 
@@ -132,34 +102,11 @@ class PointcloudVis(QtWidgets.QWidget):
             color_map_array[int(key)] = value
         return np.asarray(color_map_array[semantic_ids], dtype=np.float32)
 
-    def jump_forwards(self) -> None:
-        """Skip 10 frames forwards."""
-        self.frame_number += 10
-        self.update_scene()
-
-    def jump_backwards(self) -> None:
-        """Skip 10 frames backwards."""
-        self.frame_number -= 10
-        self.update_scene()
-
-    def load_next_frame(self) -> None:
-        """."""
-        self.frame_number += 1
-        self.update_scene()
-
-    def toggle_animation(self) -> None:
-        """."""
-        self.is_animating = not self.is_animating
-        if self.is_animating:
-            self.animation_timer.start()
-        else:
-            self.animation_timer.stop()
-
-    def update_scene(self) -> None:
+    def update_scene(self, frame_id: int) -> None:
         """Method to update the scene with the current frame."""
-        if Path(f'{self.directory}/{self.frame_number:06d}.bin').exists():
+        if Path(f'{self.directory}/{frame_id:06d}.bin').exists():  #
             # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
-            positions = np.ascontiguousarray(self.load_positions(), dtype=np.float32)
+            positions = np.ascontiguousarray(self.load_positions(frame_id), dtype=np.float32)
             colors = np.ascontiguousarray(self.load_colors_gradient(positions), dtype=np.float32)
             sizes = np.ascontiguousarray(
                 np.ones(positions.shape[0], dtype=np.float32) * 0.03, dtype=np.float32
@@ -178,9 +125,6 @@ class PointcloudVis(QtWidgets.QWidget):
                 )
                 self.scene.add(self.pcd)
             self.canvas.update()
-            self.status_bar.showMessage(f'Frame: {self.frame_number}')
-            # calculating FPS for testing
-
             current_time = time.time()
             elapsed_time = current_time - self.start_time
             if elapsed_time >= 5.0:
@@ -189,7 +133,6 @@ class PointcloudVis(QtWidgets.QWidget):
                 self.frame_count = 0
                 self.start_time = current_time
         elif self.is_animating:
-            self.toggle_animation()
             self.waiting_for_new_file = True
 
     def directory_changed(self) -> None:
@@ -199,7 +142,6 @@ class PointcloudVis(QtWidgets.QWidget):
             and self.waiting_for_new_file
             and Path(f'{self.directory}/{self.frame_number:06d}.bin').exists()
         ):
-            self.toggle_animation()
             self.waiting_for_new_file = False
 
     def animate(self) -> None:
@@ -214,6 +156,5 @@ if __name__ == '__main__':
     pointcloud.config_file = r'C:\Users\wich_\Desktop\semantic-kitti-all.yaml'
     pointcloud.directory = r'C:\Users\wich_\Desktop\velodyne\00'
     pointcloud.label_directory = r'C:\Users\wich_\Desktop\data_odometry_labels\00\labels'
-    pointcloud.file_watcher.addPath(str(pointcloud.directory))
     pointcloud.show()
     app.exec()
