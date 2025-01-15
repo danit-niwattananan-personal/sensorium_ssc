@@ -95,17 +95,18 @@ class PointcloudVis(QtWidgets.QWidget):
         points = np.fromfile(path, np.float32).reshape(-1, 4)
         return points[:, :3]
 
-    def load_colors_gradient(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+    def load_colors_gradient(
+        self, positions: np.ndarray[tuple[int, ...], np.dtype[np.float32]]
+    ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """Creates a gradient color map based on the z-values of the points.
 
         Args:
-            self.
+            positions:np.ndarray[tuple[int, ...], np.dtype[np.float32]]: Array with the coordinates
+            of the points. Needed to assign the colors based on the z-valuse.
 
         Returns:
             np.ndarray[tuple[int, ...], np.dtype[np.float32]]: Array withe rbg values of the points.
         """
-        positions = self.load_positions()
-
         z_values = positions[:, 2]
         z_min = np.percentile(z_values, 10)
         z_max = np.percentile(z_values, 90)
@@ -158,10 +159,8 @@ class PointcloudVis(QtWidgets.QWidget):
         """Method to update the scene with the current frame."""
         if Path(f'{self.directory}/{self.frame_number:06d}.bin').exists():
             # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
-            positions = self.load_positions()
-            colors = self.load_colors_gradient()
-            positions = np.ascontiguousarray(positions, dtype=np.float32)
-            colors = np.ascontiguousarray(colors, dtype=np.float32)
+            positions = np.ascontiguousarray(self.load_positions(), dtype=np.float32)
+            colors = np.ascontiguousarray(self.load_colors_gradient(positions), dtype=np.float32)
             sizes = np.ascontiguousarray(
                 np.ones(positions.shape[0], dtype=np.float32) * 0.03, dtype=np.float32
             )
