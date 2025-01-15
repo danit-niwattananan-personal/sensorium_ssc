@@ -4,6 +4,7 @@
 
 from unittest.mock import mock_open, patch
 
+import numpy as np
 from PySide6 import QtGui, QtWidgets
 
 from sensorium.trajectory_on_map.trajectory_visualization import Trajectory
@@ -18,9 +19,8 @@ def test_draw_line() -> None:
         app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
         widget = Trajectory()
 
-        widget.previous_point = [0, 0]
+        widget.previous_point = np.array([0, 0], dtype=np.float64)
 
-        widget.frame_number = 1
         widget.view = QtWidgets.QGraphicsView()
         widget.scene = QtWidgets.QGraphicsScene()
         widget.view.setScene(widget.scene)
@@ -33,7 +33,7 @@ def test_draw_line() -> None:
             QtGui.QPen(QtGui.QColor(255, 0, 0)),
             QtGui.QBrush(QtGui.QColor(255, 0, 0)),
         )
-
-        widget.draw_line()
+        frame_id = 0
+        widget.draw_line(frame_id)
         assert len(widget.scene.items()) == 2
     app.quit()

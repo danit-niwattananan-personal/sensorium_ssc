@@ -21,23 +21,20 @@ def test_show_image() -> None:
     try:
         with patch('cv2.imread', return_value=mock_img):
             camera_widget = CameraWidget()
-            camera_widget.frame_id = 99
+            frame_id = 0
             with patch(
                 'sensorium.camera_visualization.camera_visualization.QPixmap'
             ) as mock_pixmap:
                 mock_pixmap_instance = Mock(spec=QPixmap)
                 mock_pixmap_instance.scaled.return_value = QPixmap()
                 mock_pixmap.return_value = mock_pixmap_instance
+                camera_widget.show_image(frame_id)
 
-                camera_widget.show_image()
-                assert camera_widget.frame_id == 0
                 mock_pixmap_instance.scaled.assert_called_once_with(
                     camera_widget.label.width(),
                     camera_widget.label.height(),
                     Qt.AspectRatioMode.KeepAspectRatio,
                 )
-                camera_widget.show_image()
-                assert camera_widget.frame_id == 1
-
     finally:
+        app.quit()
         app.shutdown()

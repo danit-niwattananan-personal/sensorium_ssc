@@ -22,20 +22,21 @@ def setup_window() -> tuple[QApplication, MainWindow]:
 def test_main_window_initialization(setup_window: tuple[QApplication, MainWindow]) -> None:
     """Testet die grundlegende Initialisierung des MainWindow."""
     app, window = setup_window
+    try:
+        assert window.windowTitle() == 'Sensorium'
 
-    assert window.windowTitle() == 'Sensorium'
+        assert window.width() == 800
+        assert window.height() == 600
 
-    assert window.width() == 800
-    assert window.height() == 600
+        assert window.centralWidget() is not None
 
-    assert window.centralWidget() is not None
+        assert isinstance(window.left_column, QLabel)
+        assert window.left_column.text() == 'Ordner'
 
-    assert isinstance(window.left_column, QLabel)
-    assert window.left_column.text() == 'Ordner'
-
-    menu_bar = window.menuBar()
-    assert isinstance(menu_bar, QMenuBar)
-    app.shutdown()
+        menu_bar = window.menuBar()
+        assert isinstance(menu_bar, QMenuBar)
+    finally:
+        app.shutdown()
 
 
 def test_menu_bar(setup_window: tuple[QApplication, MainWindow]) -> None:
