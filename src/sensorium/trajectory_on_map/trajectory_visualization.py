@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 # from sensorium.launch.launch import get_traj_data # noqa: ERA001
 
@@ -23,18 +23,13 @@ class Trajectory(QtWidgets.QWidget):
         self.view.setScene(self.scene)
 
         self.frame_number = 0
-
-        # self.animation_timer = QtCore.QTimer(self)
-        # self.animation_timer.timeout.connect(self.draw_line)
-        # self.animation_timer.setInterval(1)
-
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.view)
         self.setLayout(layout)
 
-        with Path(
-            r'C:\Users\wich_\ppp_project\b\src\sensorium\trajectory_on_map\trajectory.txt'
-        ).open() as f:
+        self.current_directory = Path(__file__).parent
+        trajectory_file_path = self.current_directory / 'trajectory.txt'
+        with Path(trajectory_file_path).open() as f:
             self.coord_dict = [json.loads(line.strip()) for line in f]
         self.previous_point = np.zeros(3)
 
@@ -93,5 +88,4 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     window = Trajectory()
     window.show()
-    # window.animation_timer.start()
     app.exec()
