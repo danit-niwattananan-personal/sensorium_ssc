@@ -24,9 +24,10 @@ def window() -> LaunchWindow:
     return LaunchWindow()
 
 
-def test_launch_window_geometry(window: LaunchWindow) -> None:
+def test_launch_window_geometry(app: QApplication, window: LaunchWindow) -> None:
     """Test to verify LaunchWindow geometry."""
     assert window.x() == 300
     assert window.y() == 300
     assert window.width() == 400
     assert window.height() == 200
+    app.shutdown()
