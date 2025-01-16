@@ -29,7 +29,8 @@ def test_setup_canvas_initialization(
     app: QtWidgets.QApplication, pointcloud_vis: PointcloudVis
 ) -> None:
     """Test setup_canvas method."""
-    pointcloud_vis.setup_canvas()
+    with patch('wgpu.gui.qt.get_alt_x11_display', return_value=1):
+        pointcloud_vis.setup_canvas()
 
     assert isinstance(pointcloud_vis.canvas, WgpuCanvas)
     assert isinstance(pointcloud_vis.renderer, gfx.WgpuRenderer)
