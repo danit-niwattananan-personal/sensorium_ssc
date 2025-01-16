@@ -100,34 +100,33 @@ class PointcloudVis(QtWidgets.QWidget):
 
     def update_scene(self, frame_id: int) -> None:
         """Method to update the scene with the current frame."""
-        if Path(f'{self.directory}/{frame_id:06d}.bin').exists():
-            # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
-            positions = np.ascontiguousarray(self.load_positions(frame_id), dtype=np.float32)
-            colors = np.ascontiguousarray(self.load_colors_gradient(positions), dtype=np.float32)
-            sizes = np.ascontiguousarray(
-                np.ones(positions.shape[0], dtype=np.float32) * 0.03, dtype=np.float32
+        # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
+        positions = np.ascontiguousarray(self.load_positions(frame_id), dtype=np.float32)
+        colors = np.ascontiguousarray(self.load_colors_gradient(positions), dtype=np.float32)
+        sizes = np.ascontiguousarray(
+            np.ones(positions.shape[0], dtype=np.float32) * 0.03, dtype=np.float32
+        )
+        positions = gfx.Buffer(positions, force_contiguous=True)
+        colors = gfx.Buffer(colors, force_contiguous=True)
+        sizes = gfx.Buffer(sizes, force_contiguous=True)
+        if self.pcd is not None:
+            self.pcd.geometry.positions = positions
+            self.pcd.geometry.colors = colors
+            self.pcd.geometry.sizes = sizes
+        else:
+            self.pcd = gfx.Points(
+                gfx.Geometry(positions=positions, sizes=sizes, colors=colors),
+                gfx.PointsMaterial(color_mode='vertex', size_mode='vertex'),
             )
-            positions = gfx.Buffer(positions, force_contiguous=True)
-            colors = gfx.Buffer(colors, force_contiguous=True)
-            sizes = gfx.Buffer(sizes, force_contiguous=True)
-            if self.pcd is not None:
-                self.pcd.geometry.positions = positions
-                self.pcd.geometry.colors = colors
-                self.pcd.geometry.sizes = sizes
-            else:
-                self.pcd = gfx.Points(
-                    gfx.Geometry(positions=positions, sizes=sizes, colors=colors),
-                    gfx.PointsMaterial(color_mode='vertex', size_mode='vertex'),
-                )
-                self.scene.add(self.pcd)
-            self.canvas.update()
-            current_time = time.time()
-            elapsed_time = current_time - self.start_time
-            if elapsed_time >= 5.0:
-                fps = self.frame_count / elapsed_time
-                print(f'FPS: {fps:.2f} Frame:{frame_id}')
-                self.frame_count = 0
-                self.start_time = current_time
+            self.scene.add(self.pcd)
+        self.canvas.update()
+        current_time = time.time()
+        elapsed_time = current_time - self.start_time
+        if elapsed_time >= 5.0:
+            fps = self.frame_count / elapsed_time
+            print(f'FPS: {fps:.2f} Frame:{frame_id}')
+            self.frame_count = 0
+            self.start_time = current_time
 
     def animate(self) -> None:
         """."""
