@@ -30,16 +30,12 @@ def test_setup_canvas_initialization(
     app: QtWidgets.QApplication, pointcloud_vis: PointcloudVis
 ) -> None:
     """Test setup_canvas method."""
-    # Patch die Funktion und erhalte das Mock-Objekt
-
-    # Initialisiere das Canvas
     pointcloud_vis.setup_canvas()
     assert isinstance(pointcloud_vis.canvas, WgpuCanvas)
     assert isinstance(pointcloud_vis.renderer, gfx.WgpuRenderer)
     assert isinstance(pointcloud_vis.scene, gfx.Scene)
     assert isinstance(pointcloud_vis.camera, gfx.OrthographicCamera)
 
-    # App sauber herunterfahren
     app.shutdown()
     app.quit()
 
