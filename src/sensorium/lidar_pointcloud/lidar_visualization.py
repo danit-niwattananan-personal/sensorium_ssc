@@ -24,17 +24,11 @@ class PointcloudVis(QtWidgets.QWidget):
         self.resize(640, 480)
         self.directory = r'C:\Users\wich_\Desktop\velodyne\00'
         self.pcd = None
-        self.frame_number = 0
-        self.is_animating = False
-        self.waiting_for_new_file = False
-
         self.label_directory = ''
         self.config_file = ''
 
         self.setup_canvas()
-
         self.frame_count = 0
-
         self.start_time = time.time()
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
@@ -89,9 +83,11 @@ class PointcloudVis(QtWidgets.QWidget):
         colors[:, 2] = 0  # blue
         return colors
 
-    def load_colors_ground_truth(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+    def load_colors_ground_truth(
+        self, frame_id: int
+    ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """."""
-        path = f'{self.label_directory}/{self.frame_number:06d}.label'
+        path = f'{self.label_directory}/{frame_id:06d}.label'
         ids = np.fromfile(path, dtype=np.uint32)
         semantic_ids = ids & 0xFFFF
         color_map = self.get_colormap()
@@ -104,7 +100,7 @@ class PointcloudVis(QtWidgets.QWidget):
 
     def update_scene(self, frame_id: int) -> None:
         """Method to update the scene with the current frame."""
-        if Path(f'{self.directory}/{frame_id:06d}.bin').exists():  #
+        if Path(f'{self.directory}/{frame_id:06d}.bin').exists():
             # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
             positions = np.ascontiguousarray(self.load_positions(frame_id), dtype=np.float32)
             colors = np.ascontiguousarray(self.load_colors_gradient(positions), dtype=np.float32)
@@ -129,20 +125,9 @@ class PointcloudVis(QtWidgets.QWidget):
             elapsed_time = current_time - self.start_time
             if elapsed_time >= 5.0:
                 fps = self.frame_count / elapsed_time
-                print(f'FPS: {fps:.2f} Frame:{self.frame_number}')
+                print(f'FPS: {fps:.2f} Frame:{frame_id}')
                 self.frame_count = 0
                 self.start_time = current_time
-        elif self.is_animating:
-            self.waiting_for_new_file = True
-
-    def directory_changed(self) -> None:
-        """."""
-        if (
-            not self.is_animating
-            and self.waiting_for_new_file
-            and Path(f'{self.directory}/{self.frame_number:06d}.bin').exists()
-        ):
-            self.waiting_for_new_file = False
 
     def animate(self) -> None:
         """."""
