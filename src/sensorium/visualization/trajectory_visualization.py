@@ -28,8 +28,8 @@ class Trajectory(QtWidgets.QWidget):
         self.setLayout(layout)
 
         self.trajectory_file_path = ''
-        with Path(self.trajectory_file_path).open() as f:
-            self.coord_dict = [json.loads(line.strip()) for line in f]
+        print(self.trajectory_file_path)
+
         self.previous_point = np.zeros(3)
 
         self.current_position_marker = self.scene.addEllipse(
@@ -43,9 +43,11 @@ class Trajectory(QtWidgets.QWidget):
 
     def get_coordinates(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """."""
-        x = np.array([coord['x'] for coord in self.coord_dict])
-        y = np.array([coord['y'] for coord in self.coord_dict])
-        z = np.array([coord['z'] for coord in self.coord_dict])
+        with Path(self.trajectory_file_path).open() as f:
+            coord_dict = [json.loads(line.strip()) for line in f]
+        x = np.array([coord['x'] for coord in coord_dict])
+        y = np.array([coord['y'] for coord in coord_dict])
+        z = np.array([coord['z'] for coord in coord_dict])
         return np.column_stack((x, y, z))
 
     def draw_line(self, frame_id: int) -> None:
