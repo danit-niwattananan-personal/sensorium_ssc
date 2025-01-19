@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 
-from sensorium.camera_visualization.camera_visualization import (
+from sensorium.visualization.camera_visualization import (
     CameraWidget,
 )
 
@@ -22,7 +22,7 @@ def test_show_image(qtbot: QtBot) -> None:
         qtbot.addWidget(camera_widget)
         frame_id = 0
 
-        with patch('sensorium.camera_visualization.camera_visualization.QPixmap') as mock_pixmap:
+        with patch('sensorium.visualization.camera_visualization.QPixmap') as mock_pixmap:
             mock_pixmap_instance = Mock(spec=QPixmap)
             mock_pixmap_instance.scaled.return_value = QPixmap()
             mock_pixmap.return_value = mock_pixmap_instance

@@ -14,9 +14,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from sensorium.camera_visualization.camera_visualization import CameraWidget
-from sensorium.lidar_pointcloud.lidar_visualization import PointcloudVis
-from sensorium.trajectory_on_map.trajectory_visualization import Trajectory
+from sensorium.visualization.camera_visualization import CameraWidget
+from sensorium.visualization.lidar_visualization import PointcloudVis
+from sensorium.visualization.trajectory_visualization import Trajectory
 
 
 class VisualisationGui(QMainWindow):

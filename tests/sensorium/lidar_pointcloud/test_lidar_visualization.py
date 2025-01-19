@@ -11,7 +11,7 @@ import pytest
 from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 from wgpu.gui.qt import WgpuCanvas  # type: ignore[import-untyped]
 
-from sensorium.lidar_pointcloud.lidar_visualization import PointcloudVis
+from sensorium.visualization.lidar_visualization import PointcloudVis
 
 
 @pytest.fixture
