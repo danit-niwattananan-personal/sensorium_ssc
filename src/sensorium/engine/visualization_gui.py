@@ -40,14 +40,14 @@ class VisualisationGui(QMainWindow):
 
         self.camera = CameraWidget()
         grid_layout.addWidget(self.camera, 0, 0)
-        self.camera.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'
+        # self.camera.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
 
         self.pointcloud = PointcloudVis()
-        self.pointcloud.directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin'
+        # self.pointcloud.directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin'  # noqa: E501, ERA001
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
-        self.trajectory.trajectory_file_path = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt'  # noqa: E501
+        # self.trajectory.trajectory_file_path = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt'  # noqa: E501, ERA001
         grid_layout.addWidget(self.trajectory, 1, 0)
 
         self.placeholder = QLabel('Platzhalter')
