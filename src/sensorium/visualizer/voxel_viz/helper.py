@@ -6,20 +6,20 @@
 import mayavi
 from mayavi import mlab
 
-try:
-    engine = mayavi.engine
-except NameError:
-    from mayavi.api import Engine
+# try:
+#     engine = mayavi.engine
+# except NameError:
+#     from mayavi.api import Engine
 
-    engine = Engine()
-    engine.start()
+#     engine = Engine()
+#     engine.start()
 import numpy as np
 from numpy.typing import NDArray
 
 import sensorium.data_processing.utils.io_data as semkitti_io
 
 
-def position_scene_view(scene: mlab.figure.scene, view: int = 1) -> None:
+def position_scene_view(scene, view: int = 1) -> None:
     """Rotate the scene to a specific view.
 
     Available views:
@@ -98,7 +98,7 @@ def draw_semantic_voxel(
         raise ValueError(_e_msg)
 
     if figure is None:
-        figure = mlab.figure(size=(1400, 1400), bgcolor=(1, 1, 1), engine=engine)
+        figure = mlab.figure(size=(1400, 1400), bgcolor=(1, 1, 1))
 
     # Compute the coordinates of the mesh representing camera
     x = d * img_size[0] / (2 * f)
