@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import pytest
 
-# from sensorium.data_processing.camera.camera import load_images
+from sensorium.data_processing.camera.camera import load_frame
 
 
 def test_load_images(tmp_path: Path) -> None:
@@ -44,14 +44,20 @@ def test_load_images(tmp_path: Path) -> None:
     temp_blue = temp_dir / 'imageBlue.png'
 
     cv2.imwrite('imageGreen.png', im_green)
-    temp_green = Path(temp_dir) / 'imageGreen.png'
+    temp_green = temp_dir / 'imageGreen.png'
 
-    # Check if the temporary files exist
-    # assert Path.exists(temp_red) == True
-    # assert temp_file.is_file()
+    # assert temp_red.is_file() //to check if the temporary file exists
+    assert load_frame('temp_dir', 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
 
-    # deleting temporary files (does not work for now.)
-    Path.unlink(temp_red)
+    # assert temp_blue.is_file()
+    assert load_frame('temp_dir', 'imageBlue.png') == cv2.imread(
+        str(temp_blue), cv2.IMREAD_UNCHANGED
+    )
+
+    # assert temp_green.is_file()
+    assert load_frame('temp_dir', 'imageGreen.png') == cv2.imread(
+        str(temp_green), cv2.IMREAD_UNCHANGED
+    )
 
 
-# load_images(temp_dir)
+# code to delete temporary files?????
