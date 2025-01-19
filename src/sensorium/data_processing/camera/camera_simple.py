@@ -94,7 +94,22 @@ def camera_function() -> None:
 camera_function()
 
 
-def load_images() -> None:
+def load_images(directory: str) -> None:
+    """Load images."""
+    frame_length = 300  # change for faster/slower
+    image_paths = [Path(directory) / file for file in sorted(os.listdir(directory))]
+
+    for path in image_paths:
+        im = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
+        cv2.imshow('Camera', im)
+        cv2.waitKey(frame_length)
+
+
+dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
+load_images(dir1)
+
+
+def load_images_noinput() -> None:
     """Load images."""
     frame_length = 300  # change for faster/slower
     dir1 = '/Users/antonijakrajcheva/b/src/sensorium/data_processing/camera/dummy_kitti/images'
@@ -104,6 +119,3 @@ def load_images() -> None:
         im = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
         cv2.imshow('Camera', im)
         cv2.waitKey(frame_length)
-
-
-load_images()
