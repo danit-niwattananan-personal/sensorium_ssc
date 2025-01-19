@@ -37,6 +37,7 @@ dependencies = [
     "mayavi>=4.8.2",
     "numpy==2.0.0",
     "numba==0.60.0",
+    "configobj>=5.0.9",
 ]
 dynamic = ["version"]
 keywords = []
