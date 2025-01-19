@@ -27,11 +27,8 @@ class Trajectory(QtWidgets.QWidget):
         layout.addWidget(self.view)
         self.setLayout(layout)
 
-        self.current_directory = Path(__file__).parent
-        trajectory_file_path = self.current_directory / 'trajectory.txt'
-        with Path(trajectory_file_path).open() as f:
-            for _ in range(2):
-                next(f)
+        self.trajectory_file_path = ''
+        with Path(self.trajectory_file_path).open() as f:
             self.coord_dict = [json.loads(line.strip()) for line in f]
         self.previous_point = np.zeros(3)
 
@@ -89,5 +86,6 @@ class Trajectory(QtWidgets.QWidget):
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     window = Trajectory()
+    window.trajectory_file_path = r'C:\Users\wich_\Desktop\trajectory.txt'
     window.show()
     app.exec()
