@@ -30,6 +30,8 @@ class Trajectory(QtWidgets.QWidget):
         self.current_directory = Path(__file__).parent
         trajectory_file_path = self.current_directory / 'trajectory.txt'
         with Path(trajectory_file_path).open() as f:
+            for _ in range(2):
+                next(f)
             self.coord_dict = [json.loads(line.strip()) for line in f]
         self.previous_point = np.zeros(3)
 
