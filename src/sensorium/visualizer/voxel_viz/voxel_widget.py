@@ -71,7 +71,11 @@ class VoxelWidget(QMainWindow):
 
 def main() -> None:
     """Main function."""
-    app = QApplication(sys.argv)
+
+    if not QApplication.instance():
+        app = QApplication(sys.argv)
+    else:
+        app = QApplication.instance
     window = VoxelWidget()
     window.show()
     sys.exit(app.exec())
