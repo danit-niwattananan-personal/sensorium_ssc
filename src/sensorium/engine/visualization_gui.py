@@ -36,6 +36,7 @@ class VisualisationGui(QMainWindow):
 
         self.framenumber = 0
         self.play_en = False
+        self.seq_id = 0
 
         self.camera = CameraWidget()
         grid_layout.addWidget(self.camera, 0, 0)
@@ -77,7 +78,7 @@ class VisualisationGui(QMainWindow):
         button_plus1.clicked.connect(lambda: self.update_frame(1))
         controlbar.addWidget(button_plus1)
 
-        button_plus10 = QPushButton('+10 Frame')
+        button_plus10 = QPushButton('+10 Frames')
         button_plus10.clicked.connect(lambda: self.update_frame(10))
         controlbar.addWidget(button_plus10)
 
@@ -90,7 +91,7 @@ class VisualisationGui(QMainWindow):
     def update_frame(self, frame: int) -> None:
         """Erhöht und senkt die Framenummer."""
         self.framenumber += frame
-        self.framenumber = max(self.framenumber, 1)
+        self.framenumber = max(self.framenumber, 0)
         self.framenumber = min(self.framenumber, 100)
         self.frame_label.setText(f'Frame: {self.framenumber}')
         if self.framenumber == 100:
@@ -111,7 +112,7 @@ class VisualisationGui(QMainWindow):
         CameraWidget.show_image(self.camera, self.framenumber)
         Trajectory.draw_line(self.trajectory, self.framenumber)
         PointcloudVis.update_scene(self.pointcloud, self.framenumber)
-        self.placeholder.setText(f'Das ist der neue frame: {self.framenumber}')
+        self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
         self.update_frame(1)
 
 

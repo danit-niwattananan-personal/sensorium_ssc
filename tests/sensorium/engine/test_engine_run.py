@@ -2,14 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test GUI."""
 
-# import pytest  # noqa: ERA001
-# from PySide6.QtCore import Qt  # noqa: ERA001
-# from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QMenuBar  # noqa: ERA001
-# from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]  # noqa: ERA001
+import pytest  # noqa: F401
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QMenuBar  # noqa: F401
+from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 
-# from sensorium.engine.engine_run import MainWindow  # noqa: ERA001
-# from sensorium.engine.settings import SettingsDialog  # noqa: ERA001
-
+from sensorium.engine.engine_run import MainWindow  # noqa: F401
+from sensorium.engine.settings import SettingsDialog
 
 # @pytest.fixture
 # def setup_window() -> tuple[QApplication, MainWindow]:
@@ -47,22 +46,22 @@
 #     app.shutdown()  # noqa: ERA001
 
 
-# def test_open_settings_window(qtbot: QtBot) -> None:
-#     """Testet das Einstellungsfenster mit pytest-qt."""
-#     dialog = SettingsDialog()  # noqa: ERA001
-#     dialog.show()  # noqa: ERA001
-#     qtbot.waitExposed(dialog)  # noqa: ERA001
+def test_open_settings_window(qtbot: QtBot) -> None:
+    """Testet das Einstellungsfenster mit pytest-qt."""
+    dialog = SettingsDialog()
+    dialog.show()
+    qtbot.waitExposed(dialog)
 
-#     input_field = dialog.findChild(QLineEdit)  # noqa: ERA001
-#     assert input_field is not None
+    input_field = dialog.findChild(QLineEdit)
+    assert input_field is not None
 
-#     assert dialog.apply_button is not None
-#     assert dialog.cancel_button is not None
+    assert dialog.apply_button is not None
+    assert dialog.cancel_button is not None
 
-#     qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)  # noqa: ERA001
-#     assert not dialog.isVisible()  # noqa: ERA001
+    qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)
+    assert not dialog.isVisible()
 
-#     dialog = SettingsDialog()  # noqa: ERA001
-#     dialog.show()  # noqa: ERA001
-#     qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)  # noqa: ERA001
-#     assert not dialog.isVisible()  # noqa: ERA001
+    dialog = SettingsDialog()
+    dialog.show()
+    qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)
+    assert not dialog.isVisible()
