@@ -16,9 +16,7 @@ class CameraWidget(QMainWindow):
     def __init__(self) -> None:
         """."""
         super().__init__()
-        self.img_directory = (
-            r'C:\Users\wich_\Desktop\2011_09_26\2011_09_26_drive_0035_sync\image_00\data'
-        )
+        self.img_directory = ''
         sample_img = cv2.imread(self.img_directory + '/' + '0000000000.png')
         self._height, self._width = sample_img.shape[:2]
 
@@ -50,5 +48,8 @@ class CameraWidget(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = CameraWidget()
+    window.img_directory = (
+        r'C:\Users\wich_\Desktop\2011_09_26\2011_09_26_drive_0035_sync\image_00\data'
+    )
     window.show()
     sys.exit(app.exec())
