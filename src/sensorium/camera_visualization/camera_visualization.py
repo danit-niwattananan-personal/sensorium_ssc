@@ -4,7 +4,7 @@
 
 import sys
 
-import cv2
+import cv2  # noqa: F401
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
@@ -17,9 +17,8 @@ class CameraWidget(QMainWindow):
         """."""
         super().__init__()
         self.img_directory = ''
-        sample_img = cv2.imread(self.img_directory + '/' + '0000000000.png')
-        self._height, self._width = sample_img.shape[:2]
-
+        # sample_img = cv2.imread(self.img_directory + '/' + '0000000000.png')  # noqa: ERA001
+        self._height, self._width = 375, 1242
         self.setup_lable()
 
     def setup_lable(self) -> None:
