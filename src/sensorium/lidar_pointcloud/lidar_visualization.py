@@ -22,8 +22,8 @@ class PointcloudVis(QtWidgets.QWidget):
         """Initialize the PointcloudVis class."""
         super().__init__(None)
         self.resize(640, 480)
-        self.directory = r'C:\Users\wich_\Desktop\velodyne\00'
         self.pcd = None
+        self.directory = ''
         self.label_directory = ''
         self.config_file = ''
 
