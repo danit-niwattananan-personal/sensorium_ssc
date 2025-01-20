@@ -10,6 +10,7 @@ try:
     engine = mayavi.engine
 except (NameError, AttributeError):
     from mayavi.api import Engine
+
     engine = Engine()
     engine.start()
 import numpy as np
@@ -63,6 +64,7 @@ def get_grid_coords(dims: list[int], resolution: float) -> NDArray[np.float32]:
     temp[:, 0] = coords_grid[:, 1]
     temp[:, 1] = coords_grid[:, 0]
     return np.copy(temp)
+
 
 def draw_semantic_voxel(
     voxels: NDArray[np.uint8] | NDArray[np.float32] | None,
