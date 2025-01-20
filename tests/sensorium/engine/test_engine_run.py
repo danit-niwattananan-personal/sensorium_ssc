@@ -9,7 +9,8 @@ from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 
 from sensorium.engine.engine_run import MainWindow  # noqa: F401
 from sensorium.engine.settings import SettingsDialog
-
+from sensorium.engine.visualization_gui import VisualisationGui
+from unittest.mock import patch
 # @pytest.fixture
 # def setup_window() -> tuple[QApplication, MainWindow]:
 #     """Fixture zum Erstellen und Initialisieren des MainWindow."""
@@ -65,3 +66,15 @@ def test_open_settings_window(qtbot: QtBot) -> None:
     dialog.show()
     qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)
     assert not dialog.isVisible()
+
+
+def test_update_frame(qtbot: QtBot) -> None:
+    """Testet das Einstellungsfenster mit pytest-qt."""
+    visualisation = VisualisationGui()
+    qtbot.add_widget(visualisation)
+    with patch(
+        'sensorium.engine.visualization_gui.VisualisationGui.update_frame'
+    ) as mock_update_frame:
+        qtbot.mouseClick(visualisation.button_minus10, Qt.LeftButton)
+        mock_update_frame.assert_called_with(-10)
+    visualisation.update_scene()

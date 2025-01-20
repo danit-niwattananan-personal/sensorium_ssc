@@ -41,16 +41,16 @@ class VisualisationGui(QMainWindow):
         self.camera = CameraWidget()
         grid_layout.addWidget(self.camera, 0, 0)
         # self.camera.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
-        # self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
+        self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
         self.pointcloud = PointcloudVis()
         # self.pointcloud.directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin'  # noqa: E501, ERA001
-        # self.pointcloud.directory = '/Users/raymund.tonyka/Downloads/Data_visualization/bin'  # noqa: E501, ERA001
+        self.pointcloud.directory = '/Users/raymund.tonyka/Downloads/Data_visualization/bin'  # noqa: E501, ERA001
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         # self.trajectory.trajectory_file_path = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt'  # noqa: E501, ERA001
-        # self.trajectory.trajectory_file_path = '/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt'  # noqa: E501, ERA001
+        self.trajectory.trajectory_file_path = '/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt'  # noqa: E501, ERA001
         grid_layout.addWidget(self.trajectory, 1, 0)
 
         self.placeholder = QLabel('Platzhalter')
@@ -68,9 +68,9 @@ class VisualisationGui(QMainWindow):
         self.frame_label = QLabel(f'Frame: {self.framenumber}')
         main_layout.addWidget(self.frame_label)
 
-        button_minus10 = QPushButton('-10 Frames')
-        button_minus10.clicked.connect(lambda: self.update_frame(-10))
-        controlbar.addWidget(button_minus10)
+        self.button_minus10 = QPushButton('-10 Frames')
+        self.button_minus10.clicked.connect(lambda: self.update_frame(-10))
+        controlbar.addWidget(self.button_minus10)
 
         button_minus1 = QPushButton('-1 Frame')
         button_minus1.clicked.connect(lambda: self.update_frame(-1))
@@ -115,9 +115,9 @@ class VisualisationGui(QMainWindow):
 
     def update_scene(self) -> None:
         """Ladet neue Bilder."""
-        CameraWidget.show_image(self.camera, self.framenumber)
-        Trajectory.draw_line(self.trajectory, self.framenumber)
-        PointcloudVis.update_scene(self.pointcloud, self.framenumber)
+        self.camera.show_image(self.framenumber)
+        self.trajectory.draw_line(self.framenumber)
+        self.pointcloud.update_scene(self.framenumber)
         self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
         self.update_frame(1)
 
