@@ -39,9 +39,7 @@ class MainWindow(QMainWindow):
         # Ordner
         self.left_column = QLabel('Ordner')
         self.left_column.setStyleSheet(
-            'background-color: lightgray; '
-            'padding: 10px; '
-            'border-radius: 15px; '
+            'background-color: lightgray; ' 'padding: 10px; ' 'border-radius: 15px; '
         )
         self.left_column.setFixedWidth(200)
         main_layout.addWidget(self.left_column)
