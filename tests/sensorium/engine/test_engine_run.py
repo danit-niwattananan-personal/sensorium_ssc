@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test GUI."""
 
+from unittest.mock import patch
+
 import pytest  # noqa: F401
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QMenuBar  # noqa: F401
@@ -10,7 +12,7 @@ from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 from sensorium.engine.engine_run import MainWindow  # noqa: F401
 from sensorium.engine.settings import SettingsDialog
 from sensorium.engine.visualization_gui import VisualisationGui
-from unittest.mock import patch
+
 # @pytest.fixture
 # def setup_window() -> tuple[QApplication, MainWindow]:
 #     """Fixture zum Erstellen und Initialisieren des MainWindow."""
