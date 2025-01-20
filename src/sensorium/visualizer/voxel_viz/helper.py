@@ -6,20 +6,20 @@
 import mayavi
 from mayavi import mlab
 
-# try:
-#     engine = mayavi.engine
-# except NameError:
-#     from mayavi.api import Engine
-
-#     engine = Engine()
-#     engine.start()
+try:
+    engine = mayavi.engine
+except (NameError, AttributeError):
+    from mayavi.api import Engine
+    engine = Engine()
+    engine.start()
 import numpy as np
 from numpy.typing import NDArray
+from traits.api import Instance
 
 import sensorium.data_processing.utils.io_data as semkitti_io
 
 
-def position_scene_view(scene, view: int = 1) -> None:
+def position_scene_view(scene: mlab.figure, view: int = 1) -> None:
     """Rotate the scene to a specific view.
 
     Available views:
@@ -30,7 +30,6 @@ def position_scene_view(scene, view: int = 1) -> None:
     if view == 0:
         pass  # Default mayavi isometric view, do nothing.
     elif view == 1:
-        scene.x_minus_view()
         scene.camera.position = [-54.665532379571125, -43.712070618513835, 93.7371444096225]
         scene.camera.focal_point = [25.49999923631549, 25.49999923631549, 1.9999999515712261]
         scene.camera.view_angle = 30.0
@@ -65,14 +64,13 @@ def get_grid_coords(dims: list[int], resolution: float) -> NDArray[np.float32]:
     temp[:, 1] = coords_grid[:, 0]
     return np.copy(temp)
 
-
 def draw_semantic_voxel(
     voxels: NDArray[np.uint8] | NDArray[np.float32] | None,
     cam_pose: NDArray[np.float32],
     vox_origin: NDArray[np.float32],
     fov_mask: NDArray[np.bool_],
-    figure: mlab.figure = None,
-) -> mlab.figure:
+    scene: Instance,
+) -> None:
     """Draw a semantic voxel. Code adapted from Symphonies.
 
     Args:
@@ -80,10 +78,7 @@ def draw_semantic_voxel(
         cam_pose: the camera's extrinsic matrix relative to lidar
         vox_origin: the origin coordinate of the voxel
         fov_mask: the field of view mask
-        figure: the mayavi figure
-
-    Returns:
-        img: the image of the voxel's visualization
+        scene: the mayavi scene object
     """
     # Set meta data of the voxel
     img_size = (1220, 370)  # for SemanticKITTI dataset.
@@ -96,9 +91,6 @@ def draw_semantic_voxel(
     if voxels is None:
         _e_msg = 'No voxel passed to draw_semantic_voxel function'
         raise ValueError(_e_msg)
-
-    if figure is None:
-        figure = mlab.figure(size=(1400, 1400), bgcolor=(1, 1, 1))
 
     # Compute the coordinates of the mesh representing camera
     x = d * img_size[0] / (2 * f)
@@ -133,7 +125,7 @@ def draw_semantic_voxel(
     # Get the voxels outside FOV
     outfov_grid_coords = grid_coords[~fov_mask, :]
     # Draw the camera
-    mlab.triangular_mesh(
+    scene.mlab.triangular_mesh(
         x,
         y,
         z,
@@ -141,7 +133,6 @@ def draw_semantic_voxel(
         representation='wireframe',
         color=(0, 0, 0),
         line_width=10,
-        figure=figure,
     )
 
     colors = semkitti_io.get_cmap_semantickitti20()
@@ -152,26 +143,21 @@ def draw_semantic_voxel(
     for i, grid_coords in enumerate((fov_grid_coords, outfov_grid_coords)):
         # Remove empty and unknown voxels
         voxels = grid_coords[(grid_coords[:, 3] > 0) & (grid_coords[:, 3] < 255)]
-        plt_plot = mlab.points3d(
+        plt_plot = scene.mlab.points3d(
             voxels[:, 0],
             voxels[:, 1],
             voxels[:, 2],
             voxels[:, 3],
             colormap='viridis',
             scale_factor=voxel_size - 0.05 * voxel_size,
-            figure=figure,
             mode='cube',
             opacity=1.0,
             vmin=1,
             vmax=19,
         )
-        position_scene_view(figure.scene, view)
+        position_scene_view(scene.scene, view)
 
         plt_plot.glyph.scale_mode = 'scale_by_vector'
         plt_plot.module_manager.scalar_lut_manager.lut.table = colors if i == 0 else outfov_colors
 
     plt_plot.scene.camera.zoom(1.3)
-
-    img = mlab.screenshot(figure)
-    mlab.clf(figure)
-    return img
