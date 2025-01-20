@@ -103,7 +103,6 @@ class VisualisationGui(QMainWindow):
         if self.framenumber == 100:
             self.framenumber = 0
 
-
     def toggle_play_stop(self) -> None:
         """Funktion die dem Play Button eine Funktion gibt."""
         self.play_en = not self.play_en
