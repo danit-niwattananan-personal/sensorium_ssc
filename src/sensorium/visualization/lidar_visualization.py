@@ -137,8 +137,8 @@ class PointcloudVis(QtWidgets.QWidget):
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     pointcloud = PointcloudVis()
-    pointcloud.config_file = r'C:\Users\wich_\Desktop\semantic-kitti-all.yaml'
-    pointcloud.directory = r'C:\Users\wich_\Desktop\velodyne\00'
-    pointcloud.label_directory = r'C:\Users\wich_\Desktop\data_odometry_labels\00\labels'
+    pointcloud.config_file = Path(r'C:\Users\wich_\Desktop\semantic-kitti-all.yaml')
+    pointcloud.directory = Path(r'C:\Users\wich_\Desktop\velodyne\00')
+    pointcloud.label_directory = Path(r'C:\Users\wich_\Desktop\data_odometry_labels\00\labels')
     pointcloud.show()
     app.exec()
