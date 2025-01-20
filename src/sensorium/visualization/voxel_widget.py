@@ -17,7 +17,7 @@ from traits.api import HasTraits, Instance, Tuple, on_trait_change
 from traitsui.api import Item, View
 
 from sensorium.data_processing.engine.backend_engine import BackendEngine
-from sensorium.visualizer.voxel_viz.helper import draw_semantic_voxel
+from sensorium.visualization.helper import draw_semantic_voxel
 
 
 class VoxelVisualization(HasTraits):
