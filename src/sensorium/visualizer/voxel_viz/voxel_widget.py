@@ -2,83 +2,112 @@
 # SPDX-License-Identifier: Apache-2.0
 """Voxel Visualization class."""
 
+import os
+
+os.environ['ETS_TOOLKIT'] = 'qt'
 import sys
 from pathlib import Path
 
 import numpy as np
 import yaml
-from cv2.typing import MatLike
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QLabel, QMainWindow, QWidget
+from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
+from traits.api import HasTraits, Instance, Tuple, on_trait_change
+from traitsui.api import Item, View
 
 from sensorium.data_processing.engine.backend_engine import BackendEngine
 from sensorium.visualizer.voxel_viz.helper import draw_semantic_voxel
 
 
-class VoxelWidget(QMainWindow):
-    """Mayavi PyQt wrapper for voxel visualization window."""
+class VoxelVisualization(HasTraits):
+    """Voxel Visualization class."""
+    scene = Instance(MlabSceneModel, ())
+    seq_frame_id_pair = Tuple(0, 0)
 
-    def __init__(
-        self,
-        parent: QWidget | None = None,
-    ) -> None:
-        """."""
-        super().__init__(parent)
+    # Get all necessary data. Must change this to call COMM func instead
+    config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
+    with Path(config_path).open() as stream:
+        backend_config = yaml.safe_load(stream)
+    backend_engine = BackendEngine(data_dir=backend_config['backend_engine']['data_dir'])
 
-        # First, get all necessary data. Must change this to call COMM func instead
-        config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
-        with Path(config_path).open() as stream:
-            backend_config = yaml.safe_load(stream)
-        backend_engine = BackendEngine(data_dir=backend_config['backend_engine']['data_dir'])
-        data = backend_engine.process(sequence_id=0, frame_id=0)
-
-        voxel_img = draw_semantic_voxel(
+    @on_trait_change('scene.activated') # type: ignore[misc]
+    def update_plot(self) -> None:
+        """Load the new data and draw the new voxel."""
+        sequence_id, frame_id = self.seq_frame_id_pair
+        data = self.backend_engine.process(sequence_id=sequence_id, frame_id=frame_id)
+        draw_semantic_voxel(
             voxels=data['voxel'],  # type: ignore[arg-type]
             cam_pose=data['t_velo_2_cam'],  # type: ignore[arg-type]
             vox_origin=np.array([0, -25.6, -2]),
             fov_mask=data['fov_mask'],  # type: ignore[arg-type]
+            scene=self.scene, # type: ignore[arg-type]
         )
-        height, width = voxel_img.shape[:2]
 
-        scale_factor = 0.5
-        width = int(width * scale_factor)
-        height = int(height * scale_factor)
+    view = View(
+        Item('scene', editor=SceneEditor(scene_class=MayaviScene),
+                     show_label=False), resizable=True # need this to resize with the parent widget
+        )
+
+# NOTE: QMainWindow doesn't work with our settings, so we use QWidget instead
+class VoxelWidget(QWidget):
+    """Mayavi PyQt wrapper for voxel visualization window."""
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        """Initialize the voxel widget."""
+        super().__init__(parent)
+        self.frame_number = 0
         self.setWindowTitle('Voxel Ground Truth')
-        self.setGeometry(100, 100, width, height)
+        self.setFixedSize(800, 800)
 
-        self.label = QLabel(self)
-        self.label.setGeometry(0, 0, width, height)
+        # Create the main widget
+        self.layout_window = QVBoxLayout(self)
+        self.layout_window.setContentsMargins(0, 0, 0, 0)
+        self.layout_window.setSpacing(0)
 
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_scene)
-        self.timer.start(100)
-        self.frame_number = 0
+        self.timer.timeout.connect(lambda: self.update_scene(self.frame_number))
+        self.timer.setInterval(100)
+        self.timer.start()
 
-    def update_scene(self, img: MatLike) -> None:
+
+    def update_scene(self, frame_id: int, sequence_id: int = 0) -> None:
         """Update the scene with the new image and show to the user."""
-        pixmap = QPixmap(img)
-        self.label.setPixmap(
-            pixmap.scaled(
-                self.label.width(),
-                self.label.height(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-            )
-        )
+        # First check the frame_id is valid
+        if frame_id % 5 != 0:
+            self.frame_number += 1
+            return
 
+        self.visualization = VoxelVisualization(seq_frame_id_pair=(sequence_id, frame_id))
+
+        # Clean up the previous UI and scene
+        if hasattr(self, 'ui'):
+            self.layout_window.removeWidget(self.ui) # type: ignore[has-type]
+            self.ui.deleteLater() # type: ignore[has-type]
+            if self.visualization.scene.scene_editor is not None: # type: ignore[union-attr]
+                self.visualization.scene.scene_editor = None # type: ignore[union-attr]
+
+        # Remove the figure
+        self.visualization.scene.mlab.clf() # type: ignore[union-attr]
+
+        # Update the scene and add it to the layout
+        self.ui = self.visualization.edit_traits(
+            parent=self,
+            kind='subpanel',
+            context=self.visualization
+        ).control
+        self.layout_window.addWidget(self.ui)
+        self.ui.setParent(self)
+
+        # Update the frame number
         self.frame_number += 1
-
 
 def main() -> None:
     """Main function."""
-
-    if not QApplication.instance():
-        app = QApplication(sys.argv)
-    else:
-        app = QApplication.instance
+    app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     window = VoxelWidget()
     window.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec()) # type: ignore[union-attr]
 
 
 if __name__ == '__main__':
