@@ -41,13 +41,16 @@ class VisualisationGui(QMainWindow):
         self.camera = CameraWidget()
         grid_layout.addWidget(self.camera, 0, 0)
         # self.camera.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
+        # self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
         self.pointcloud = PointcloudVis()
         # self.pointcloud.directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin'  # noqa: E501, ERA001
+        # self.pointcloud.directory = '/Users/raymund.tonyka/Downloads/Data_visualization/bin'  # noqa: E501, ERA001
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         # self.trajectory.trajectory_file_path = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt'  # noqa: E501, ERA001
+        # self.trajectory.trajectory_file_path = '/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt'  # noqa: E501, ERA001
         grid_layout.addWidget(self.trajectory, 1, 0)
 
         self.placeholder = QLabel('Platzhalter')
@@ -55,7 +58,7 @@ class VisualisationGui(QMainWindow):
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
-        self.animation_timer.setInterval(1)
+        self.animation_timer.setInterval(100)
 
         grid_layout.setRowStretch(0, 1)
         grid_layout.setRowStretch(1, 1)
@@ -95,11 +98,11 @@ class VisualisationGui(QMainWindow):
         """Erhöht und senkt die Framenummer."""
         self.framenumber += frame
         self.framenumber = max(self.framenumber, 0)
-        self.framenumber = min(self.framenumber, 100)
+        self.framenumber = min(self.framenumber, 10)
         self.frame_label.setText(f'Frame: {self.framenumber}')
         if self.framenumber == 100:
             self.framenumber = 0
-        self.update_scene()
+
 
     def toggle_play_stop(self) -> None:
         """Funktion die dem Play Button eine Funktion gibt."""
