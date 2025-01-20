@@ -1842,6 +1842,7 @@ dependencies = [
     { name = "pygfx" },
     { name = "pyside6" },
     { name = "pytest-qt" },
+    { name = "traits-stubs" },
     { name = "types-pyyaml" },
     { name = "websockets" },
     { name = "wgpu" },
@@ -1872,6 +1873,7 @@ requires-dist = [
     { name = "pygfx", specifier = ">=0.6.0" },
     { name = "pyside6", specifier = ">=6.8.1" },
     { name = "pytest-qt", specifier = ">=4.4.0" },
+    { name = "traits-stubs", specifier = ">=6.4.0" },
     { name = "types-pyyaml", specifier = ">=6.0.12.20241230" },
     { name = "websockets", specifier = ">=11.0" },
     { name = "wgpu", specifier = ">=0.19.3" },
@@ -2179,6 +2181,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/1f/ab/8de13dc6c30cb8c72239725a15c2c3bed4a6dbef6b1b73afc05f0b740373/traits-6.4.3-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:7b1f5763ae1e6b1cab0ce7c82f7da3a642170666fba32dd643181f564e576d4d", size = 5114149 },
     { url = "https://files.pythonhosted.org/packages/88/36/2c09faccc21e6d6b469e17736fb9e18d3f9237e430c6da4afce685dff4bd/traits-6.4.3-cp312-cp312-win32.whl", hash = "sha256:f1253043fb8f034c4342b78e56490a1f2386ed6a645cf5e33e3aa428b4b680b6", size = 5008475 },
     { url = "https://files.pythonhosted.org/packages/52/7c/ff400b76ae5d6a596894002d536c2fde758194a7771bab9c20cc6c33fb06/traits-6.4.3-cp312-cp312-win_amd64.whl", hash = "sha256:a01968bff6b13a0dc64842caf598ffc628bd973610b309d14b50fa92ce493a56", size = 5010809 },
+]
+
+[[package]]
+name = "traits-stubs"
+version = "6.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "traits" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/92/96/95f2b69428c0b88aad1f201ff29b486947c417beb25ac494e0d977d09b4a/traits-stubs-6.4.0.tar.gz", hash = "sha256:a0b17cc6c3c93ef0e868a93283cd1af88ff6cba04a0e70e84147aa73b7bca43d", size = 20051 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2f/87/9a1769591c4f5254553ece9ed81c379885fdeefb07e6ea6598ece33eda34/traits_stubs-6.4.0-py3-none-any.whl", hash = "sha256:a97c4503cb9512a973896a7ed7757f71eed5dd2f6b3de0d4113c886a74d9da0d", size = 45606 },
 ]
 
 [[package]]
