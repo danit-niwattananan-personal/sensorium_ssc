@@ -75,7 +75,7 @@ class BackendEngine:
         start_frame_id = f'{frame_id:06d}'  # 6 digits, from 4070 to '004070'
         sequence_id = f'{int(sequence_id):02d}'  # 2 digits, from 1 to '01'
 
-        # Load the image
+        # # Load the image
         image_2_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_2'
         image_3_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_3'
         image_2_frame = load_single_img(str(image_2_dir), start_frame_id)
@@ -99,7 +99,7 @@ class BackendEngine:
         # NOTE: the calib_file and calibration_file contains information about sequence_id
         calib_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'calib.txt')
         poses_file_path = str(
-            Path(self.data_dir) / 'sequences' / sequence_id / 'poses_single_frame.txt'
+            Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt'
         )
         trajectory_data_dict = get_position_at_frame(
             calib_file_path, poses_file_path, int(start_frame_id)
