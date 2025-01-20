@@ -22,6 +22,7 @@ from sensorium.visualizer.voxel_viz.helper import draw_semantic_voxel
 
 class VoxelVisualization(HasTraits):
     """Voxel Visualization class."""
+
     scene = Instance(MlabSceneModel, ())
     seq_frame_id_pair = Tuple(0, 0)
 
@@ -31,7 +32,7 @@ class VoxelVisualization(HasTraits):
         backend_config = yaml.safe_load(stream)
     backend_engine = BackendEngine(data_dir=backend_config['backend_engine']['data_dir'])
 
-    @on_trait_change('scene.activated') # type: ignore[misc]
+    @on_trait_change('scene.activated')  # type: ignore[misc]
     def update_plot(self) -> None:
         """Load the new data and draw the new voxel."""
         sequence_id, frame_id = self.seq_frame_id_pair
@@ -41,13 +42,14 @@ class VoxelVisualization(HasTraits):
             cam_pose=data['t_velo_2_cam'],  # type: ignore[arg-type]
             vox_origin=np.array([0, -25.6, -2]),
             fov_mask=data['fov_mask'],  # type: ignore[arg-type]
-            scene=self.scene, # type: ignore[arg-type]
+            scene=self.scene,  # type: ignore[arg-type]
         )
 
     view = View(
-        Item('scene', editor=SceneEditor(scene_class=MayaviScene),
-                     show_label=False), resizable=True # need this to resize with the parent widget
-        )
+        Item('scene', editor=SceneEditor(scene_class=MayaviScene), show_label=False),
+        resizable=True,  # need this to resize with the parent widget
+    )
+
 
 # NOTE: QMainWindow doesn't work with our settings, so we use QWidget instead
 class VoxelWidget(QWidget):
@@ -70,7 +72,6 @@ class VoxelWidget(QWidget):
         self.timer.setInterval(100)
         self.timer.start()
 
-
     def update_scene(self, frame_id: int, sequence_id: int = 0) -> None:
         """Update the scene with the new image and show to the user."""
         # First check the frame_id is valid
@@ -82,19 +83,17 @@ class VoxelWidget(QWidget):
 
         # Clean up the previous UI and scene
         if hasattr(self, 'ui'):
-            self.layout_window.removeWidget(self.ui) # type: ignore[has-type]
-            self.ui.deleteLater() # type: ignore[has-type]
-            if self.visualization.scene.scene_editor is not None: # type: ignore[union-attr]
-                self.visualization.scene.scene_editor = None # type: ignore[union-attr]
+            self.layout_window.removeWidget(self.ui)  # type: ignore[has-type]
+            self.ui.deleteLater()  # type: ignore[has-type]
+            if self.visualization.scene.scene_editor is not None:  # type: ignore[union-attr]
+                self.visualization.scene.scene_editor = None  # type: ignore[union-attr]
 
         # Remove the figure
-        self.visualization.scene.mlab.clf() # type: ignore[union-attr]
+        self.visualization.scene.mlab.clf()  # type: ignore[union-attr]
 
         # Update the scene and add it to the layout
         self.ui = self.visualization.edit_traits(
-            parent=self,
-            kind='subpanel',
-            context=self.visualization
+            parent=self, kind='subpanel', context=self.visualization
         ).control
         self.layout_window.addWidget(self.ui)
         self.ui.setParent(self)
@@ -102,12 +101,13 @@ class VoxelWidget(QWidget):
         # Update the frame number
         self.frame_number += 1
 
+
 def main() -> None:
     """Main function."""
     app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     window = VoxelWidget()
     window.show()
-    sys.exit(app.exec()) # type: ignore[union-attr]
+    sys.exit(app.exec())  # type: ignore[union-attr]
 
 
 if __name__ == '__main__':

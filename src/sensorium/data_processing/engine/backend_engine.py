@@ -98,9 +98,7 @@ class BackendEngine:
         # Load the trajectory
         # NOTE: the calib_file and calibration_file contains information about sequence_id
         calib_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'calib.txt')
-        poses_file_path = str(
-            Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt'
-        )
+        poses_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt')
         trajectory_data_dict = get_position_at_frame(
             calib_file_path, poses_file_path, int(start_frame_id)
         )
