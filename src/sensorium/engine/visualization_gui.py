@@ -91,7 +91,6 @@ class VisualisationGui(QMainWindow):
         main_layout.addLayout(grid_layout)
         main_layout.addLayout(controlbar)
 
-        self.update_scene()
         self.animation_timer.stop()
 
     def update_frame(self, frame: int) -> None:

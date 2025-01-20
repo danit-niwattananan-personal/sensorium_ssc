@@ -79,4 +79,3 @@ def test_update_frame(qtbot: QtBot) -> None:
     ) as mock_update_frame:
         qtbot.mouseClick(visualisation.button_minus10, Qt.LeftButton)
         mock_update_frame.assert_called_with(-10)
-    visualisation.update_scene()
