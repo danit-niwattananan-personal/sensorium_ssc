@@ -12,7 +12,10 @@ from sensorium.data_processing.camera.camera import load_frame
 
 
 def test_load_images(tmp_path: Path) -> None:
-    """Test for the camera function."""
+    """Test for the camera function.
+
+    Right now it tests the camera function that only loads one frame. Should be later changed.
+    """
     height = 600
     width = 600
 
@@ -46,18 +49,16 @@ def test_load_images(tmp_path: Path) -> None:
     cv2.imwrite('imageGreen.png', im_green)
     temp_green = temp_dir / 'imageGreen.png'
 
-    # assert temp_red.is_file() //to check if the temporary file exists
+    # Checking if the temporary file was created and then running the camera method
+    assert temp_red.is_file()
     assert load_frame('temp_dir', 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
 
-    # assert temp_blue.is_file()
+    assert temp_blue.is_file()
     assert load_frame('temp_dir', 'imageBlue.png') == cv2.imread(
         str(temp_blue), cv2.IMREAD_UNCHANGED
     )
 
-    # assert temp_green.is_file()
+    assert temp_green.is_file()
     assert load_frame('temp_dir', 'imageGreen.png') == cv2.imread(
         str(temp_green), cv2.IMREAD_UNCHANGED
     )
-
-
-# code to delete temporary files?????
