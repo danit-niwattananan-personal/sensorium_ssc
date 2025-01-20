@@ -38,6 +38,7 @@ dependencies = [
     "numba==0.60.0",
     "configobj>=5.0.9",
     "mayavi",
+    "traits-stubs>=6.4.0",
 ]
 dynamic = ["version"]
 keywords = []
