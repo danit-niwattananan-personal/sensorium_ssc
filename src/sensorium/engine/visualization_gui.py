@@ -89,7 +89,7 @@ class VisualisationGui(QMainWindow):
         main_layout.addLayout(controlbar)
 
         self.update_scene()
-        self.animation_timer.start()
+        self.animation_timer.stop()
 
     def update_frame(self, frame: int) -> None:
         """Erhöht und senkt die Framenummer."""
@@ -99,6 +99,7 @@ class VisualisationGui(QMainWindow):
         self.frame_label.setText(f'Frame: {self.framenumber}')
         if self.framenumber == 100:
             self.framenumber = 0
+        self.update_scene()
 
     def toggle_play_stop(self) -> None:
         """Funktion die dem Play Button eine Funktion gibt."""
