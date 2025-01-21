@@ -89,3 +89,25 @@ def get_position_at_frame(calib_file: str, poses_file: str, frame_index: int) ->
     # Extract the (x, y, z) coordinates for the requested frame
     pose = poses[frame_index]
     return {'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]}
+
+def get_framepos_from_list(poses: list[NDArray[np.float64]], frame_index: int) -> dict[str, float]:
+    """Retrieve the (x, y, z) position for a specific frame from a pre-computed list of poses.
+
+    Args:
+        poses (list[NDArray[np.float64]]): List of poses as 4x4 numpy arrays.
+        frame_index (int): The frame number for which to get the position.
+
+    Returns:
+        dict: A dictionary containing {'x': float, 'y': float, 'z': float}.
+    """
+    error_message = f"""Frame Index out of range. Frame index: {frame_index},
+    number of frames: {len(poses)}
+    """
+
+    # Ensure the requested frame index is valid
+    if frame_index < 0 or frame_index >= len(poses):
+        raise IndexError(error_message)
+
+    # Extract the (x, y, z) coordinates for the requested frame
+    pose = poses[frame_index]
+    return {'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]}
