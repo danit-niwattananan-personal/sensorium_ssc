@@ -16,7 +16,10 @@ from sensorium.data_processing.lidar_pointcloud.point_cloud import (
     read_labels_and_colors,
     read_point_cloud,
 )
-from sensorium.data_processing.trajectory.traj import get_position_at_frame
+from sensorium.data_processing.trajectory.traj import (
+    get_framepos_from_list,
+    parse_poses
+)
 from sensorium.data_processing.voxel_process.ssc_voxel_loader import (
     load_ssc_voxel,
     read_calib,
@@ -52,13 +55,45 @@ class BackendEngine:
         self.scene_dim = tuple(int(dim / self.voxel_size) for dim in self.scene_size)
         self.img_shape = (1220, 370)
 
+    def process_static_data(
+        self,
+        sequence_id: int | str,
+    ) -> dict[str, str | list[NDArray[np.float64]] | NDArray[np.float64] | NDArray[np.bool_]]:
+        """Process the data that takes long time, but only needs to be done once every sequence."""
+        # Meta data
+        sequence_id = f'{int(sequence_id):02d}'  # 2 digits, from 1 to '01'
+        calib_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'calib.txt')
+        poses_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt')
+
+        # Calculate all static data
+        all_calibs = read_calib(calib_file_path)
+        cam_intrinsic = all_calibs['P2']
+        t_velo_2_cam = all_calibs['Tr']  # cam_pose
+        cam_k = cam_intrinsic[:3, :3]
+        # NOTE: This code takes way too long to calculate for every frame
+        # Solution: calculate once and save it as attribute of class, or use a cache
+        _, fov_mask, _ = vox2pix(
+            t_velo_2_cam, cam_k, self.voxel_origin, self.img_shape, self.scene_size
+        )
+
+        # NOTE: the calib_file and calibration_file contains information about sequence_id
+        poses = parse_poses(poses_file_path, all_calibs)
+
+        return {
+            'sequence_id': sequence_id,
+            'fov_mask': fov_mask,
+            't_velo_2_cam': t_velo_2_cam,
+            'poses': poses
+        }
+
     def process(
         self,
         sequence_id: int | str,
         frame_id: int | str,
     ) -> dict[
         str,
-        str | list[float] | float | NDArray[np.float32] | NDArray[np.bool_] | MatLike | None,
+        (str | list[float] | float | NDArray[np.float64]| NDArray[np.float32] |
+        NDArray[np.bool_] | MatLike | None),
     ]:
         """Call the loading methods of the loaders and pack them into a dict to be passed to COMM.
 
@@ -75,7 +110,18 @@ class BackendEngine:
         start_frame_id = f'{frame_id:06d}'  # 6 digits, from 4070 to '004070'
         sequence_id = f'{int(sequence_id):02d}'  # 2 digits, from 1 to '01'
 
-        # # Load the image
+        # If the sequence_id is changed or static data is not available, reprocess static data
+        try:
+            is_seq_id_equal = sequence_id == self.static_data['sequence_id'] # type: ignore[has-type]        
+        except AttributeError:
+            is_seq_id_equal = False
+
+        if not is_seq_id_equal :
+            if self.verbose:
+                print(f'Reprocessing static data for sequence {sequence_id} at frame {frame_id} ...')
+            self.static_data = self.process_static_data(sequence_id=sequence_id)
+
+        # Load the image
         image_2_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_2'
         image_3_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_3'
         image_2_frame = load_single_img(str(image_2_dir), start_frame_id)
@@ -96,11 +142,8 @@ class BackendEngine:
             print('Lidar point cloud loaded')
 
         # Load the trajectory
-        # NOTE: the calib_file and calibration_file contains information about sequence_id
-        calib_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'calib.txt')
-        poses_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt')
-        trajectory_data_dict = get_position_at_frame(
-            calib_file_path, poses_file_path, int(start_frame_id)
+        trajectory_data_dict = get_framepos_from_list(
+            self.static_data['poses'], int(start_frame_id) # type: ignore[arg-type]
         )
         xyz = np.array(
             [trajectory_data_dict['x'], trajectory_data_dict['y'], trajectory_data_dict['z']]
@@ -127,27 +170,17 @@ class BackendEngine:
                 _error_msg = """Make sure that 1) data exists, 2) execute this file from the root
                 directory of project, 3) the config file is in b/config/vox_semantic_kitti.yaml"""
                 raise ImportError(_error_msg) from e
-            all_calibs = read_calib(calib_file_path)
-            cam_intrinsic = all_calibs['P2']
-            t_velo_2_cam = all_calibs['Tr']  # cam_pose
-            cam_k = cam_intrinsic[:3, :3]
-            # NOTE: This code takes way too long to calculate for every frame
-            # Solution: calculate once and save it as attribute of class, or use a cache
-            _, fov_mask, _ = vox2pix(
-                t_velo_2_cam, cam_k, self.voxel_origin, self.img_shape, self.scene_size
-            )
 
         except ValueError:
             # If no, assign None to voxel_related data
             voxel_data = None
-            fov_mask = None
-            t_velo_2_cam = None
 
         if self.verbose:
             print('Voxel loaded')
 
         return {
-            'frame_id': start_frame_id,
+            'frame_id': start_frame_id, # for checking error after transmission
+            'sequence_id': sequence_id, # for checking error after transmission
             'timestamp': self.calculate_timestamp(start_frame_id),
             'image_2': image_2_frame,
             'image_3': image_3_frame,
@@ -156,8 +189,10 @@ class BackendEngine:
             'lidar_pc_label_colors': pc_label_colors,
             'trajectory': xyz,
             'voxel': voxel_data,
-            'fov_mask': fov_mask,
-            't_velo_2_cam': t_velo_2_cam,
+            # NOTE: type: ignore[dict-item] is required since process_static_data
+            # has different item types
+            'fov_mask': self.static_data['fov_mask'], # type: ignore[dict-item]
+            't_velo_2_cam': self.static_data['t_velo_2_cam'], # type: ignore[dict-item]
         }
 
     def calculate_timestamp(
@@ -217,11 +252,18 @@ def main() -> None:
 
     start_time = time.time()
     data_dir = backend_config['backend_engine']['data_dir']
-    backend_engine = BackendEngine(data_dir=data_dir)
+    backend_engine = BackendEngine(data_dir=data_dir, verbose=True)
     backend_engine.process(sequence_id=0, frame_id=0)
     print(f'Loaded data for sequence {0} and frame {0} ...')
     end_time = time.time()
-    print(f'Time taken: {end_time - start_time} seconds')
+    print(f'Time taken: {end_time - start_time:.4f} seconds')
+
+    # Load another frame
+    start_time = time.time()
+    backend_engine.process(sequence_id=0, frame_id=5)
+    print(f'Loaded data for sequence {0} and frame {5} ...')
+    end_time = time.time()
+    print(f'Time taken: {end_time - start_time:.4f} seconds')
 
 
 if __name__ == '__main__':
