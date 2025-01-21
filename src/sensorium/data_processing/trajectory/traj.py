@@ -90,6 +90,7 @@ def get_position_at_frame(calib_file: str, poses_file: str, frame_index: int) ->
     pose = poses[frame_index]
     return {'x': pose[0, 3], 'y': pose[1, 3], 'z': pose[2, 3]}
 
+
 def get_framepos_from_list(poses: list[NDArray[np.float64]], frame_index: int) -> dict[str, float]:
     """Retrieve the (x, y, z) position for a specific frame from a pre-computed list of poses.
 
