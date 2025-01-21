@@ -15,7 +15,6 @@ from pathlib import Path
 # Mock data for testing
 def create_mock_calibration_file(file_path: str) -> None:
     """Create a mock calibration file for testing."""
-    path = Path(file_path)
     with open(file_path, 'w') as f:
         f.write('P2: 1 0 0 0 0 1 0 0 0 0 1 0\n')
         f.write('Tr: 1 0 0 0 0 1 0 0 0 0 1 0\n')
@@ -23,7 +22,6 @@ def create_mock_calibration_file(file_path: str) -> None:
 
 def create_mock_poses_file(file_path: str) -> None:
     """Create a mock poses file for testing."""
-    path = Path(file_path)
     with open(file_path, 'w') as f:
         f.write('1 0 0 1 0 1 0 2 0 0 1 3\n')
         f.write('1 0 0 4 0 1 0 5 0 0 1 6\n')
@@ -76,12 +74,13 @@ def test_get_position_at_frame() -> None:
     position = get_position_at_frame(calib_file, poses_file, 1)
     assert position == {'x': 4.0, 'y': 5.0, 'z': 6.0}
 
+    expected_error = 'Expected an IndexError for out-of-range frame index'
     try:
         get_position_at_frame(calib_file, poses_file, 2)
     except IndexError:
         pass
     else:
-        raise AssertionError('Expected an IndexError for out-of-range frame index')
+        raise AssertionError(expected_error)
 
     Path(calib_file).unlink()
     Path(poses_file).unlink()
@@ -100,12 +99,13 @@ def test_get_framepos_from_list() -> None:
     position = get_framepos_from_list(poses, 1)
     assert position == {'x': 4.0, 'y': 5.0, 'z': 6.0}
 
+    expected_error = 'Expected an IndexError for out-of-range frame index'
     try:
         get_framepos_from_list(poses, 2)
     except IndexError:
         pass
     else:
-        raise AssertionError('Expected an IndexError for out-of-range frame index')
+        raise AssertionError(expected_error)
 
 
 if __name__ == '__main__':
