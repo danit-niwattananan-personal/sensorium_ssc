@@ -148,7 +148,7 @@ class BackendEngine:
 
         # Load the trajectory
         trajectory_data_dict = get_framepos_from_list(
-            self.static_data['poses'], # type: ignore[arg-type]
+            self.static_data['poses'],  # type: ignore[arg-type]
             int(start_frame_id),
         )
         xyz = np.array(
