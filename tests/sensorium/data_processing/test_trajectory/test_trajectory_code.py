@@ -15,14 +15,14 @@ from pathlib import Path
 # Mock data for testing
 def create_mock_calibration_file(file_path: str) -> None:
     """Create a mock calibration file for testing."""
-    with open(file_path, 'w') as f:
+    with Path(file_path).open('w') as f:
         f.write('P2: 1 0 0 0 0 1 0 0 0 0 1 0\n')
         f.write('Tr: 1 0 0 0 0 1 0 0 0 0 1 0\n')
 
 
 def create_mock_poses_file(file_path: str) -> None:
     """Create a mock poses file for testing."""
-    with open(file_path, 'w') as f:
+    with Path(file_path).open('w') as f:
         f.write('1 0 0 1 0 1 0 2 0 0 1 3\n')
         f.write('1 0 0 4 0 1 0 5 0 0 1 6\n')
 
