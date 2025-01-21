@@ -10,23 +10,24 @@ from sensorium.data_processing.trajectory.traj import (
 )
 import numpy as np
 from pathlib import Path
+from typing import List
 
 
 # Mock data for testing
-def create_mock_calibration_file(file_path):
+def create_mock_calibration_file(file_path: str) -> None:
     with open(file_path, 'w') as f:
         f.write('P2: 1 0 0 0 0 1 0 0 0 0 1 0\n')
         f.write('Tr: 1 0 0 0 0 1 0 0 0 0 1 0\n')
 
 
-def create_mock_poses_file(file_path):
+def create_mock_poses_file(file_path: str) -> None:
     with open(file_path, 'w') as f:
         f.write('1 0 0 1 0 1 0 2 0 0 1 3\n')
         f.write('1 0 0 4 0 1 0 5 0 0 1 6\n')
 
 
 # Tests
-def test_parse_calibration():
+def test_parse_calibration() -> None:
     test_file = 'calib_test.txt'
     create_mock_calibration_file(test_file)
 
@@ -40,7 +41,7 @@ def test_parse_calibration():
     Path(test_file).unlink()
 
 
-def test_parse_poses():
+def test_parse_poses() -> None:
     calib_file = 'calib_test.txt'
     poses_file = 'poses_test.txt'
     create_mock_calibration_file(calib_file)
@@ -57,7 +58,7 @@ def test_parse_poses():
     Path(poses_file).unlink()
 
 
-def test_get_position_at_frame():
+def test_get_position_at_frame() -> None:
     calib_file = 'calib_test.txt'
     poses_file = 'poses_test.txt'
     create_mock_calibration_file(calib_file)
@@ -79,7 +80,7 @@ def test_get_position_at_frame():
     Path(poses_file).unlink()
 
 
-def test_get_framepos_from_list():
+def test_get_framepos_from_list() -> None:
     poses = [
         np.array([[1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3], [0, 0, 0, 1]]),
         np.array([[1, 0, 0, 4], [0, 1, 0, 5], [0, 0, 1, 6], [0, 0, 0, 1]]),
