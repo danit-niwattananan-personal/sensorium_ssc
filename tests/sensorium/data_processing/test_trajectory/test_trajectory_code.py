@@ -7,14 +7,13 @@ from pathlib import Path
 import numpy as np
 
 from sensorium.data_processing.trajectory.traj import (
+    get_framepos_from_list,
+    get_position_at_frame,
     parse_calibration,
     parse_poses,
-    get_position_at_frame,
-    get_framepos_from_list,
 )
 
 
-# Mock data for testing
 def create_mock_calibration_file(file_path: str) -> None:
     """Create a mock calibration file for testing."""
     with Path(file_path).open('w') as f:
