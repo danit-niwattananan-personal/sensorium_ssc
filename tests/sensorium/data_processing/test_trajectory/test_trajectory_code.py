@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test Trajectory Server Functions."""
 
+from pathlib import Path
+import numpy as np
 from sensorium.data_processing.trajectory.traj import (
     parse_calibration,
     parse_poses,
     get_position_at_frame,
     get_framepos_from_list,
 )
-import numpy as np
-from pathlib import Path
 
 
 # Mock data for testing
