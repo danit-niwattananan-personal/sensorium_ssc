@@ -3,7 +3,9 @@
 """Test Trajectory Server Functions."""
 
 from pathlib import Path
+
 import numpy as np
+
 from sensorium.data_processing.trajectory.traj import (
     parse_calibration,
     parse_poses,
