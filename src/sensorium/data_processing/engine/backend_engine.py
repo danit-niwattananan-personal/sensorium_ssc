@@ -16,10 +16,7 @@ from sensorium.data_processing.lidar_pointcloud.point_cloud import (
     read_labels_and_colors,
     read_point_cloud,
 )
-from sensorium.data_processing.trajectory.traj import (
-    get_framepos_from_list,
-    parse_poses
-)
+from sensorium.data_processing.trajectory.traj import get_framepos_from_list, parse_poses
 from sensorium.data_processing.voxel_process.ssc_voxel_loader import (
     load_ssc_voxel,
     read_calib,
@@ -83,7 +80,7 @@ class BackendEngine:
             'sequence_id': sequence_id,
             'fov_mask': fov_mask,
             't_velo_2_cam': t_velo_2_cam,
-            'poses': poses
+            'poses': poses,
         }
 
     def process(
@@ -92,8 +89,16 @@ class BackendEngine:
         frame_id: int | str,
     ) -> dict[
         str,
-        (str | list[float] | float | NDArray[np.float64]| NDArray[np.float32] |
-        NDArray[np.bool_] | MatLike | None),
+        (
+            str
+            | list[float]
+            | float
+            | NDArray[np.float64]
+            | NDArray[np.float32]
+            | NDArray[np.bool_]
+            | MatLike
+            | None
+        ),
     ]:
         """Call the loading methods of the loaders and pack them into a dict to be passed to COMM.
 
@@ -112,13 +117,13 @@ class BackendEngine:
 
         # If the sequence_id is changed or static data is not available, reprocess static data
         try:
-            is_seq_id_equal = sequence_id == self.static_data['sequence_id'] # type: ignore[has-type]        
+            is_seq_id_equal = sequence_id == self.static_data['sequence_id']  # type: ignore[has-type]
         except AttributeError:
             is_seq_id_equal = False
 
-        if not is_seq_id_equal :
+        if not is_seq_id_equal:
             if self.verbose:
-                print(f'Reprocessing static data for sequence {sequence_id} at frame {frame_id} ...')
+                print(f'Processing static data for sequence {sequence_id} at frame {frame_id} ...')
             self.static_data = self.process_static_data(sequence_id=sequence_id)
 
         # Load the image
@@ -143,7 +148,8 @@ class BackendEngine:
 
         # Load the trajectory
         trajectory_data_dict = get_framepos_from_list(
-            self.static_data['poses'], int(start_frame_id) # type: ignore[arg-type]
+            self.static_data['poses'], # type: ignore[arg-type]
+            int(start_frame_id),
         )
         xyz = np.array(
             [trajectory_data_dict['x'], trajectory_data_dict['y'], trajectory_data_dict['z']]
@@ -179,8 +185,8 @@ class BackendEngine:
             print('Voxel loaded')
 
         return {
-            'frame_id': start_frame_id, # for checking error after transmission
-            'sequence_id': sequence_id, # for checking error after transmission
+            'frame_id': start_frame_id,  # for checking error after transmission
+            'sequence_id': sequence_id,  # for checking error after transmission
             'timestamp': self.calculate_timestamp(start_frame_id),
             'image_2': image_2_frame,
             'image_3': image_3_frame,
@@ -191,8 +197,8 @@ class BackendEngine:
             'voxel': voxel_data,
             # NOTE: type: ignore[dict-item] is required since process_static_data
             # has different item types
-            'fov_mask': self.static_data['fov_mask'], # type: ignore[dict-item]
-            't_velo_2_cam': self.static_data['t_velo_2_cam'], # type: ignore[dict-item]
+            'fov_mask': self.static_data['fov_mask'],  # type: ignore[dict-item]
+            't_velo_2_cam': self.static_data['t_velo_2_cam'],  # type: ignore[dict-item]
         }
 
     def calculate_timestamp(
