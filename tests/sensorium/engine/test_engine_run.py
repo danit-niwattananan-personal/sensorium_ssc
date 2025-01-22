@@ -78,5 +78,5 @@ def test_update_frame(qtbot: QtBot) -> None:
     with patch(
         'sensorium.engine.visualization_gui.VisualisationGui.update_frame'
     ) as mock_update_frame:
-        qtbot.mouseClick(visualisation.button_minus10, Qt.LeftButton) #type:ignore[attr-defined]
+        qtbot.mouseClick(visualisation.button_minus10, Qt.LeftButton)  # type:ignore[attr-defined]
         mock_update_frame.assert_called_with(-10)
