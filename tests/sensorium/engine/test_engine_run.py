@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLineEdit
-from pytestqt.qtbot import QtBot
+from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 
 from sensorium.engine.settings import SettingsDialog
 from sensorium.engine.visualization_gui import VisualisationGui
