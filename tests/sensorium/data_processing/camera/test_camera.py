@@ -54,12 +54,16 @@ def test_load_images(tmp_path: Path) -> None:
 
     # Checking if the temporary file was created and then running the camera method
     assert temp_red.is_file()
-    assert load_frame(temp_dir, 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
+    assert load_frame('temp_dir', 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
 
     assert temp_blue.is_file()
-    assert load_frame(temp_dir, 'imageBlue.png') == cv2.imread(str(temp_blue), cv2.IMREAD_UNCHANGED)
+    assert load_frame('temp_dir', 'imageBlue.png') == cv2.imread(
+        str(temp_blue), cv2.IMREAD_UNCHANGED
+    )
 
     assert temp_green.is_file()
-    assert load_frame(temp_dir, 'imageGreen.png') == cv2.imread(
+    assert load_frame('temp_dir', 'imageGreen.png') == cv2.imread(
         str(temp_green), cv2.IMREAD_UNCHANGED
     )
+
+    # os.remove(temp_dir)
