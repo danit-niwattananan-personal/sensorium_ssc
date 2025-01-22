@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test GUI."""
 
+import os
 from unittest.mock import patch
 
-import pytest  # noqa: F401
+import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QMenuBar  # noqa: F401
-from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
+from PySide6.QtWidgets import QLineEdit
+from pytestqt.qtbot import QtBot
 
-from sensorium.engine.engine_run import MainWindow  # noqa: F401
 from sensorium.engine.settings import SettingsDialog
 from sensorium.engine.visualization_gui import VisualisationGui
 
@@ -70,6 +70,7 @@ def test_open_settings_window(qtbot: QtBot) -> None:
     assert not dialog.isVisible()
 
 
+@pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
 def test_update_frame(qtbot: QtBot) -> None:
     """Testet das Einstellungsfenster mit pytest-qt."""
     visualisation = VisualisationGui()
