@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test Camera."""
 
+import os
 from pathlib import Path
 
 import cv2
@@ -39,6 +40,8 @@ def test_load_images(tmp_path: Path) -> None:
     temp_dir = tmp_path / 'temp_dir'
     temp_dir.mkdir()
 
+    os.chdir(temp_dir)
+
     # Saving the images inside the temporary directory
     cv2.imwrite('imageRed.png', im_red)
     temp_red = temp_dir / 'imageRed.png'
@@ -51,14 +54,12 @@ def test_load_images(tmp_path: Path) -> None:
 
     # Checking if the temporary file was created and then running the camera method
     assert temp_red.is_file()
-    assert load_frame('temp_dir', 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
+    assert load_frame(temp_dir, 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
 
     assert temp_blue.is_file()
-    assert load_frame('temp_dir', 'imageBlue.png') == cv2.imread(
-        str(temp_blue), cv2.IMREAD_UNCHANGED
-    )
+    assert load_frame(temp_dir, 'imageBlue.png') == cv2.imread(str(temp_blue), cv2.IMREAD_UNCHANGED)
 
     assert temp_green.is_file()
-    assert load_frame('temp_dir', 'imageGreen.png') == cv2.imread(
+    assert load_frame(temp_dir, 'imageGreen.png') == cv2.imread(
         str(temp_green), cv2.IMREAD_UNCHANGED
     )
