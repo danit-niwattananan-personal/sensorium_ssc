@@ -1,3 +1,3 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
-"""Test."""
+"""Test for camera method."""
