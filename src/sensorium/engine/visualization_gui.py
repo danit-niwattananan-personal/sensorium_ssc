@@ -18,6 +18,8 @@ from sensorium.visualization.camera_visualization import CameraWidget
 from sensorium.visualization.lidar_visualization import PointcloudVis
 from sensorium.visualization.trajectory_visualization import Trajectory
 
+# from sensorium.visualization.voxel_widget import VoxelWidget  # noqa: ERA001
+
 
 class VisualisationGui(QMainWindow):
     """Main GUI that embeds all widgets."""
@@ -55,6 +57,8 @@ class VisualisationGui(QMainWindow):
 
         self.placeholder = QLabel('Platzhalter')
         grid_layout.addWidget(self.placeholder, 1, 1)
+        # self.voxel = VoxelWidget()  # noqa: ERA001
+        # grid_layout.addWidget(self.voxel, 1, 1)  # noqa: ERA001
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
@@ -118,6 +122,7 @@ class VisualisationGui(QMainWindow):
         self.trajectory.draw_line(self.framenumber)
         self.pointcloud.update_scene(self.framenumber)
         self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
+        # self.voxel.update_scene(self.framenumber, self.seq_id)  # noqa: ERA001
         self.update_frame(1)
 
 
