@@ -23,9 +23,9 @@ class PointcloudVis(QtWidgets.QWidget):
         super().__init__(None)
         self.resize(640, 480)
         self.pcd = None
-        self.directory = ''
-        self.label_directory = ''
-        self.config_file = ''
+        self.config_file = Path()
+        self.directory = Path()
+        self.label_directory = Path()
 
         self.setup_canvas()
         self.frame_count = 0
@@ -55,7 +55,7 @@ class PointcloudVis(QtWidgets.QWidget):
 
     def load_positions(self, frame_id: int) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """Loads the coordinates for the positions of the points from one .bin file."""
-        path = f'{self.directory}/{frame_id:06d}.bin'
+        path = self.directory / f'{frame_id:06d}.bin'
         points = np.fromfile(path, np.float32).reshape(-1, 4)
         return points[:, :3]
 
@@ -87,7 +87,7 @@ class PointcloudVis(QtWidgets.QWidget):
         self, frame_id: int
     ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
         """."""
-        path = f'{self.label_directory}/{frame_id:06d}.label'
+        path = self.label_directory / f'{frame_id:06d}.label'
         ids = np.fromfile(path, dtype=np.uint32)
         semantic_ids = ids & 0xFFFF
         color_map = self.get_colormap()

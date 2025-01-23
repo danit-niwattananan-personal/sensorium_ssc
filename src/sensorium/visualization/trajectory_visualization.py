@@ -8,26 +8,27 @@ from pathlib import Path
 import numpy as np
 from PySide6 import QtGui, QtWidgets
 
-# from sensorium.launch.launch import get_traj_data # noqa: ERA001
+# from sensorium.launch.launch import LaunchWindow  # noqa: ERA001
 
 
 class Trajectory(QtWidgets.QWidget):
     """."""
 
+    # def __init__(self, launch_window: LaunchWindow) -> None:
     def __init__(self) -> None:
         """Initialize the Trajectory widget."""
         super().__init__(None)
         self.resize(500, 500)
+        # self.launch_window = launch_window  # noqa: ERA001
         self.view = QtWidgets.QGraphicsView()
         self.scene = QtWidgets.QGraphicsScene()
         self.view.setScene(self.scene)
 
-        self.frame_number = 0
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.view)
         self.setLayout(layout)
 
-        self.trajectory_file_path = ''
+        self.trajectory_file_path = Path()
         print(self.trajectory_file_path)
 
         self.previous_point = np.zeros(3)
@@ -50,9 +51,18 @@ class Trajectory(QtWidgets.QWidget):
         z = np.array([coord['z'] for coord in coord_dict])
         return np.column_stack((x, y, z))
 
+    # def get_traj_data(
+    #     self, frame_id: int, seq_id: int
+    # ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+    #     """."""
+    #     data_list = self.launch_window.get_traj_data(frame_id, seq_id)  # noqa: ERA001
+    #     x = data_list['x']  # noqa: ERA001
+    #     y = data_list['y']  # noqa: ERA001
+    #     z = data_list['z']  # noqa: ERA001
+    #     return np.column_stack((x, y, z))  # noqa: ERA001
+
     def draw_line(self, frame_id: int) -> None:
         """."""
-        # coords = get_traj_data(frame_id, seq_id)# noqa: ERA001
         coords = self.get_coordinates()
         scale_factor = 1
         coords = coords * scale_factor
@@ -82,12 +92,11 @@ class Trajectory(QtWidgets.QWidget):
         )
 
         self.previous_point = current_point
-        self.frame_number += 1
 
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     window = Trajectory()
-    window.trajectory_file_path = r'C:\Users\wich_\Desktop\trajectory.txt'
+    window.trajectory_file_path = Path(r'C:\Users\wich_\Desktop\trajectory.txt')
     window.show()
     app.exec()
