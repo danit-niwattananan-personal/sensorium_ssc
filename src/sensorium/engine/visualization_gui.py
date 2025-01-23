@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """."""
 
+# from pathlib import Path  # noqa: ERA001
+
 from PySide6 import QtCore
 from PySide6.QtWidgets import (
     QApplication,
@@ -40,18 +42,26 @@ class VisualisationGui(QMainWindow):
         self.play_en = False
         self.seq_id = 0
 
-        self.camera = CameraWidget()
-        grid_layout.addWidget(self.camera, 0, 0)
-        # self.camera.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
+        self.camera1 = CameraWidget()
+        # self.camera1.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
         # self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
+        self.camera2 = CameraWidget()
+        # self.camera2.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
+        # self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
+
+        self.camera = QVBoxLayout()
+        self.camera.addWidget(self.camera2)
+        self.camera.addWidget(self.camera1)
+        grid_layout.addLayout(self.camera, 0, 0)
+
         self.pointcloud = PointcloudVis()
-        # self.pointcloud.directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin'  # noqa: E501, ERA001
+        # self.pointcloud.directory = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin')  # noqa: E501, ERA001
         # self.pointcloud.directory = '/Users/raymund.tonyka/Downloads/Data_visualization/bin'  # noqa: E501, ERA001
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
-        # self.trajectory.trajectory_file_path = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt'  # noqa: E501, ERA001
+        # self.trajectory.trajectory_file_path = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt')  # noqa: E501, ERA001
         # self.trajectory.trajectory_file_path = '/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt'  # noqa: E501, ERA001
         grid_layout.addWidget(self.trajectory, 1, 0)
 
@@ -111,14 +121,15 @@ class VisualisationGui(QMainWindow):
         self.play_en = not self.play_en
         if self.play_en:
             self.button_play_stop.setText('Play')
-            window.animation_timer.stop()
+            self.animation_timer.stop()
         else:
             self.button_play_stop.setText('Stop')
-            window.animation_timer.start()
+            self.animation_timer.start()
 
     def update_scene(self) -> None:
         """Ladet neue Bilder."""
-        self.camera.show_image(self.framenumber)
+        self.camera1.show_image(self.framenumber)
+        self.camera2.show_image(self.framenumber)
         self.trajectory.draw_line(self.framenumber)
         self.pointcloud.update_scene(self.framenumber)
         self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
