@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test Trajectory Visualization."""
 
+from pathlib import Path
 from unittest.mock import mock_open, patch
 
 import numpy as np
@@ -18,7 +19,7 @@ def test_draw_line(qtbot: QtBot) -> None:
         widget = Trajectory()
         qtbot.addWidget(widget)
 
-        widget.trajectory_file_path = 'dummy_trajectory.txt'
+        widget.trajectory_file_path = Path('dummy_trajectory.txt')
 
         widget.previous_point = np.array([0, 0, 0], dtype=np.float32)
 
