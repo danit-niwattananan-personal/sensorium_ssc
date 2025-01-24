@@ -44,11 +44,11 @@ class VisualisationGui(QMainWindow):
 
         self.camera1 = CameraWidget()
         # self.camera1.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
-        # self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
+        # self.camera1.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
         self.camera2 = CameraWidget()
         # self.camera2.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
-        # self.camera.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
+        # self.camera2.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
         self.camera = QVBoxLayout()
         self.camera.addWidget(self.camera2)
@@ -57,12 +57,12 @@ class VisualisationGui(QMainWindow):
 
         self.pointcloud = PointcloudVis()
         # self.pointcloud.directory = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin')  # noqa: E501, ERA001
-        # self.pointcloud.directory = '/Users/raymund.tonyka/Downloads/Data_visualization/bin'  # noqa: E501, ERA001
+        # self.pointcloud.directory = Path('/Users/raymund.tonyka/Downloads/Data_visualization/bin')  # noqa: E501, ERA001
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         # self.trajectory.trajectory_file_path = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt')  # noqa: E501, ERA001
-        # self.trajectory.trajectory_file_path = '/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt'  # noqa: E501, ERA001
+        # self.trajectory.trajectory_file_path = Path('/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt')  # noqa: E501, ERA001
         grid_layout.addWidget(self.trajectory, 1, 0)
 
         self.placeholder = QLabel('Platzhalter')
@@ -86,21 +86,21 @@ class VisualisationGui(QMainWindow):
         self.button_minus10.clicked.connect(lambda: self.update_frame(-10))
         controlbar.addWidget(self.button_minus10)
 
-        button_minus1 = QPushButton('-1 Frame')
-        button_minus1.clicked.connect(lambda: self.update_frame(-1))
-        controlbar.addWidget(button_minus1)
+        self.button_minus1 = QPushButton('-1 Frame')
+        self.button_minus1.clicked.connect(lambda: self.update_frame(-1))
+        controlbar.addWidget(self.button_minus1)
 
         self.button_play_stop = QPushButton('Play')
         self.button_play_stop.clicked.connect(self.toggle_play_stop)
         controlbar.addWidget(self.button_play_stop)
 
-        button_plus1 = QPushButton('+1 Frame')
-        button_plus1.clicked.connect(lambda: self.update_frame(1))
-        controlbar.addWidget(button_plus1)
+        self.button_plus1 = QPushButton('+1 Frame')
+        self.button_plus1.clicked.connect(lambda: self.update_frame(1))
+        controlbar.addWidget(self.button_plus1)
 
-        button_plus10 = QPushButton('+10 Frames')
-        button_plus10.clicked.connect(lambda: self.update_frame(10))
-        controlbar.addWidget(button_plus10)
+        self.button_plus10 = QPushButton('+10 Frames')
+        self.button_plus10.clicked.connect(lambda: self.update_frame(10))
+        controlbar.addWidget(self.button_plus10)
 
         main_layout.addLayout(grid_layout)
         main_layout.addLayout(controlbar)
