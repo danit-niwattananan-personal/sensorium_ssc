@@ -56,6 +56,7 @@ def test_visualitsation_gui(qtbot: QtBot) -> None:
         mock_update_frame.assert_called_with(10)
 
 
+@pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
 def test_update_frame() -> None:
     """Testet update_frame."""
     visualisation = VisualisationGui()
