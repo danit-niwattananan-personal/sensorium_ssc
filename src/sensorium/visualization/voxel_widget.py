@@ -67,10 +67,10 @@ class VoxelWidget(QWidget):
         self.layout_window.setContentsMargins(0, 0, 0, 0)
         self.layout_window.setSpacing(0)
 
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(lambda: self.update_scene(self.frame_number))
-        self.timer.setInterval(100)
-        self.timer.start()
+        # self.timer = QTimer(self)
+        # self.timer.timeout.connect(lambda: self.update_scene(self.frame_number))
+        # self.timer.setInterval(100)
+        # self.timer.start()
 
     def update_scene(self, frame_id: int, sequence_id: int = 0) -> None:
         """Update the scene with the new image and show to the user."""
