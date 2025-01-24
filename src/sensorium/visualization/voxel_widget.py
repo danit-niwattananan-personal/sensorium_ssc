@@ -60,7 +60,7 @@ class VoxelWidget(QWidget):
         super().__init__(parent)
         self.frame_number = 0
         self.setWindowTitle('Voxel Ground Truth')
-        self.setFixedSize(800, 800)
+        # self.setFixedSize(800, 800)
 
         # Create the main widget
         self.layout_window = QVBoxLayout(self)
