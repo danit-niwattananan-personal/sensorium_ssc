@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """."""
 
-# from pathlib import Path  # noqa: ERA001
+import sys
+from pathlib import Path  # noqa: ERA001
 
+import yaml
 from PySide6 import QtCore
 from PySide6.QtWidgets import (
     QApplication,
@@ -19,8 +21,7 @@ from PySide6.QtWidgets import (
 from sensorium.visualization.camera_visualization import CameraWidget
 from sensorium.visualization.lidar_visualization import PointcloudVis
 from sensorium.visualization.trajectory_visualization import Trajectory
-
-# from sensorium.visualization.voxel_widget import VoxelWidget  # noqa: ERA001
+from sensorium.visualization.voxel_widget import VoxelWidget
 
 
 class VisualisationGui(QMainWindow):
@@ -42,12 +43,18 @@ class VisualisationGui(QMainWindow):
         self.play_en = False
         self.seq_id = 0
 
+        config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
+        with Path(config_path).open() as stream:
+            config = yaml.safe_load(stream)
+
         self.camera1 = CameraWidget()
         # self.camera1.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
+        self.camera1.img_directory = config['frontend_engine']['img2_dir']
         # self.camera1.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
         self.camera2 = CameraWidget()
         # self.camera2.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
+        self.camera2.img_directory = config['frontend_engine']['img3_dir']
         # self.camera2.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
 
         self.camera = QVBoxLayout()
@@ -58,17 +65,19 @@ class VisualisationGui(QMainWindow):
         self.pointcloud = PointcloudVis()
         # self.pointcloud.directory = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin')  # noqa: E501, ERA001
         # self.pointcloud.directory = Path('/Users/raymund.tonyka/Downloads/Data_visualization/bin')  # noqa: E501, ERA001
+        self.pointcloud.directory = config['frontend_engine']['pointcloud_dir']
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         # self.trajectory.trajectory_file_path = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt')  # noqa: E501, ERA001
         # self.trajectory.trajectory_file_path = Path('/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt')  # noqa: E501, ERA001
+        self.trajectory.trajectory_file_path = config['frontend_engine']['trajectory_dir']
         grid_layout.addWidget(self.trajectory, 1, 0)
 
-        self.placeholder = QLabel('Platzhalter')
-        grid_layout.addWidget(self.placeholder, 1, 1)
-        # self.voxel = VoxelWidget()  # noqa: ERA001
-        # grid_layout.addWidget(self.voxel, 1, 1)  # noqa: ERA001
+        # self.placeholder = QLabel('Platzhalter')
+        # grid_layout.addWidget(self.placeholder, 1, 1)
+        self.voxel = VoxelWidget()  # noqa: ERA001
+        grid_layout.addWidget(self.voxel, 1, 1)  # noqa: ERA001
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
@@ -132,13 +141,14 @@ class VisualisationGui(QMainWindow):
         self.camera2.show_image(self.framenumber)
         self.trajectory.draw_line(self.framenumber)
         self.pointcloud.update_scene(self.framenumber)
-        self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
-        # self.voxel.update_scene(self.framenumber, self.seq_id)  # noqa: ERA001
+        # self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
+        self.voxel.update_scene(self.framenumber, self.seq_id)  # noqa: ERA001
         self.update_frame(1)
 
 
 if __name__ == '__main__':
-    app = QApplication([])
+    # app = QApplication([])
+    app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     window = VisualisationGui()
     window.show()
     app.exec()
