@@ -3,3 +3,9 @@
 backend_engine:
   data_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset # like /home/jovyan/kitti_dummy/dataset
   # declare more parameters here to be used in the backend
+
+frontend_engine:
+  img2_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\image_2
+  img3_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\image_3
+  pointcloud_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\velodyne
+  trajectory_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\trajectory.txt
