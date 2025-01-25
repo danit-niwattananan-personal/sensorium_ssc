@@ -11,7 +11,6 @@ from pathlib import Path
 import numpy as np
 import yaml
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
-from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 from traits.api import HasTraits, Instance, Tuple, on_trait_change
 from traitsui.api import Item, View
@@ -60,17 +59,11 @@ class VoxelWidget(QWidget):
         super().__init__(parent)
         self.frame_number = 0
         self.setWindowTitle('Voxel Ground Truth')
-        # self.setFixedSize(800, 800)
 
         # Create the main widget
         self.layout_window = QVBoxLayout(self)
         self.layout_window.setContentsMargins(0, 0, 0, 0)
         self.layout_window.setSpacing(0)
-
-        # self.timer = QTimer(self)
-        # self.timer.timeout.connect(lambda: self.update_scene(self.frame_number))
-        # self.timer.setInterval(100)
-        # self.timer.start()
 
     def update_scene(self, frame_id: int, sequence_id: int = 0) -> None:
         """Update the scene with the new image and show to the user."""
