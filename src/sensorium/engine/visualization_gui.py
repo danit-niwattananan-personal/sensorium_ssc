@@ -42,7 +42,6 @@ class VisualisationGui(QMainWindow):
         self._init_variables()
         self._read_config()
 
-        self.camera1 = CameraWidget()
         # NOTE: from now on, just change the path in the config file sensorium.yaml
         # No need to change the code here
         self._setup_camera_widget()
