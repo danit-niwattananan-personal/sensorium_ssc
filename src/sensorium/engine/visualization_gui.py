@@ -3,7 +3,7 @@
 """."""
 
 import sys
-from pathlib import Path  # noqa: ERA001
+from pathlib import Path
 
 import yaml
 from PySide6 import QtCore
@@ -28,7 +28,7 @@ class VisualisationGui(QMainWindow):
     """Main GUI that embeds all widgets."""
 
     def __init__(self) -> None:
-        """."""
+        """Initialize the GUI."""
         super().__init__()
         self.setGeometry(0, 0, 1200, 800)
         central_widget = QWidget()
@@ -39,49 +39,35 @@ class VisualisationGui(QMainWindow):
         grid_layout = QGridLayout()
         controlbar = QHBoxLayout()
 
-        self.framenumber = 0
-        self.play_en = False
-        self.seq_id = 0
-
-        config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
-        with Path(config_path).open() as stream:
-            config = yaml.safe_load(stream)
+        self._init_variables()
+        self._read_config()
 
         self.camera1 = CameraWidget()
-        # self.camera1.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
-        self.camera1.img_directory = config['frontend_engine']['img2_dir']
-        # self.camera1.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
-
-        self.camera2 = CameraWidget()
-        # self.camera2.img_directory = r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\png'  # noqa: E501, ERA001
-        self.camera2.img_directory = config['frontend_engine']['img3_dir']
-        # self.camera2.img_directory = '/Users/raymund.tonyka/Downloads/Data_visualization/png'  # noqa: E501, ERA001
-
-        self.camera = QVBoxLayout()
-        self.camera.addWidget(self.camera2)
-        self.camera.addWidget(self.camera1)
+        # NOTE: from now on, just change the path in the config file sensorium.yaml
+        # No need to change the code here
+        self._setup_camera_widget()
         grid_layout.addLayout(self.camera, 0, 0)
 
         self.pointcloud = PointcloudVis()
         # self.pointcloud.directory = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\bin')  # noqa: E501, ERA001
         # self.pointcloud.directory = Path('/Users/raymund.tonyka/Downloads/Data_visualization/bin')  # noqa: E501, ERA001
-        self.pointcloud.directory = config['frontend_engine']['pointcloud_dir']
+        self.pointcloud.directory = Path(self.config['frontend_engine']['pointcloud_dir'])
         grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         # self.trajectory.trajectory_file_path = Path(r'C:\Users\Raymund Tonyka\Desktop\Data_visualization\trajectory.txt')  # noqa: E501, ERA001
         # self.trajectory.trajectory_file_path = Path('/Users/raymund.tonyka/Downloads/Data_visualization/trajectory.txt')  # noqa: E501, ERA001
-        self.trajectory.trajectory_file_path = config['frontend_engine']['trajectory_dir']
+        self.trajectory.trajectory_file_path = Path(
+            self.config['frontend_engine']['trajectory_dir']
+        )
         grid_layout.addWidget(self.trajectory, 1, 0)
 
-        # self.placeholder = QLabel('Platzhalter')
-        # grid_layout.addWidget(self.placeholder, 1, 1)
-        self.voxel = VoxelWidget()  # noqa: ERA001
-        grid_layout.addWidget(self.voxel, 1, 1)  # noqa: ERA001
+        self.voxel = VoxelWidget()
+        grid_layout.addWidget(self.voxel, 1, 1)
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
-        self.animation_timer.setInterval(100)
+        self.animation_timer.setInterval(1000)
 
         grid_layout.setRowStretch(0, 1)
         grid_layout.setRowStretch(1, 1)
@@ -116,6 +102,29 @@ class VisualisationGui(QMainWindow):
 
         self.animation_timer.stop()
 
+    def _init_variables(self) -> None:
+        """Initialize the variables to reduce number of lines in init method."""
+        self.framenumber = 0
+        self.play_en = False
+        self.seq_id = 0
+
+    def _read_config(self) -> None:
+        """Read the config file for path findings during runtime data reading."""
+        config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
+        with Path(config_path).open() as stream:
+            self.config = yaml.safe_load(stream)
+
+    def _setup_camera_widget(self) -> None:
+        """Setup the camera widget."""
+        self.camera1 = CameraWidget()
+        self.camera1.img_directory = self.config['frontend_engine']['img2_dir']
+        self.camera2 = CameraWidget()
+        self.camera2.img_directory = self.config['frontend_engine']['img3_dir']
+
+        self.camera = QVBoxLayout()
+        self.camera.addWidget(self.camera2)
+        self.camera.addWidget(self.camera1)
+
     def update_frame(self, frame: int) -> None:
         """Erhöht und senkt die Framenummer."""
         self.framenumber += frame
@@ -141,14 +150,13 @@ class VisualisationGui(QMainWindow):
         self.camera2.show_image(self.framenumber)
         self.trajectory.draw_line(self.framenumber)
         self.pointcloud.update_scene(self.framenumber)
-        # self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}')
-        self.voxel.update_scene(self.framenumber, self.seq_id)  # noqa: ERA001
+        # self.placeholder.setText(f'Das ist der neue Frame: {self.framenumber}') # noqa: ERA001
+        self.voxel.update_scene(self.framenumber, self.seq_id)
         self.update_frame(1)
 
 
 if __name__ == '__main__':
-    # app = QApplication([])
     app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     window = VisualisationGui()
     window.show()
-    app.exec()
+    app.exec()  # type: ignore[union-attr]
