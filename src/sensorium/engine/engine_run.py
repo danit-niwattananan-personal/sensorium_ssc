@@ -105,4 +105,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     window = MainWindow()
     window.show()
-    app.exec()
+    app.exec()  # type: ignore[union-attr]
