@@ -10,13 +10,13 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QHBoxLayout,
-    QLabel,
     QMainWindow,
     QMenuBar,
     QVBoxLayout,
     QWidget,
 )
 
+from sensorium.engine.ordner import ButtonPanel
 from sensorium.engine.settings import open_settings_window
 from sensorium.engine.visualization_gui import VisualisationGui
 
@@ -28,44 +28,33 @@ class MainWindow(QMainWindow):
         """Aufbau der einzelnen Elemente des MainWindow."""
         super().__init__()
         self.setWindowTitle('Sensorium')
-        self.setGeometry(300, 200, 800, 600)
-        self.setMinimumSize(800, 600)
+        self.setGeometry(300, 200, 1130, 600)
+        self.setMinimumSize(1130, 600)
 
-        # Zentrale Widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        # Hauptlayout
         main_layout = QHBoxLayout(central_widget)
 
-        # Ordner
-        self.left_column = QLabel('Ordner')
-        self.left_column.setStyleSheet(
-            'background-color: lightgray; ' 'padding: 10px; ' 'border-radius: 15px; '
-        )
+        self.left_column = ButtonPanel()
         self.left_column.setFixedWidth(200)
         main_layout.addWidget(self.left_column)
 
-        # Videoplayer
         right_layout = QVBoxLayout()
         main_layout.addLayout(right_layout)
 
-        # Platzhalter-Label für Videoplayer
         videoplayer = VisualisationGui()
         right_layout.addWidget(videoplayer, stretch=1)
 
-        # Menüleiste
         menu_bar = QMenuBar(self)
         self.setMenuBar(menu_bar)
 
-        # Menü: Einstellungen  # noqa: ERA001
         settings_menu = menu_bar.addMenu('Einstellungen')
         settings_action = QAction('Einstellungen öffnen', self)
         settings_action.setObjectName('action_settings')
         settings_action.triggered.connect(self.open_settings)
         settings_menu.addAction(settings_action)
 
-        # Menü: Server verbinden
         server_menu = menu_bar.addMenu('Server')
         server_connect = QAction('Mit Server verbinden', self)
         server_connect.triggered.connect(self.connect_server)
@@ -74,7 +63,6 @@ class MainWindow(QMainWindow):
         server_menu.addAction(server_connect)
         server_menu.addAction(server_disconnect)
 
-        # Menü: Dateien vom Server anfragen
         ask_data_menu = menu_bar.addMenu('Dateien')
         ask_data_action = QAction('Dateien vom Server anfragen', self)
         ask_4_new_data = QAction('Dateien neu anfragen', self)
