@@ -63,9 +63,7 @@ class SettingsDialog(QDialog):
         self.visualisation.next_frame_time = self.next_frame_time
         x = self.visualisation.framenumber
         y = self.visualisation.seq_id
-        self.visualisation.frame_label.setText(
-            f'Frame: {x}, Sequence: {y} und FPS: {int(fps)}'
-        )
+        self.visualisation.frame_label.setText(f'Frame: {x}, Sequence: {y} und FPS: {int(fps)}')
         self.accept()
 
 

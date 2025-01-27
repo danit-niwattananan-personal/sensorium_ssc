@@ -107,7 +107,7 @@ class VisualisationGui(QMainWindow):
         self.play_en = False
         self.seq_id = 0
         self.next_frame_time = 1000
-        self.fps = int(1000/self.next_frame_time)
+        self.fps = int(1000 / self.next_frame_time)
 
     def set_frame_slider(self) -> None:
         """Sets the Frame if slider is moved."""

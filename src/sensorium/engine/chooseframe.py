@@ -53,7 +53,7 @@ class FrameDialog(QDialog):
 
         x = self.visualisation.framenumber
         y = self.visualisation.seq_id
-        fps = int(1000/self.visualisation.next_frame_time)
+        fps = int(1000 / self.visualisation.next_frame_time)
         self.visualisation.frame_label.setText(f'Frame: {x}, Sequence: {y} und FPS: {int(fps)}')
         self.visualisation.slider.setValue(self.visualisation.framenumber)
         self.accept()
@@ -64,6 +64,7 @@ def choose_frame(visualisation: VisualisationGui) -> QDialog:
     dialog = FrameDialog(visualisation)
     dialog.exec()
     return dialog
+
 
 class SeqDialog(QDialog):
     """Choose your frame."""
@@ -104,7 +105,7 @@ class SeqDialog(QDialog):
 
         x = self.visualisation.framenumber
         y = self.visualisation.seq_id
-        fps = int(1000/self.visualisation.next_frame_time)
+        fps = int(1000 / self.visualisation.next_frame_time)
         self.visualisation.frame_label.setText(f'Frame: {x}, Sequence: {y} und FPS: {int(fps)}')
         self.visualisation.slider.setValue(self.visualisation.framenumber)
         self.accept()

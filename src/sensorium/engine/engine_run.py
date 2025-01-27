@@ -69,7 +69,6 @@ class MainWindow(QMainWindow):
         print('Einstellungen geöffnet')
         return open_settings_window(self.videoplayer)
 
-
     def ask_for_frame(self) -> None:
         """Load current Frame."""
         print('Ordner laden')
