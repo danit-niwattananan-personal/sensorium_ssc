@@ -28,13 +28,13 @@ def test_open_settings_window(qtbot: QtBot) -> None:
 
     qtbot.keyClicks(dialog.input_field, '10')
     qtbot.keyClicks(dialog.speed_label, '10')
-    qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)
+    qtbot.mouseClick(dialog.apply_button, Qt.LeftButton) # type: ignore[attr-defined]
 
     assert not dialog.isVisible()
 
     dialog = SettingsDialog(vizualisation)
     dialog.show()
-    qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)
+    qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton) # type: ignore[attr-defined]
     assert not dialog.isVisible()
 
 
