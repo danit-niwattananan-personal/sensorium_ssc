@@ -35,7 +35,6 @@ class VisualisationGui(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        self.maxframe = 10
         main_layout = QVBoxLayout(central_widget)
 
         self.grid_layout = QGridLayout()
@@ -103,6 +102,7 @@ class VisualisationGui(QMainWindow):
 
     def _init_variables(self) -> None:
         """Initialize the variables to reduce number of lines in init method."""
+        self.maxframe = 10
         self.framenumber = 0
         self.play_en = False
         self.seq_id = 0

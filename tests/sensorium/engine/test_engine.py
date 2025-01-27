@@ -16,7 +16,8 @@ from sensorium.engine.visualization_gui import VisualisationGui
 
 def test_open_settings_window(qtbot: QtBot) -> None:
     """Testet das Einstellungsfenster mit pytest-qt."""
-    dialog = SettingsDialog()
+    vizualisation = VisualisationGui()
+    dialog = SettingsDialog(vizualisation)
     dialog.show()
     qtbot.waitExposed(dialog)
 
@@ -26,10 +27,13 @@ def test_open_settings_window(qtbot: QtBot) -> None:
     assert dialog.apply_button is not None
     assert dialog.cancel_button is not None
 
+    qtbot.keyClicks(dialog.input_field, '10')
+    qtbot.keyClicks(dialog.speed_label, '10')
     qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)
+
     assert not dialog.isVisible()
 
-    dialog = SettingsDialog()
+    dialog = SettingsDialog(vizualisation)
     dialog.show()
     qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)
     assert not dialog.isVisible()
