@@ -20,7 +20,7 @@ def test_load_images(tmp_path: Path) -> None:
     height = 600
     width = 600
 
-    # Creating the images
+    # Creating the images (test data)
     im_red = np.zeros((height, width, 3), np.uint8)
     im_red[:, :, 0] = 0
     im_red[:, :, 1] = 0
@@ -36,34 +36,29 @@ def test_load_images(tmp_path: Path) -> None:
     im_green[:, :, 1] = 255
     im_green[:, :, 2] = 0
 
-    # Using tmp_path to create a temporary directory
-    temp_dir = tmp_path / 'temp_dir'
-    temp_dir.mkdir()
+    # Create a temporary file paths within the temporary directory (tmp_path)
+    temp_file_path_1 = tmp_path / 'imageRed.png'
+    cv2.imwrite(temp_file_path_1, im_red)
 
-    os.chdir(temp_dir)
+    temp_file_path_2 = tmp_path / 'imageBlue.png'
+    cv2.imwrite(temp_file_path_2, im_blue)
 
-    # Saving the images inside the temporary directory
-    cv2.imwrite('imageRed.png', im_red)
-    temp_red = temp_dir / 'imageRed.png'
+    temp_file_path_3 = tmp_path / 'imageGreen.png'
+    cv2.imwrite(temp_file_path_3, im_green)
 
-    cv2.imwrite('imageBlue.png', im_blue)
-    temp_blue = temp_dir / 'imageBlue.png'
+    # Assert that the files were created in the temporary directory
+    assert temp_file_path_1.exists()
+    assert temp_file_path_2.exists()
+    assert temp_file_path_3.exists()
 
-    cv2.imwrite('imageGreen.png', im_green)
-    temp_green = temp_dir / 'imageGreen.png'
+    # read the test data with opencv
+    test_data_red = cv2.imread(str(temp_file_path_1), cv2.IMREAD_UNCHANGED)
+    test_data_blue = cv2.imread(str(temp_file_path_2), cv2.IMREAD_UNCHANGED)
+    test_data_green = cv2.imread(str(temp_file_path_3), cv2.IMREAD_UNCHANGED)
 
-    # Checking if the temporary file was created and then running the camera method
-    assert temp_red.is_file()
-    assert load_frame('temp_dir', 'imageRed.png') == cv2.imread(str(temp_red), cv2.IMREAD_UNCHANGED)
-
-    assert temp_blue.is_file()
-    assert load_frame('temp_dir', 'imageBlue.png') == cv2.imread(
-        str(temp_blue), cv2.IMREAD_UNCHANGED
-    )
-
-    assert temp_green.is_file()
-    assert load_frame('temp_dir', 'imageGreen.png') == cv2.imread(
-        str(temp_green), cv2.IMREAD_UNCHANGED
-    )
+    # Assert that the data from the function matches the test data
+    assert load_frame(tmp_path, temp_file_path_1) == test_data_red
+    assert load_frame(tmp_path, temp_file_path_2) == test_data_green
+    assert load_frame(tmp_path, temp_file_path_3) == test_data_blue
 
     # os.remove(temp_dir)
