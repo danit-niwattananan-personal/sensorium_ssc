@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from sensorium.engine.chooseframe import choose_frame, choose_seq_id
 from sensorium.engine.ordner import ButtonPanel
 from sensorium.engine.settings import open_settings_window
 from sensorium.engine.visualization_gui import VisualisationGui
@@ -38,12 +39,12 @@ class MainWindow(QMainWindow):
 
         right_layout = QVBoxLayout()
 
-        videoplayer = VisualisationGui()
+        self.videoplayer = VisualisationGui()
 
-        self.left_column = ButtonPanel(videoplayer)
+        self.left_column = ButtonPanel(self.videoplayer)
         self.left_column.setFixedWidth(200)
         main_layout.addWidget(self.left_column)
-        right_layout.addWidget(videoplayer, stretch=1)
+        right_layout.addWidget(self.videoplayer, stretch=1)
         main_layout.addLayout(right_layout)
 
         menu_bar = QMenuBar(self)
@@ -55,38 +56,29 @@ class MainWindow(QMainWindow):
         settings_action.triggered.connect(self.open_settings)
         settings_menu.addAction(settings_action)
 
-        server_menu = menu_bar.addMenu('Server')
-        server_connect = QAction('Mit Server verbinden', self)
-        server_connect.triggered.connect(self.connect_server)
-        server_disconnect = QAction('Verbindung trennen', self)
-        server_disconnect.triggered.connect(self.disconnect_server)
-        server_menu.addAction(server_connect)
-        server_menu.addAction(server_disconnect)
-
-        ask_data_menu = menu_bar.addMenu('Dateien')
-        ask_data_action = QAction('Dateien vom Server anfragen', self)
-        ask_4_new_data = QAction('Dateien neu anfragen', self)
-        ask_data_action.triggered.connect(self.ask_for_data)
-        ask_4_new_data.triggered.connect(self.ask_for_data)
-        ask_data_menu.addAction(ask_data_action)
-        ask_data_menu.addAction(ask_4_new_data)
+        ask_data_menu = menu_bar.addMenu('Frame/Sequenz_ID wählen')
+        ask_4_frame = QAction('Spezielle Framenummer laden', self)
+        ask_4_seq_id = QAction('Spezielle Sequenz_ID laden', self)
+        ask_4_frame.triggered.connect(self.ask_for_frame)
+        ask_4_seq_id.triggered.connect(self.ask_for_seq)
+        ask_data_menu.addAction(ask_4_frame)
+        ask_data_menu.addAction(ask_4_seq_id)
 
     def open_settings(self) -> QDialog:
         """Hier werden die Einstellungen geöffnet."""
         print('Einstellungen geöffnet')
-        return open_settings_window()
+        return open_settings_window(self.videoplayer)
 
-    def connect_server(self) -> None:
-        """Hier wird später das Pop-Up für den Aufbau der Verbindung geöffnet."""
-        print('Mit Server verbunden')
 
-    def disconnect_server(self) -> None:
-        """Hier wird später die Verbindung zum Server getrennt."""
-        print('Verbindung zum Server getrennt')
-
-    def ask_for_data(self) -> None:
-        """Hier werden später die Ordner vom Server geladen."""
+    def ask_for_frame(self) -> None:
+        """Load current Frame."""
         print('Ordner laden')
+        choose_frame(self.videoplayer)
+
+    def ask_for_seq(self) -> None:
+        """Load current Frame."""
+        print('Ordner laden')
+        choose_seq_id(self.videoplayer)
 
 
 if __name__ == '__main__':

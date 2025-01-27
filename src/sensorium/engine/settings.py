@@ -12,22 +12,31 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from sensorium.engine.visualization_gui import VisualisationGui
+
 
 class SettingsDialog(QDialog):
     """Hier werden alle funktionen der Einstellungen beschrieben."""
 
-    def __init__(self) -> None:
+    def __init__(self, visualisation: VisualisationGui) -> None:
         """Hier wird das Fenster für die Einstellungen initializiert."""
         super().__init__()
         self.setWindowTitle('Einstellungen')
         self.setMinimumSize(300, 200)
-
+        self.visualisation = visualisation
         self.settings_layout = QVBoxLayout(self)
 
-        self.label = QLabel('Example Setting:')
+        self.label = QLabel('Max Frame:')
         self.input_field = QLineEdit(self)
+        self.input_field.setText(str(self.visualisation.maxframe))
         self.settings_layout.addWidget(self.label)
         self.settings_layout.addWidget(self.input_field)
+
+        self.speed_label = QLabel('Fps:')
+        self.speed_input = QLineEdit(self)
+        self.speed_input.setText(str(self.visualisation.fps))
+        self.settings_layout.addWidget(self.speed_label)
+        self.settings_layout.addWidget(self.speed_input)
 
         self.button_layout = QHBoxLayout()
 
@@ -43,13 +52,25 @@ class SettingsDialog(QDialog):
 
     def apply_settings(self) -> None:
         """Speichert später die Einstellungen."""
-        setting_value = self.input_field.text()
-        print(f'Setting applied: {setting_value}')
+        maxframe = self.input_field.text()
+        print(f'Setting applied: {maxframe}')
+        maxframe_int = int(maxframe)
+        self.visualisation.maxframe = maxframe_int
+        self.visualisation.slider.setRange(0, maxframe_int)
+
+        fps = self.speed_input.text()
+        self.next_frame_time = int(1000 / int(fps))
+        self.visualisation.next_frame_time = self.next_frame_time
+        x = self.visualisation.framenumber
+        y = self.visualisation.seq_id
+        self.visualisation.frame_label.setText(
+            f'Frame: {x}, Sequence: {y} und FPS: {int(fps)}'
+        )
         self.accept()
 
 
-def open_settings_window() -> QDialog:
+def open_settings_window(visualisation: VisualisationGui) -> QDialog:
     """Hier werden alle Einstellungen kommen."""
-    dialog = SettingsDialog()
+    dialog = SettingsDialog(visualisation)
     dialog.exec()
     return dialog

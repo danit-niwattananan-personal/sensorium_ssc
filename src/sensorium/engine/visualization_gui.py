@@ -62,9 +62,11 @@ class VisualisationGui(QMainWindow):
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
-        self.animation_timer.setInterval(1000)
+        self.animation_timer.setInterval(self.next_frame_time)
 
-        self.frame_label = QLabel(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
+        self.frame_label = QLabel(
+            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'
+        )
         main_layout.addWidget(self.frame_label)
 
         self.button_minus10 = QPushButton('-10 Frames')
@@ -104,11 +106,15 @@ class VisualisationGui(QMainWindow):
         self.framenumber = 0
         self.play_en = False
         self.seq_id = 0
+        self.next_frame_time = 1000
+        self.fps = int(1000/self.next_frame_time)
 
     def set_frame_slider(self) -> None:
         """Sets the Frame if slider is moved."""
         self.framenumber = self.slider.value()
-        self.frame_label.setText(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
+        self.frame_label.setText(
+            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'
+        )
 
     def _grid_layout(self) -> None:
         """self.grid_layout."""
@@ -144,7 +150,9 @@ class VisualisationGui(QMainWindow):
         self.framenumber += frame
         self.framenumber = max(self.framenumber, 0)
         self.framenumber = min(self.framenumber, self.maxframe)
-        self.frame_label.setText(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
+        self.frame_label.setText(
+            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'
+        )
         if self.framenumber == 100:
             self.framenumber = 0
         self.slider.setValue(self.framenumber)
