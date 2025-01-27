@@ -21,8 +21,7 @@ def test_open_settings_window(qtbot: QtBot) -> None:
     dialog.show()
     qtbot.waitExposed(dialog)
 
-    input_field = dialog.findChild(QLineEdit)
-    assert input_field is not None
+    assert dialog.speed_input is not None
 
     assert dialog.apply_button is not None
     assert dialog.cancel_button is not None
