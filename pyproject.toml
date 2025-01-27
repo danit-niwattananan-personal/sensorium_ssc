@@ -83,7 +83,7 @@ mypy_path = "src"
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["mayavi", "mayavi.api", "numba", "traitsui.api", "mayavi.core.ui.api", "mayavi.tools.mlab_scene_model"]
+module = ["mayavi", "mayavi.api", "numba", "traitsui.api", "mayavi.core.ui.api", "mayavi.tools.mlab_scene_model", "pytestqt"]
 ignore_missing_imports = true
 
 

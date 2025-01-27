@@ -25,8 +25,8 @@ def test_open_settings_window(qtbot: QtBot) -> None:
     assert dialog.apply_button is not None
     assert dialog.cancel_button is not None
 
-    qtbot.keyClicks(dialog.input_field, '10')
-    qtbot.keyClicks(dialog.speed_label, '10')
+    qtbot.keyClicks(dialog.input_field, str(10))
+    qtbot.keyClicks(dialog.speed_label, str(10))
     qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)  # type: ignore[attr-defined]
 
     assert not dialog.isVisible()
