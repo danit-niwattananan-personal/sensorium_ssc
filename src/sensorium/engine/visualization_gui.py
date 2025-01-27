@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QPushButton,
+    QSlider,
     QVBoxLayout,
     QWidget,
 )
@@ -34,6 +35,7 @@ class VisualisationGui(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
+        self.maxframe = 10
         main_layout = QVBoxLayout(central_widget)
 
         self.grid_layout = QGridLayout()
@@ -87,6 +89,12 @@ class VisualisationGui(QMainWindow):
 
         self._grid_layout()
         main_layout.addLayout(self.grid_layout)
+
+        self.slider = QSlider(QtCore.Qt.Horizontal)  # type: ignore[attr-defined]
+        self.slider.setRange(0, self.maxframe)
+        self.slider.setValue(0)
+        self.slider.valueChanged.connect(lambda: self.set_frame_slider())
+        main_layout.addWidget(self.slider)
         main_layout.addLayout(controlbar)
 
         self.animation_timer.stop()
@@ -96,6 +104,11 @@ class VisualisationGui(QMainWindow):
         self.framenumber = 0
         self.play_en = False
         self.seq_id = 0
+
+    def set_frame_slider(self) -> None:
+        """Sets the Frame if slider is moved."""
+        self.framenumber = self.slider.value()
+        self.frame_label.setText(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
 
     def _grid_layout(self) -> None:
         """self.grid_layout."""
@@ -130,10 +143,11 @@ class VisualisationGui(QMainWindow):
         """Erhöht und senkt die Framenummer."""
         self.framenumber += frame
         self.framenumber = max(self.framenumber, 0)
-        self.framenumber = min(self.framenumber, 10)
+        self.framenumber = min(self.framenumber, self.maxframe)
         self.frame_label.setText(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
         if self.framenumber == 100:
             self.framenumber = 0
+        self.slider.setValue(self.framenumber)
 
     def toggle_play_stop(self) -> None:
         """Funktion die dem Play Button eine Funktion gibt."""

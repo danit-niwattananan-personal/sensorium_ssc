@@ -54,8 +54,10 @@ class ButtonPanel(QWidget):
         button_text = sender.text()  # type: ignore[attr-defined]
         button_number = int(button_text.split(' ')[1])
         print(f'Button {button_number} wurde gedrückt!')
-        self.videoplayer.seq_id = button_number
-        self.videoplayer.update_frame(0)
+        if self.videoplayer.seq_id != button_number:
+            self.videoplayer.seq_id = button_number
+            self.videoplayer.framenumber = 0
+            self.videoplayer.update_frame(0)
 
 
 if __name__ == '__main__':
