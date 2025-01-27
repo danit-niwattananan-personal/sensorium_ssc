@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLineEdit
 from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 
 from sensorium.engine.settings import SettingsDialog
@@ -28,13 +27,13 @@ def test_open_settings_window(qtbot: QtBot) -> None:
 
     qtbot.keyClicks(dialog.input_field, '10')
     qtbot.keyClicks(dialog.speed_label, '10')
-    qtbot.mouseClick(dialog.apply_button, Qt.LeftButton) # type: ignore[attr-defined]
+    qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)  # type: ignore[attr-defined]
 
     assert not dialog.isVisible()
 
     dialog = SettingsDialog(vizualisation)
     dialog.show()
-    qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton) # type: ignore[attr-defined]
+    qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)  # type: ignore[attr-defined]
     assert not dialog.isVisible()
 
 
