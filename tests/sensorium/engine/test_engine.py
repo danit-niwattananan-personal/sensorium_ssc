@@ -13,6 +13,7 @@ from sensorium.engine.settings import SettingsDialog
 from sensorium.engine.visualization_gui import VisualisationGui
 
 
+@pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
 def test_open_settings_window(qtbot: QtBot) -> None:
     """Testet das Einstellungsfenster mit pytest-qt."""
     vizualisation = VisualisationGui()
