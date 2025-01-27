@@ -6,18 +6,17 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget
 
+from sensorium.engine.visualization_gui import VisualisationGui
+
 
 class ButtonPanel(QWidget):
     """Hier kann die Sequenz ausgewählt werden."""
 
-    def __init__(self) -> None:
+    def __init__(self, videoplayer: VisualisationGui) -> None:
         """Initialiesierung."""
         super().__init__()
-
-        # Layout für das Widget
+        self.videoplayer = videoplayer
         layout = QVBoxLayout(self)
-
-        # Text über den Buttons
         self.info_label = QLabel('Such dir eine Sequenz aus', self)
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.info_label)
@@ -25,7 +24,24 @@ class ButtonPanel(QWidget):
         self.buttons = []
         for i in range(10):
             button = QPushButton(f'Sequenz {i}', self)
-            button.setStyleSheet('background-color: lightgray; padding: 10px; border-radius: 15px;')
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: lightgray;
+                    padding: 10px;
+                    border-radius: 10px;
+                    border: 1px solid transparent;
+                }
+
+                QPushButton:hover {
+                    background-color: lightblue;
+                    border: 1px solid #0066cc;
+                }
+
+                QPushButton:pressed {
+                    background-color: lightgray;
+                    border: 1px solid gray;
+                }
+            """)
             button.clicked.connect(self.update_seq)
             self.buttons.append(button)
             layout.addWidget(button)
@@ -38,10 +54,13 @@ class ButtonPanel(QWidget):
         button_text = sender.text()  # type: ignore[attr-defined]
         button_number = int(button_text.split(' ')[1])
         print(f'Button {button_number} wurde gedrückt!')
+        self.videoplayer.seq_id = button_number
+        self.videoplayer.update_frame(0)
 
 
 if __name__ == '__main__':
     app = QApplication()
-    window = ButtonPanel()
+    videoplayer = VisualisationGui()
+    window = ButtonPanel(videoplayer)
     window.show()
     app.exec()

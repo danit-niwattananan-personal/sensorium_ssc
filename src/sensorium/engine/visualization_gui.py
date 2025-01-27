@@ -62,7 +62,7 @@ class VisualisationGui(QMainWindow):
         self.animation_timer.timeout.connect(self.update_scene)
         self.animation_timer.setInterval(1000)
 
-        self.frame_label = QLabel(f'Frame: {self.framenumber}')
+        self.frame_label = QLabel(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
         main_layout.addWidget(self.frame_label)
 
         self.button_minus10 = QPushButton('-10 Frames')
@@ -131,7 +131,7 @@ class VisualisationGui(QMainWindow):
         self.framenumber += frame
         self.framenumber = max(self.framenumber, 0)
         self.framenumber = min(self.framenumber, 10)
-        self.frame_label.setText(f'Frame: {self.framenumber} und Seq_id {self.seq_id}')
+        self.frame_label.setText(f'Frame: {self.framenumber} und Sequence: {self.seq_id}')
         if self.framenumber == 100:
             self.framenumber = 0
 

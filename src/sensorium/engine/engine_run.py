@@ -36,15 +36,15 @@ class MainWindow(QMainWindow):
 
         main_layout = QHBoxLayout(central_widget)
 
-        self.left_column = ButtonPanel()
-        self.left_column.setFixedWidth(200)
-        main_layout.addWidget(self.left_column)
-
         right_layout = QVBoxLayout()
-        main_layout.addLayout(right_layout)
 
         videoplayer = VisualisationGui()
+
+        self.left_column = ButtonPanel(videoplayer)
+        self.left_column.setFixedWidth(200)
+        main_layout.addWidget(self.left_column)
         right_layout.addWidget(videoplayer, stretch=1)
+        main_layout.addLayout(right_layout)
 
         menu_bar = QMenuBar(self)
         self.setMenuBar(menu_bar)
