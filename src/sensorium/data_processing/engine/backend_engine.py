@@ -52,6 +52,24 @@ class BackendEngine:
         self.scene_dim = tuple(int(dim / self.voxel_size) for dim in self.scene_size)
         self.img_shape = (1220, 370)
 
+        # Debugging variables
+        self.problem_load_cam_2 = False
+        self.problem_load_cam_3 = False
+        self.problem_load_lidar_pc = False
+        self.problem_load_lidar_label = False
+        self.problem_load_trajectory = False
+        self.problem_load_voxel = False
+
+        # Initialize buffer memory. Don't use None to avoid type checking error.
+        self.buf_mem = {
+            'image_2': np.zeros((1,), dtype=np.uint8),
+            'image_3': np.zeros((1,), dtype=np.uint8),
+            'lidar_pc': np.zeros((3,), dtype=np.float32),
+            'lidar_label': np.zeros((1,), dtype=np.uint32),
+            'lidar_label_colors': np.zeros((4, 1), dtype=np.uint8),
+            'trajectory': np.zeros((3, 1), dtype=np.float64),
+        }
+
     def process_static_data(
         self,
         sequence_id: int | str,
@@ -61,6 +79,14 @@ class BackendEngine:
         sequence_id = f'{int(sequence_id):02d}'  # 2 digits, from 1 to '01'
         calib_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'calib.txt')
         poses_file_path = str(Path(self.data_dir) / 'sequences' / sequence_id / 'poses.txt')
+        # Check if the file exists
+        if not Path(calib_file_path).exists() or not Path(poses_file_path).exists():
+            _error_msg = f"""Cannot go further without loading trajectory and voxel.
+            calib.txt or poses.txt not found in the path:
+            {calib_file_path}
+            {poses_file_path}
+            """
+            raise FileNotFoundError(_error_msg)
 
         # Calculate all static data
         all_calibs = read_calib(calib_file_path)
@@ -123,39 +149,37 @@ class BackendEngine:
 
         if not is_seq_id_equal:
             if self.verbose:
+                print('Will send data from buffer memory if file of current frame not found')
                 print(f'Processing static data for sequence {sequence_id} at frame {frame_id} ...')
             self.static_data = self.process_static_data(sequence_id=sequence_id)
 
         # Load the image
-        image_2_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_2'
-        image_3_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_3'
-        image_2_frame = load_single_img(str(image_2_dir), start_frame_id)
-        image_3_frame = load_single_img(str(image_3_dir), start_frame_id)
-        if self.verbose:
-            print('Images loaded')
+        image_2_frame, image_3_frame = self._check_and_load_images(sequence_id, start_frame_id)
 
         # Load the lidar point cloud and panoptic ground truth
-        lidar_pc_path = str(
-            Path(self.data_dir) / 'sequences' / sequence_id / 'velodyne' / f'{start_frame_id}.bin'
+        lidar_pc, pc_labels, pc_label_colors = self._check_and_load_lidar(
+            sequence_id, start_frame_id
         )
-        lidar_label_path = str(
-            Path(self.data_dir) / 'sequences' / sequence_id / 'labels' / f'{start_frame_id}.label'
-        )
-        lidar_pc = read_point_cloud(lidar_pc_path)
-        pc_labels, pc_label_colors = read_labels_and_colors(lidar_label_path)
-        if self.verbose:
-            print('Lidar point cloud loaded')
 
         # Load the trajectory
-        trajectory_data_dict = get_framepos_from_list(
-            self.static_data['poses'],  # type: ignore[arg-type]
-            int(start_frame_id),
-        )
-        xyz = np.array(
-            [trajectory_data_dict['x'], trajectory_data_dict['y'], trajectory_data_dict['z']]
-        )
+        try:
+            trajectory_data_dict = get_framepos_from_list(
+                self.static_data['poses'],  # type: ignore[arg-type]
+                int(start_frame_id),
+            )
+            xyz = np.array(
+                [trajectory_data_dict['x'], trajectory_data_dict['y'], trajectory_data_dict['z']]
+            )
+            self.buf_mem['trajectory'] = xyz
+        except IndexError:
+            self.problem_load_trajectory = True
+            xyz = np.asarray(self.buf_mem['trajectory'])
+
         if self.verbose:
-            print(f'Trajectory loaded with x,y,z: {xyz}')
+            print(f"""
+            traj frame {start_frame_id} loaded successfully: {not self.problem_load_trajectory}
+            x,y,z: {xyz}
+            """)
 
         # Load the voxel
         sequence_path = str(Path(self.data_dir) / 'sequences')
@@ -172,17 +196,21 @@ class BackendEngine:
                         str(Path(Path.cwd()) / 'configs' / 'vox_semantic_kitti.yaml')
                     ),
                 )
-            except FileNotFoundError as e:
-                _error_msg = """Make sure that 1) data exists, 2) execute this file from the root
-                directory of project, 3) the config file is in b/config/vox_semantic_kitti.yaml"""
-                raise ImportError(_error_msg) from e
+                self.buf_mem['voxel'] = voxel_data
+            except FileNotFoundError:
+                self.problem_load_voxel = True
+                voxel_data = np.asarray(self.buf_mem['voxel'])
+                if self.verbose:
+                    print(f"""
+                    voxel frame {start_frame_id} loaded successfully: {not self.problem_load_voxel}
+                    """)
 
         except ValueError:
             # If no, assign None to voxel_related data
             voxel_data = None
 
         if self.verbose:
-            print('Voxel loaded')
+            print('=' * 40)
 
         return {
             'frame_id': start_frame_id,  # for checking error after transmission
@@ -195,11 +223,85 @@ class BackendEngine:
             'lidar_pc_label_colors': pc_label_colors,
             'trajectory': xyz,
             'voxel': voxel_data,
-            # NOTE: type: ignore[dict-item] is required since process_static_data
+            # NOTE: type: ignore[dict-item] might be required since process_static_data
             # has different item types
             'fov_mask': self.static_data['fov_mask'],  # type: ignore[dict-item]
             't_velo_2_cam': self.static_data['t_velo_2_cam'],  # type: ignore[dict-item]
         }
+
+    def _check_and_load_images(
+        self,
+        sequence_id: str,
+        frame_id: str,
+    ) -> tuple[MatLike | None, MatLike | None]:
+        """Check if the image file exists, and load the image if yes.
+
+        Otherwise, use buffer memory.
+        """
+        # Load the image
+        image_2_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_2'
+        image_3_dir = Path(self.data_dir) / 'sequences' / sequence_id / 'image_3'
+        # Check if the image file exists. If yes, load the image and update buffer.
+        # If no, use buffer memory.
+        # NOTE: try-except does not work since opencv only issue warning, but not error
+        if (Path(image_2_dir) / f'{frame_id}.png').exists():
+            image_2_frame = load_single_img(str(image_2_dir), frame_id)
+            self.buf_mem['image_2'] = image_2_frame
+        else:
+            self.problem_load_cam_2 = True
+            image_2_frame = np.asarray(self.buf_mem['image_2'])
+
+        if (Path(image_3_dir) / f'{frame_id}.png').exists():
+            image_3_frame = load_single_img(str(image_3_dir), frame_id)
+            self.buf_mem['image_3'] = image_3_frame
+        else:
+            self.problem_load_cam_3 = True
+            image_3_frame = np.asarray(self.buf_mem['image_3'])
+
+        if self.verbose:
+            print(f"""
+            img_2 frame {frame_id} loaded successfully: {not self.problem_load_cam_2}
+            img_3 frame {frame_id} loaded successfully: {not self.problem_load_cam_3}
+            """)
+        return image_2_frame, image_3_frame
+
+    def _check_and_load_lidar(
+        self,
+        sequence_id: str,
+        frame_id: str,
+    ) -> tuple[NDArray[np.float32], NDArray[np.uint32], NDArray[np.uint8]]:
+        """Check if the lidar file exists, and load the lidar if yes.
+
+        Otherwise, use buffer memory.
+        """
+        lidar_pc_path = str(
+            Path(self.data_dir) / 'sequences' / sequence_id / 'velodyne' / f'{frame_id}.bin'
+        )
+        lidar_label_path = str(
+            Path(self.data_dir) / 'sequences' / sequence_id / 'labels' / f'{frame_id}.label'
+        )
+        # Check if the file exists. If not, use buffer memory.
+        try:
+            lidar_pc = read_point_cloud(lidar_pc_path)
+            self.buf_mem['lidar_pc'] = lidar_pc
+        except FileNotFoundError:
+            self.problem_load_lidar_pc = True
+            lidar_pc = np.asarray(self.buf_mem['lidar_pc'])
+        try:
+            pc_labels, pc_label_colors = read_labels_and_colors(lidar_label_path)
+            self.buf_mem['lidar_label'] = pc_labels
+            self.buf_mem['lidar_label_colors'] = pc_label_colors
+        except FileNotFoundError:
+            self.problem_load_lidar_label = True
+            pc_labels = np.asarray(self.buf_mem['lidar_label'])
+            pc_label_colors = np.asarray(self.buf_mem['lidar_label_colors'])
+        if self.verbose:
+            print(f"""
+            pc frame {frame_id} loaded successfully: {not self.problem_load_lidar_pc}
+            label frame {frame_id} loaded successfully: {not self.problem_load_lidar_label}
+            """)
+
+        return lidar_pc, pc_labels, pc_label_colors
 
     def calculate_timestamp(
         self, frame_id: int | str | list[int] | list[str]
@@ -256,9 +358,12 @@ def main() -> None:
         backend_config = yaml.safe_load(stream)
     import time
 
-    start_time = time.time()
+    # Initialize the backend engine
     data_dir = backend_config['backend_engine']['data_dir']
     backend_engine = BackendEngine(data_dir=data_dir, verbose=True)
+
+    # Load the first frame
+    start_time = time.time()
     backend_engine.process(sequence_id=0, frame_id=0)
     print(f'Loaded data for sequence {0} and frame {0} ...')
     end_time = time.time()
