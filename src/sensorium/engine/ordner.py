@@ -17,11 +17,12 @@ class ButtonPanel(QWidget):
         super().__init__()
         self.videoplayer = videoplayer
         layout = QVBoxLayout(self)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         self.info_label = QLabel('Such dir eine Sequenz aus', self)
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.info_label)
 
-        self.buttons = []
         for i in range(10):
             button = QPushButton(f'Sequenz {i}', self)
             button.setStyleSheet("""
@@ -43,7 +44,6 @@ class ButtonPanel(QWidget):
                 }
             """)
             button.clicked.connect(self.update_seq)
-            self.buttons.append(button)
             layout.addWidget(button)
 
         self.setLayout(layout)

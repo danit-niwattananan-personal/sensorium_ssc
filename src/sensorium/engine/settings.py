@@ -61,6 +61,8 @@ class SettingsDialog(QDialog):
         fps = self.speed_input.text()
         self.next_frame_time = int(1000 / int(fps))
         self.visualisation.next_frame_time = self.next_frame_time
+        self.visualisation.fps = int(fps)
+        self.visualisation.animation_timer.setInterval(self.next_frame_time)
         x = self.visualisation.framenumber
         y = self.visualisation.seq_id
         self.visualisation.frame_label.setText(f'Frame: {x}, Sequence: {y} und FPS: {int(fps)}')

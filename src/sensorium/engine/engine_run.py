@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         """Aufbau der einzelnen Elemente des MainWindow."""
         super().__init__()
         self.setWindowTitle('Sensorium')
-        self.setGeometry(300, 200, 1130, 600)
+        self.setGeometry(300, 200, 1130, 850)
         self.setMinimumSize(1130, 600)
 
         central_widget = QWidget()
@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
 
         self.left_column = ButtonPanel(self.videoplayer)
         self.left_column.setFixedWidth(200)
+
         main_layout.addWidget(self.left_column)
         right_layout.addWidget(self.videoplayer, stretch=1)
         main_layout.addLayout(right_layout)

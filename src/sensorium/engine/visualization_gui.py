@@ -115,6 +115,8 @@ class VisualisationGui(QMainWindow):
         self.frame_label.setText(
             f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'
         )
+        if self.play_en is True:
+            self.load_frame()
 
     def _grid_layout(self) -> None:
         """self.grid_layout."""
@@ -153,9 +155,11 @@ class VisualisationGui(QMainWindow):
         self.frame_label.setText(
             f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'
         )
-        if self.framenumber == 100:
+        if self.framenumber == self.maxframe:
             self.framenumber = 0
         self.slider.setValue(self.framenumber)
+        if self.play_en is True:
+            self.load_frame()
 
     def toggle_play_stop(self) -> None:
         """Funktion die dem Play Button eine Funktion gibt."""
@@ -175,6 +179,14 @@ class VisualisationGui(QMainWindow):
         self.pointcloud.update_scene(self.framenumber)
         self.voxel.update_scene(self.framenumber, self.seq_id)
         self.update_frame(1)
+
+    def load_frame(self) -> None:
+        """Ladet neue Bilder."""
+        self.camera1.show_image(self.framenumber)
+        self.camera2.show_image(self.framenumber)
+        self.trajectory.draw_line(self.framenumber)
+        self.pointcloud.update_scene(self.framenumber)
+        self.voxel.update_scene(self.framenumber, self.seq_id)
 
 
 if __name__ == '__main__':
