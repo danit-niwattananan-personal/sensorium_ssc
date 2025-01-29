@@ -17,3 +17,7 @@ frontend_engine_rw:
   img3_dir:  C:\Users\Raymund Tonyka\downloads\00\00\image_3 
   pointcloud_dir: C:\Users\Raymund Tonyka\downloads\00\00\velodyne
   trajectory_dir: C:\Users\Raymund Tonyka\downloads\00\00\trajectory.txt
+
+semantic_kitti:
+  grid_dims: [256, 256, 32]
+  voxel_class_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 255]
