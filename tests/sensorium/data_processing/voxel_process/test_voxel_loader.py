@@ -116,7 +116,46 @@ def test_reading_calib_file() -> None:
     finally:
         Path(str(Path(Path.cwd()) / 'calib_test.txt')).unlink()
 
+def test_vox_to_pix() -> None:
+    """The vox2pix must return the correct pixel coordinates, camera fox_mask, and pixel depth.
 
+    The voxel positions are given by the transform, cam intrinsics, and scene/img size.
+    """
+    cam_e = np.eye(4)
+    cam_k = np.array([
+        [718.856, 0, 607.1928],
+        [0, 718.856, 185.2157],
+        [0, 0, 1],
+    ])
+    vol_origin = np.array([0, -25.6, -2])
+    img_shape = (1220, 370)
+    scene_size = (51.2, 51.2, 6.4)
+
+    projected_pix, fov_mask, pix_z = vox2pix(
+        cam_e, cam_k, vol_origin, img_shape, scene_size
+    )
+
+    # Check output types and shapes
+    assert isinstance(projected_pix, np.ndarray)
+    assert isinstance(fov_mask, np.ndarray)
+    assert isinstance(pix_z, np.ndarray)
+    assert projected_pix.shape[1] == 2 # [N, 2] shape
+    assert fov_mask.shape[0] == projected_pix.shape[0] # [N, ] shape
+    assert pix_z.shape == fov_mask.shape # [N, ] shape
+    assert fov_mask.shape[0] == np.prod(config['semantic_kitti']['grid_dims']) # N = num_all_voxels
+
+    # Check the camera fov mask
+    assert fov_mask.dtype == np.bool_
+    valid_pixels = projected_pix[fov_mask]
+    assert np.all(valid_pixels[:, 0] >= 0)  # x coordinates
+    assert np.all(valid_pixels[:, 0] < img_shape[0])
+    assert np.all(valid_pixels[:, 1] >= 0)  # y coordinates
+    assert np.all(valid_pixels[:, 1] < img_shape[1])
+
+    # Check the pixel depth
+    assert pix_z.dtype == np.float32
+    assert np.all(pix_z[fov_mask] >= 0)
+    assert np.all(pix_z[fov_mask] < 100) # cam should not have depth beyond 100m
 
 def test_ssc_voxel_loader_with_invalid_frame_id() -> None:
     """Loader must raise an error if the frame_id is not in correct forma (divisible by 5)."""
