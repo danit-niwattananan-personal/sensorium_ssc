@@ -3,6 +3,7 @@
 """Camera Visualization."""
 
 import sys
+from pathlib import Path
 
 import cv2  # noqa: F401
 from PySide6.QtCore import Qt
@@ -33,7 +34,9 @@ class CameraWidget(QMainWindow):
 
     def show_image(self, frame_id: int) -> None:
         """."""
-        pixmap = QPixmap(f'{self.img_directory}/{frame_id:010d}.png')
+        frame_id_ = f'{frame_id:06d}.png'
+        img_path = Path(self.img_directory) / frame_id_
+        pixmap = QPixmap(img_path)
 
         self.label.setPixmap(
             pixmap.scaled(
