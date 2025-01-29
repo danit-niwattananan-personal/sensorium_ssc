@@ -1,14 +1,16 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 backend_engine:
-  data_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset # like /home/jovyan/kitti_dummy/dataset
+  data_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti-small\dataset # like /home/jovyan/kitti_dummy/dataset
   # declare more parameters here to be used in the backend
 
 frontend_engine:
-  img2_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\image_2
-  img3_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\image_3
-  pointcloud_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\velodyne
-  trajectory_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti\dataset\sequences\00\trajectory.txt
+  img2_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti-small\dataset\sequences\00\image_2
+  img3_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti-small\dataset\sequences\00\image_3
+  pointcloud_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti-small\dataset\sequences\00\velodyne
+  trajectory_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti-small\dataset\sequences\00\trajectory.txt
+  max_frame: 200 # Maximum frame that the program witll show before start looping
+  next_frame_time: 1000 # in ms. Default to 1 Hz or 1s
 
 frontend_engine_rw:
   img2_dir:  C:\Users\Raymund Tonyka\downloads\00\00\image_2
