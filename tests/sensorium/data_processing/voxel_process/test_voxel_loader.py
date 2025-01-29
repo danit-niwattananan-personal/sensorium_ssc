@@ -86,10 +86,36 @@ def test_return_voxel_data() -> None:
         Path(label_path).unlink()
         Path(invalid_path).unlink()
 
+def create_mock_calib_file(file_path: str) -> None:
+    """Create a mock calibration file for testing."""
+    contents = [
+        'P0: 1 0 0 0 0 1 0 0 0 0 1 0',
+        'P1: 1 0 0 0 0 1 0 0 0 0 1 0',
+        'P2: 1 0 0 0 0 1 0 0 0 0 1 0',
+        'P3: 1 0 0 0 0 1 0 0 0 0 1 0',
+        'Tr: 1 0 0 0 0 1 0 0 0 0 1 0'
+    ]
+    with Path(file_path).open('w') as f:
+        f.write('\n'.join(contents))
 
-def test_ssc_voxel_loader_with_invalid_data() -> None:
-    """Semantic voxel loader must raise an error if the data is not in correct format."""
-    print('Semantic voxel loader must raise an error if the data is not in correct format.')
+def test_reading_calib_file() -> None:
+    """The parsed calibration must return dict with correct keys and values in correct type."""
+    try:
+        create_mock_calib_file(str(Path(Path.cwd()) / 'calib_test.txt'))
+        calib_data = read_calib(str(Path(Path.cwd()) / 'calib_test.txt'))
+        # Check data type, and keys
+        assert isinstance(calib_data, dict)
+        keys_to_test = ['P2', 'Tr']
+        for key in keys_to_test:
+            assert key in calib_data
+            assert isinstance(calib_data[key], np.ndarray)
+        # Check shapes and values
+        assert calib_data['P2'].shape == (3, 4)
+        assert calib_data['Tr'].shape == (4, 4)
+        assert np.allclose(calib_data['Tr'], np.eye(4))
+    finally:
+        Path(str(Path(Path.cwd()) / 'calib_test.txt')).unlink()
+
 
 
 def test_ssc_voxel_loader_with_invalid_frame_id() -> None:
