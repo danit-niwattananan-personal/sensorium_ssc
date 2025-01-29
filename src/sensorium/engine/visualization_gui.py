@@ -40,19 +40,19 @@ class VisualisationGui(QMainWindow):
         self.grid_layout = QGridLayout()
         controlbar = QHBoxLayout()
 
-        self._init_variables()
         self._read_config()
+        self._init_variables()
 
         self._setup_camera_widget()
         self.grid_layout.addLayout(self.camera, 0, 0)
 
         self.pointcloud = PointcloudVis()
-        self.pointcloud.directory = Path(self.config['frontend_engine_rw']['pointcloud_dir'])
+        self.pointcloud.directory = Path(self.config['frontend_engine']['pointcloud_dir'])
         self.grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         self.trajectory.trajectory_file_path = Path(
-            self.config['frontend_engine_rw']['trajectory_dir']
+            self.config['frontend_engine']['trajectory_dir']
         )
         self.grid_layout.addWidget(self.trajectory, 1, 0)
 
@@ -61,10 +61,10 @@ class VisualisationGui(QMainWindow):
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
-        self.animation_timer.setInterval(self.next_frame_time)
+        self.animation_timer.setInterval(self.next_frame_time) # type: ignore[has-type]
 
         self.frame_label = QLabel(
-            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'
+            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}' # type: ignore[has-type]
         )
         main_layout.addWidget(self.frame_label)
 
@@ -92,7 +92,7 @@ class VisualisationGui(QMainWindow):
         main_layout.addLayout(self.grid_layout)
 
         self.slider = QSlider(QtCore.Qt.Horizontal)  # type: ignore[attr-defined]
-        self.slider.setRange(0, self.maxframe)
+        self.slider.setRange(0, self.maxframe) # type: ignore[has-type]
         self.slider.setValue(0)
         self.slider.valueChanged.connect(lambda: self.set_frame_slider())
         main_layout.addWidget(self.slider)
@@ -102,11 +102,11 @@ class VisualisationGui(QMainWindow):
 
     def _init_variables(self) -> None:
         """Initialize the variables to reduce number of lines in init method."""
-        self.maxframe = 10
+        self.maxframe = int(self.config['frontend_engine']['max_frame'])
         self.framenumber = 0
         self.play_en = False
         self.seq_id = 0
-        self.next_frame_time = 1000
+        self.next_frame_time = int(self.config['frontend_engine']['next_frame_time'])
         self.fps = int(1000 / self.next_frame_time)
 
     def set_frame_slider(self) -> None:
@@ -139,9 +139,9 @@ class VisualisationGui(QMainWindow):
     def _setup_camera_widget(self) -> None:
         """Setup the camera widget."""
         self.camera1 = CameraWidget()
-        self.camera1.img_directory = self.config['frontend_engine_rw']['img2_dir']
+        self.camera1.img_directory = self.config['frontend_engine']['img2_dir']
         self.camera2 = CameraWidget()
-        self.camera2.img_directory = self.config['frontend_engine_rw']['img3_dir']
+        self.camera2.img_directory = self.config['frontend_engine']['img3_dir']
 
         self.camera = QVBoxLayout()
         self.camera.addWidget(self.camera2)
