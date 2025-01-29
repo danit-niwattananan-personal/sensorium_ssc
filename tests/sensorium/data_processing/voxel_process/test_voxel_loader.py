@@ -93,7 +93,9 @@ def create_mock_calib_file(file_path: str) -> None:
         'P1: 1 0 0 0 0 1 0 0 0 0 1 0',
         'P2: 1 0 0 0 0 1 0 0 0 0 1 0',
         'P3: 1 0 0 0 0 1 0 0 0 0 1 0',
-        'Tr: 1 0 0 0 0 1 0 0 0 0 1 0'
+        'Tr: 1 0 0 0 0 1 0 0 0 0 1 0',
+        '',
+        'Extra: 1 2 3 4 5 6 7 8 9 10 11 12',
     ]
     with Path(file_path).open('w') as f:
         f.write('\n'.join(contents))
@@ -109,6 +111,11 @@ def test_reading_calib_file() -> None:
         for key in keys_to_test:
             assert key in calib_data
             assert isinstance(calib_data[key], np.ndarray)
+            assert calib_data[key].dtype == np.float64
+
+        # Check whether line break works
+        assert 'Extra' not in calib_data
+
         # Check shapes and values
         assert calib_data['P2'].shape == (3, 4)
         assert calib_data['Tr'].shape == (4, 4)
@@ -156,7 +163,3 @@ def test_vox_to_pix() -> None:
     assert pix_z.dtype == np.float32
     assert np.all(pix_z[fov_mask] >= 0)
     assert np.all(pix_z[fov_mask] < 100) # cam should not have depth beyond 100m
-
-def test_ssc_voxel_loader_with_invalid_frame_id() -> None:
-    """Loader must raise an error if the frame_id is not in correct forma (divisible by 5)."""
-    print('Loader must raise an error if the frame_id is not in correct forma (divisible by 5).')
