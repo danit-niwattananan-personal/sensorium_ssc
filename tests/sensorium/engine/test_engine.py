@@ -3,9 +3,11 @@
 """Test GUI."""
 
 import os
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import yaml
 from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 
@@ -62,16 +64,25 @@ def test_visualitsation_gui(qtbot: QtBot) -> None:
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
 def test_update_frame() -> None:
     """Testet update_frame."""
+    # Load the config for max_frame
+    config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
+    with Path(config_path).open() as stream:
+        config = yaml.safe_load(stream)
+    max_frame = config['frontend_engine']['max_frame']
+
+    # Test if the frame number is increased by 1
     visualisation = VisualisationGui()
     visualisation.framenumber = 1
     visualisation.update_frame(1)
     assert visualisation.framenumber == 2
 
+    # Test if the frame number is set to 0 if it is less than 0
     visualisation.update_frame(-10)
     assert visualisation.framenumber == 0
 
-    visualisation.update_frame(450)
-    assert visualisation.framenumber == 10
+    # Test if the frame number is set to 0 if it is greater than max_frame
+    visualisation.update_frame(max_frame + 1)
+    assert visualisation.framenumber == 0
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
