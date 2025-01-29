@@ -38,7 +38,7 @@ def test_file_not_found(sequence_path: str, sequence_id: str, frame_id: str) -> 
         load_ssc_voxel(sequence_path, sequence_id, frame_id, np.array([]))
 
 def create_mock_voxel_files(label_path: str, invalid_path: str) -> None:
-    """Create a mock voxel file for testing."""
+    """Create a mock voxel files for testing."""
     generator = np.random.default_rng(seed=12345)
 
     # Label data can only have values declared in configs/vox_semantic_kitti.yaml in labels
@@ -79,7 +79,7 @@ def test_return_voxel_data() -> None:
         # Check the conditions
         assert voxel_data.dtype == np.uint8
         assert voxel_data.shape == tuple(config['semantic_kitti']['grid_dims'])
-        assert np.all(voxel_data.all() in config['semantic_kitti']['voxel_class_ids'])
+        assert np.all(np.isin(voxel_data, config['semantic_kitti']['voxel_class_ids']))
 
     # Clean up
     finally:
