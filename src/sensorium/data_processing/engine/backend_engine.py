@@ -318,25 +318,6 @@ class BackendEngine:
             return float(int(frame_id) / self.frequency)
         return [float(int(f) / self.frequency) for f in frame_id]
 
-    def collate_dictoflists(self, data: dict[str, list[dict[str, float]]]) -> None:
-        """Collate data into a single list of dicts instead of dict of lists.
-
-        Args:
-            data: The data to be collated.
-
-        Returns:
-            collated_data: The collated data.
-
-        Raises:
-            AssertionError: If the length of the data is not equal to the length of frame_id.
-        """
-        for k, v in data.items():
-            assert len(v) == len(
-                data['frame_id']
-            ), f'The length of {k} is not equal to the length of frame_id'
-        # to be implemented
-        print('Collating data...')
-
     def spin(self) -> None:
         """Run the engine until the datastream ends, get interrupted, or new signal is received."""
         print('Spinning the engine...')  # To be implemented
