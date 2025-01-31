@@ -1,6 +1,7 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 """Test the semantic voxel loader and their APIs."""
+
 from pathlib import Path
 
 import numpy as np
@@ -24,18 +25,20 @@ with Path(config_path).open() as stream:
     label_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.label'
     invalid_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.invalid'
 
+
 @pytest.mark.parametrize(
     ('sequence_path', 'sequence_id', 'frame_id'),
     [
-        ('test_sequence', '00', '000000'), # Incorrect sequence_path
-        (sequence_path, '1000', '000000'), # Incorrect sequence_id
-        (sequence_path, '00', '11'), # Incorrect frame_id
+        ('test_sequence', '00', '000000'),  # Incorrect sequence_path
+        (sequence_path, '1000', '000000'),  # Incorrect sequence_id
+        (sequence_path, '00', '11'),  # Incorrect frame_id
     ],
 )
 def test_file_not_found(sequence_path: str, sequence_id: str, frame_id: str) -> None:
     """The loader must raise FileNotFoundError if the file from given arguments is not found."""
     with pytest.raises(FileNotFoundError):
         load_ssc_voxel(sequence_path, sequence_id, frame_id, np.array([]))
+
 
 def create_mock_voxel_files(label_path: str, invalid_path: str) -> None:
     """Create a mock voxel files for testing."""
@@ -59,6 +62,7 @@ def create_mock_voxel_files(label_path: str, invalid_path: str) -> None:
     )
     invalid_data = invalid_data.astype(np.uint8)
     invalid_data.tofile(invalid_path)
+
 
 def test_return_voxel_data() -> None:
     """The loader must return the data in correct type, shape, and value range."""
@@ -86,6 +90,7 @@ def test_return_voxel_data() -> None:
         Path(label_path).unlink()
         Path(invalid_path).unlink()
 
+
 def create_mock_calib_file(file_path: str) -> None:
     """Create a mock calibration file for testing."""
     contents = [
@@ -99,6 +104,7 @@ def create_mock_calib_file(file_path: str) -> None:
     ]
     with Path(file_path).open('w') as f:
         f.write('\n'.join(contents))
+
 
 def test_reading_calib_file() -> None:
     """The parsed calibration must return dict with correct keys and values in correct type."""
@@ -123,33 +129,34 @@ def test_reading_calib_file() -> None:
     finally:
         Path(str(Path(Path.cwd()) / 'calib_test.txt')).unlink()
 
+
 def test_vox_to_pix() -> None:
     """The vox2pix must return the correct pixel coordinates, camera fox_mask, and pixel depth.
 
     The voxel positions are given by the transform, cam intrinsics, and scene/img size.
     """
     cam_e = np.eye(4)
-    cam_k = np.array([
-        [718.856, 0, 607.1928],
-        [0, 718.856, 185.2157],
-        [0, 0, 1],
-    ])
+    cam_k = np.array(
+        [
+            [718.856, 0, 607.1928],
+            [0, 718.856, 185.2157],
+            [0, 0, 1],
+        ]
+    )
     vol_origin = np.array([0, -25.6, -2])
     img_shape = (1220, 370)
     scene_size = (51.2, 51.2, 6.4)
 
-    projected_pix, fov_mask, pix_z = vox2pix(
-        cam_e, cam_k, vol_origin, img_shape, scene_size
-    )
+    projected_pix, fov_mask, pix_z = vox2pix(cam_e, cam_k, vol_origin, img_shape, scene_size)
 
     # Check output types and shapes
     assert isinstance(projected_pix, np.ndarray)
     assert isinstance(fov_mask, np.ndarray)
     assert isinstance(pix_z, np.ndarray)
-    assert projected_pix.shape[1] == 2 # [N, 2] shape
-    assert fov_mask.shape[0] == projected_pix.shape[0] # [N, ] shape
-    assert pix_z.shape == fov_mask.shape # [N, ] shape
-    assert fov_mask.shape[0] == np.prod(config['semantic_kitti']['grid_dims']) # N = num_all_voxels
+    assert projected_pix.shape[1] == 2  # [N, 2] shape
+    assert fov_mask.shape[0] == projected_pix.shape[0]  # [N, ] shape
+    assert pix_z.shape == fov_mask.shape  # [N, ] shape
+    assert fov_mask.shape[0] == np.prod(config['semantic_kitti']['grid_dims'])  # N = num_all_voxels
 
     # Check the camera fov mask
     assert fov_mask.dtype == np.bool_
@@ -162,4 +169,4 @@ def test_vox_to_pix() -> None:
     # Check the pixel depth
     assert pix_z.dtype == np.float32
     assert np.all(pix_z[fov_mask] >= 0)
-    assert np.all(pix_z[fov_mask] < 100) # cam should not have depth beyond 100m
+    assert np.all(pix_z[fov_mask] < 100)  # cam should not have depth beyond 100m
