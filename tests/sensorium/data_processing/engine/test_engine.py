@@ -307,8 +307,17 @@ def test_check_and_load_lidar_exist() -> None:
     finally:
         shutil.rmtree(data_dir)
 
-def test_spin_engine() -> None:
-    """Engine must spin until the end of the data, get interrupted, or new signal is received."""
-    pr_str = """Engine must be able to spin until the end of the data, or get interrupted,
-    or new signal is received."""
-    print(pr_str)
+def test_calculate_timestamp() -> None:
+    """Engine must calculate the timestamp correctly given the frame id(s)."""
+    engine = BackendEngine(data_dir='test')
+    assert engine.calculate_timestamp(1) == 0.1
+    assert engine.calculate_timestamp(200) == 20.0
+    assert engine.calculate_timestamp([1, 2, 3]) == [0.1, 0.2, 0.3]
+    assert engine.calculate_timestamp(['1', '2', '3']) == [0.1, 0.2, 0.3]
+
+def test_check_arguments() -> None:
+    """Engine must check the arguments passed to it."""
+    engine = BackendEngine(data_dir='test')
+    with pytest.raises(ValueError, match='Frame ID must be a multiple of 5 for SemanticKitti'):
+        engine._check_arguments(111111) # noqa: SLF001
+    engine._check_arguments(10) # noqa: SLF001 Must pass
