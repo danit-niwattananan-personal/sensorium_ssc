@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from PIL import Image
 
 from sensorium.data_processing.engine.backend_engine import BackendEngine
 
@@ -117,6 +118,83 @@ def test_return_static_data() -> None:
     finally:
         Path(calib_file).unlink()
         Path(pose_file).unlink()
+        shutil.rmtree(data_dir)
+
+def create_mock_image_files(path: str, option: int = 0) -> None:
+    """Create mock 3-channel image file for testing."""
+    array = np.arange(27) if option == 0 else np.arange(-27, 0)
+    array = array.reshape(3, 3, 3)
+    array = array[:, :, ::-1] # Reverse the order of the channels to counteract PIL's default BGR
+    data = Image.fromarray(array.astype(np.uint8))
+    data.save(path)
+
+def test_check_and_load_images(capsys: pytest.CaptureFixture[str]) -> None:
+    """Method must load images if they exist, otherwise use buffer memory."""
+    # images don't exist
+    engine = BackendEngine(data_dir='test', verbose=True)
+    loaded_image_2, loaded_image_3 = engine._check_and_load_images( # noqa: SLF001
+        sequence_id='99',
+        frame_id='111111'
+    )
+    # The data should be from the initialized buffer memory
+    assert isinstance(loaded_image_2, np.ndarray)
+    assert isinstance(loaded_image_3, np.ndarray)
+    assert loaded_image_2.dtype == np.uint8
+    assert loaded_image_3.dtype == np.uint8
+    assert np.allclose(loaded_image_2, np.zeros((1,)))
+    assert np.allclose(loaded_image_3, np.zeros((1,)))
+    assert np.allclose(loaded_image_2, engine.buf_mem['image_2']) # type: ignore[arg-type]
+    assert np.allclose(loaded_image_3, engine.buf_mem['image_3']) # type: ignore[arg-type]
+
+    # Check the printing out
+    assert engine.problem_load_cam_2
+    assert engine.problem_load_cam_3
+    captured = capsys.readouterr()
+    expected_output = """
+            img_2 frame 111111 loaded successfully: False
+            img_3 frame 111111 loaded successfully: False
+            """
+    assert captured.out.strip() == expected_output.strip()
+
+    # Both images exist
+    try:
+        data_dir = str(Path.cwd() / 'tmp')
+        image2_path = Path(data_dir) / 'sequences' / '99' / 'image_2'
+        image3_path = Path(data_dir) / 'sequences' / '99' / 'image_3'
+        if not image2_path.exists():
+            image2_path.mkdir(parents=True)
+        if not image3_path.exists():
+            image3_path.mkdir(parents=True)
+        create_mock_image_files(str(image2_path / '111111.png'))
+        create_mock_image_files(str(image3_path / '111111.png'))
+        engine = BackendEngine(data_dir=data_dir)
+        loaded_image_2, loaded_image_3 = engine._check_and_load_images( # noqa: SLF001
+            sequence_id='99',
+            frame_id='111111'
+        )
+        assert isinstance(loaded_image_2, np.ndarray)
+        assert isinstance(loaded_image_3, np.ndarray)
+        assert loaded_image_2.shape == (3, 3, 3)
+        assert loaded_image_3.shape == (3, 3, 3)
+        # Loaded image is correct, and buffer memory is updated
+        assert np.allclose(loaded_image_2, np.arange(27).reshape(3, 3, 3))
+        assert np.allclose(loaded_image_3, np.arange(27).reshape(3, 3, 3))
+        assert np.allclose(loaded_image_2, engine.buf_mem['image_2']) # type: ignore[arg-type]
+        assert np.allclose(loaded_image_3, engine.buf_mem['image_3']) # type: ignore[arg-type]
+        assert not engine.problem_load_cam_2
+        assert not engine.problem_load_cam_3
+
+        # If load another frame that doesn't exist, should get the buffer memory value
+        loaded_image_2, loaded_image_3 = engine._check_and_load_images( # noqa: SLF001
+            sequence_id='99',
+            frame_id='222222'
+        )
+        assert np.allclose(loaded_image_2, engine.buf_mem['image_2']) # type: ignore[arg-type]
+        assert np.allclose(loaded_image_3, engine.buf_mem['image_3']) # type: ignore[arg-type]
+        assert engine.problem_load_cam_2
+        assert engine.problem_load_cam_3
+    finally:
+
         shutil.rmtree(data_dir)
 
 
