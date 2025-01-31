@@ -406,9 +406,9 @@ def test_return_process() -> None:
         assert np.allclose(ret['image_2'], np.arange(27).reshape(3, 3, 3))  # type: ignore[arg-type]
         assert np.allclose(ret['image_3'], np.zeros((1,)))  # type: ignore[arg-type]
         assert np.allclose(
-            ret['lidar_pc'],
+            ret['lidar_pc'],  # type: ignore[arg-type]
             np.array(
-                [  # type: ignore[arg-type]
+                [
                     [1.0, 2.0, 3.0],
                     [4.0, 5.0, 6.0],
                 ]
