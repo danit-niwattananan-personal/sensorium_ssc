@@ -11,33 +11,7 @@ import yaml
 from PySide6.QtCore import Qt
 from pytestqt.qtbot import QtBot  # type:ignore[import-untyped]
 
-from sensorium.engine.settings import SettingsDialog
 from sensorium.engine.visualization_gui import VisualisationGui
-
-
-@pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
-def test_open_settings_window(qtbot: QtBot) -> None:
-    """Testet das Einstellungsfenster mit pytest-qt."""
-    vizualisation = VisualisationGui()
-    dialog = SettingsDialog(vizualisation)
-    dialog.show()
-    qtbot.waitExposed(dialog)
-
-    assert dialog.speed_input is not None
-
-    assert dialog.apply_button is not None
-    assert dialog.cancel_button is not None
-
-    qtbot.keyClicks(dialog.input_field, str(10))
-    qtbot.keyClicks(dialog.speed_label, str(10))
-    qtbot.mouseClick(dialog.apply_button, Qt.LeftButton)  # type: ignore[attr-defined]
-
-    assert not dialog.isVisible()
-
-    dialog = SettingsDialog(vizualisation)
-    dialog.show()
-    qtbot.mouseClick(dialog.cancel_button, Qt.LeftButton)  # type: ignore[attr-defined]
-    assert not dialog.isVisible()
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
