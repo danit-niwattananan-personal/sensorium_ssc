@@ -185,12 +185,12 @@ def test_check_and_load_images(capsys: pytest.CaptureFixture[str]) -> None:
         assert not engine.problem_load_cam_3
 
         # If load another frame that doesn't exist, should get the buffer memory value
-        loaded_image_2, loaded_image_3 = engine._check_and_load_images( # noqa: SLF001
+        loaded_image_2_new, loaded_image_3_new = engine._check_and_load_images( # noqa: SLF001
             sequence_id='99',
             frame_id='222222'
         )
-        assert np.allclose(loaded_image_2, engine.buf_mem['image_2']) # type: ignore[arg-type]
-        assert np.allclose(loaded_image_3, engine.buf_mem['image_3']) # type: ignore[arg-type]
+        assert np.allclose(loaded_image_2_new, engine.buf_mem['image_2']) # type: ignore[arg-type]
+        assert np.allclose(loaded_image_3_new, engine.buf_mem['image_3']) # type: ignore[arg-type]
         assert engine.problem_load_cam_2
         assert engine.problem_load_cam_3
     finally:
