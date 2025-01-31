@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test the semantic voxel loader and their APIs."""
 
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -19,11 +20,12 @@ from sensorium.data_processing.voxel_process.ssc_voxel_loader import (
 config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
 with Path(config_path).open() as stream:
     config = yaml.safe_load(stream)
-    sequence_path = str(Path(config['backend_engine']['data_dir']) / 'sequences')
-    sequence_id = '00'
-    frame_id = '111110'
-    label_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.label'
-    invalid_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.invalid'
+data_dir = str(Path.cwd() / 'tmp')
+sequence_path = str(Path(data_dir) / 'sequences')
+sequence_id = '99'
+frame_id = '111110'
+label_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.label'
+invalid_path = Path(sequence_path) / sequence_id / 'voxels' / f'{frame_id}.invalid'
 
 
 @pytest.mark.parametrize(
@@ -68,6 +70,8 @@ def test_return_voxel_data() -> None:
     """The loader must return the data in correct type, shape, and value range."""
     # First, create the data
     try:
+        if not Path(label_path).parent.exists():
+            Path(label_path).parent.mkdir(parents=True)
         create_mock_voxel_files(str(label_path), str(invalid_path))
 
         # Then, load the data
@@ -87,8 +91,8 @@ def test_return_voxel_data() -> None:
 
     # Clean up
     finally:
-        Path(label_path).unlink()
-        Path(invalid_path).unlink()
+        if Path(data_dir).exists():
+            shutil.rmtree(data_dir)
 
 
 def create_mock_calib_file(file_path: str) -> None:
