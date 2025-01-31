@@ -194,9 +194,118 @@ def test_check_and_load_images(capsys: pytest.CaptureFixture[str]) -> None:
         assert engine.problem_load_cam_2
         assert engine.problem_load_cam_3
     finally:
-
         shutil.rmtree(data_dir)
 
+def test_check_and_load_lidar_no_file(capsys: pytest.CaptureFixture[str]) -> None:
+    """Method must use buffer memory if lidar files don't exist and print out correct message."""
+    # images don't exist
+    engine = BackendEngine(data_dir='test', verbose=True)
+
+    loaded_lidar_pc, loaded_lidar_label, loaded_lidar_label_colors = engine._check_and_load_lidar( # noqa: SLF001
+        sequence_id='99',
+        frame_id='111111'
+    )
+
+    # The data should be from the initialized buffer memory
+    assert isinstance(loaded_lidar_pc, np.ndarray)
+    assert isinstance(loaded_lidar_label, np.ndarray)
+    assert isinstance(loaded_lidar_label_colors, np.ndarray)
+    assert loaded_lidar_pc.dtype == np.float32
+    assert loaded_lidar_label.dtype == np.uint32
+    assert loaded_lidar_label_colors.dtype == np.uint8
+    assert np.allclose(loaded_lidar_pc, np.zeros((3,)))
+    assert np.allclose(loaded_lidar_label, np.zeros((1,)))
+    assert np.allclose(loaded_lidar_label_colors, np.zeros((4, 1)))
+    assert np.allclose(loaded_lidar_pc, engine.buf_mem['lidar_pc']) # type: ignore[arg-type]
+    assert np.allclose(loaded_lidar_label, engine.buf_mem['lidar_label']) # type: ignore[arg-type]
+    assert np.allclose(loaded_lidar_label_colors, engine.buf_mem['lidar_label_colors']) # type: ignore[arg-type]
+
+    # Check the printing out
+    assert engine.problem_load_lidar_pc
+    assert engine.problem_load_lidar_label
+    captured = capsys.readouterr()
+    expected_output = """
+            pc frame 111111 loaded successfully: False
+            label frame 111111 loaded successfully: False
+            """
+
+    assert captured.out.strip() == expected_output.strip()
+
+def create_mock_lidar_file(path: str) -> None:
+    """Create a mock lidar file for testing."""
+    pointcloud_data = np.array(
+        [
+            [1.0, 2.0, 3.0, 0.5],
+            [4.0, 5.0, 6.0, 1.0],
+        ],
+        dtype=np.float32,
+    )
+    pointcloud_data.tofile(path)
+
+def create_mock_label_file(path: str) -> None:
+    """Create a mock label file for testing."""
+    labels = np.array([10, 20, 30], dtype=np.uint32)
+    labels.tofile(path)
+
+def test_check_and_load_lidar_exist() -> None:
+    """Method must load lidar if it exists, otherwise use buffer memory."""
+    try:
+        data_dir = str(Path.cwd() / 'tmp')
+        lidar_pc_path = Path(data_dir) / 'sequences' / '99' / 'velodyne'
+        lidar_label_path = Path(data_dir) / 'sequences' / '99' / 'labels'
+        if not lidar_pc_path.exists():
+            lidar_pc_path.mkdir(parents=True)
+        if not lidar_label_path.exists():
+            lidar_label_path.mkdir(parents=True)
+        create_mock_lidar_file(str(lidar_pc_path / '111111.bin'))
+        create_mock_label_file(str(lidar_label_path / '111111.label'))
+        engine = BackendEngine(data_dir=data_dir)
+
+        loaded_lidar_pc, loaded_lidar_label, loaded_label_colors = engine._check_and_load_lidar( # noqa: SLF001
+            sequence_id='99',
+            frame_id='111111'
+        )
+        assert isinstance(loaded_lidar_pc, np.ndarray)
+        assert isinstance(loaded_lidar_label, np.ndarray)
+        assert isinstance(loaded_label_colors, np.ndarray)
+        assert loaded_lidar_pc.shape == (2, 3)
+
+        assert loaded_lidar_label.shape == (3,)
+        assert loaded_label_colors.shape == (3, 3)
+        assert loaded_lidar_pc.dtype == np.float32
+        assert loaded_lidar_label.dtype == np.uint32
+        assert loaded_label_colors.dtype == np.uint8
+
+        # Loaded image is correct, and buffer memory is updated
+        assert np.allclose(loaded_lidar_pc, np.array([
+            [1.0, 2.0, 3.0],
+            [4.0, 5.0, 6.0],
+        ]))
+        assert np.allclose(loaded_lidar_label, np.array([10, 20, 30]))
+        assert np.allclose(loaded_label_colors, np.array([
+            [245, 150, 100],
+            [255, 0, 0],
+            [30, 30, 255],
+
+        ]))
+        assert np.allclose(loaded_lidar_pc, engine.buf_mem['lidar_pc']) # type: ignore[arg-type]
+        assert np.allclose(loaded_lidar_label, engine.buf_mem['lidar_label']) # type: ignore[arg-type]
+        assert np.allclose(loaded_label_colors, engine.buf_mem['lidar_label_colors']) # type: ignore[arg-type]
+        assert not engine.problem_load_lidar_pc
+        assert not engine.problem_load_lidar_label
+
+        # If load another frame that doesn't exist, should get the buffer memory value
+        loaded_pc_new, loaded_label_new, loaded_label_colors_new = engine._check_and_load_lidar( # noqa: SLF001
+            sequence_id='99',
+            frame_id='222222'
+        )
+        assert np.allclose(loaded_pc_new, engine.buf_mem['lidar_pc']) # type: ignore[arg-type]
+        assert np.allclose(loaded_label_new, engine.buf_mem['lidar_label']) # type: ignore[arg-type]
+        assert np.allclose(loaded_label_colors_new, engine.buf_mem['lidar_label_colors']) # type: ignore[arg-type]
+        assert engine.problem_load_lidar_pc
+        assert engine.problem_load_lidar_label
+    finally:
+        shutil.rmtree(data_dir)
 
 def test_spin_engine() -> None:
     """Engine must spin until the end of the data, get interrupted, or new signal is received."""
