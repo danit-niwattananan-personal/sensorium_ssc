@@ -351,4 +351,3 @@ if __name__ == '__main__':
     print(f'Loaded data for sequence {0} and frame {5} ...')
     end_time = time.time()
     print(f'Time taken: {end_time - start_time:.4f} seconds')
-

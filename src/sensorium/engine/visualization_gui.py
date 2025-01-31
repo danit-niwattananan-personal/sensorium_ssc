@@ -61,10 +61,10 @@ class VisualisationGui(QMainWindow):
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.update_scene)
-        self.animation_timer.setInterval(self.next_frame_time) # type: ignore[has-type]
+        self.animation_timer.setInterval(self.next_frame_time)  # type: ignore[has-type]
 
         self.frame_label = QLabel(
-            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}' # type: ignore[has-type]
+            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'  # type: ignore[has-type]
         )
         main_layout.addWidget(self.frame_label)
 
@@ -92,7 +92,7 @@ class VisualisationGui(QMainWindow):
         main_layout.addLayout(self.grid_layout)
 
         self.slider = QSlider(QtCore.Qt.Horizontal)  # type: ignore[attr-defined]
-        self.slider.setRange(0, self.maxframe) # type: ignore[has-type]
+        self.slider.setRange(0, self.maxframe)  # type: ignore[has-type]
         self.slider.setValue(0)
         self.slider.valueChanged.connect(lambda: self.set_frame_slider())
         main_layout.addWidget(self.slider)
