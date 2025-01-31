@@ -318,10 +318,6 @@ class BackendEngine:
             return float(int(frame_id) / self.frequency)
         return [float(int(f) / self.frequency) for f in frame_id]
 
-    def spin(self) -> None:
-        """Run the engine until the datastream ends, get interrupted, or new signal is received."""
-        print('Spinning the engine...')  # To be implemented
-
     def _check_arguments(self, frame_id: int | str) -> None:
         """Check the arguments passed to the engine in case there is corruption during COMM."""
         if int(frame_id) % 5 != 0:
@@ -331,8 +327,7 @@ class BackendEngine:
         # Check if path exists
 
 
-def main() -> None:
-    """Main function."""
+if __name__ == '__main__':
     print('Loading config. Make sure you execute this script at directory root of project.')
     config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
     with Path(config_path).open() as stream:
@@ -357,6 +352,3 @@ def main() -> None:
     end_time = time.time()
     print(f'Time taken: {end_time - start_time:.4f} seconds')
 
-
-if __name__ == '__main__':
-    main()
