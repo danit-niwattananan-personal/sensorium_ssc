@@ -22,10 +22,10 @@ class VoxelVisualization(HasTraits):
     """Voxel Visualization class."""
 
     scene = Instance(MlabSceneModel, ())
-    data = Dict() # type: ignore[var-annotated]
+    data = Dict()  # type: ignore[var-annotated]
 
     @on_trait_change('scene.activated')  # type: ignore[misc]
-    def update_plot(self)-> None:
+    def update_plot(self) -> None:
         """Load the new data and draw the new voxel."""
         draw_semantic_voxel(
             voxels=self.data['voxel'],
@@ -60,17 +60,18 @@ class VoxelWidget(QWidget):
         self,
         frame_id: int,
         data: dict[
-        str,
-        (
-            str
-            | list[float]
-            | float
-            | NDArray[np.float64]
-            | NDArray[np.float32]
-            | NDArray[np.bool_]
-            | MatLike
-            | None
-        )],
+            str,
+            (
+                str
+                | list[float]
+                | float
+                | NDArray[np.float64]
+                | NDArray[np.float32]
+                | NDArray[np.bool_]
+                | MatLike
+                | None
+            ),
+        ],
     ) -> None:
         """Update the scene with the new image and show to the user."""
         # First check the frame_id is valid

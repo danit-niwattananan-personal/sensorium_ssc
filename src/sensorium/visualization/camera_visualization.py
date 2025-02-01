@@ -27,7 +27,7 @@ class CameraWidget(QMainWindow):
         width = self._width
         height = int(self._height * scale_factor)
         self.setWindowTitle('Video')
-        self.setGeometry(100, 100, width, height) # NOTE: make it scalable
+        self.setGeometry(100, 100, width, height)  # NOTE: make it scalable
         self.label = QLabel(self)
         self.label.setGeometry(0, 0, width, height)
 

@@ -183,33 +183,33 @@ class VisualisationGui(QMainWindow):
     def update_scene(self) -> None:
         """Ladet neue Bilder."""
         data = self.backend_engine.process(self.seq_id, self.framenumber)
-        self.camera1.show_image(data['image_2']) # type: ignore[arg-type]
-        self.camera2.show_image(data['image_3']) # type: ignore[arg-type]
-        self.trajectory.draw_line(data['trajectory'], self.framenumber, self.seq_id) # type: ignore[arg-type]
-        self.pointcloud.update_scene(self.framenumber, data['lidar_pc']) # type: ignore[arg-type]
+        self.camera1.show_image(data['image_2'])  # type: ignore[arg-type]
+        self.camera2.show_image(data['image_3'])  # type: ignore[arg-type]
+        self.trajectory.draw_line(data['trajectory'], self.framenumber, self.seq_id)  # type: ignore[arg-type]
+        self.pointcloud.update_scene(self.framenumber, data['lidar_pc'])  # type: ignore[arg-type]
         self.voxel.update_scene(self.framenumber, data)
         self.update_frame(1)
 
     def load_frame(self) -> None:
         """Ladet neue Bilder."""
         data = self.backend_engine.process(self.seq_id, self.framenumber)
-        self.camera1.show_image(data['image_2']) # type: ignore[arg-type]
-        self.camera2.show_image(data['image_3']) # type: ignore[arg-type]
-        self.trajectory.draw_line(data['trajectory'], self.framenumber, self.seq_id) # type: ignore[arg-type]
-        self.pointcloud.update_scene(self.framenumber, data['lidar_pc']) # type: ignore[arg-type]
+        self.camera1.show_image(data['image_2'])  # type: ignore[arg-type]
+        self.camera2.show_image(data['image_3'])  # type: ignore[arg-type]
+        self.trajectory.draw_line(data['trajectory'], self.framenumber, self.seq_id)  # type: ignore[arg-type]
+        self.pointcloud.update_scene(self.framenumber, data['lidar_pc'])  # type: ignore[arg-type]
         self.voxel.update_scene(self.framenumber, data)
 
-    def resizeEvent(self, event: QResizeEvent) -> None: # noqa: N802
+    def resizeEvent(self, event: QResizeEvent) -> None:  # noqa: N802
         """If Window size changes, change Widget size."""
         new_size = event.size()
         print(f'{new_size}')
-        self.camera1.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10))
+        self.camera1.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10))
         self.camera1.label.setGeometry(
-            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10)
+            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10)
         )
-        self.camera2.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10))
+        self.camera2.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10))
         self.camera2.label.setGeometry(
-            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10)
+            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10)
         )
         self.load_frame()
         return super().resizeEvent(event)

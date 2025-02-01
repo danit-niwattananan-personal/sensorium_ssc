@@ -75,7 +75,7 @@ class Trajectory(QtWidgets.QWidget):
             self.scene.clear()
         scale_factor = 1
         current_point = xyz * scale_factor
-        current_point[1] = -current_point[1] # Mirror the y axis
+        current_point[1] = -current_point[1]  # Mirror the y axis
         if self.previous_point is not None and frame_id == self.last_frame + 1:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
             line = QtWidgets.QGraphicsLineItem(
