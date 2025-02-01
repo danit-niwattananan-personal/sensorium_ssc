@@ -230,6 +230,21 @@ class VisualisationGui(QMainWindow):
         asyncio.create_task(self.load_frame(self.seq_id, self.framenumber))  # noqa: RUF006
         return super().resizeEvent(event)
 
+    def resizeEvent(self, event: QResizeEvent) -> None: # noqa: N802
+        """If Window size changes, change Widget size."""
+        new_size = event.size()
+        print(f'{new_size}')
+        self.camera1.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10))
+        self.camera1.label.setGeometry(
+            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10)
+        )
+        self.camera2.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10))
+        self.camera2.label.setGeometry(
+            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10)
+        )
+        self.load_frame()
+        return super().resizeEvent(event)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
