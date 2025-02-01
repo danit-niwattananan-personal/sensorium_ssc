@@ -6,8 +6,10 @@ import sys
 from pathlib import Path
 
 import cv2  # noqa: F401
+import numpy as np
+from cv2.typing import MatLike
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
 
 
@@ -24,19 +26,29 @@ class CameraWidget(QMainWindow):
 
     def setup_lable(self) -> None:
         """."""
-        scale_factor = 0.3
-        width = int(self._width * scale_factor)
+        scale_factor = 0.8
+        # width = int(self._width * scale_factor)
+        width = self._width
         height = int(self._height * scale_factor)
         self.setWindowTitle('Video')
-        self.setGeometry(100, 100, width, height)
+        self.setGeometry(100, 100, width, height) # NOTE: make it scalable
         self.label = QLabel(self)
         self.label.setGeometry(0, 0, width, height)
 
-    def show_image(self, frame_id: int) -> None:
+    def show_image(self, image_data: MatLike) -> None:
         """."""
-        frame_id_ = f'{frame_id:06d}.png'
-        img_path = Path(self.img_directory) / frame_id_
-        pixmap = QPixmap(img_path)
+        image = np.ascontiguousarray(image_data)
+        rgb_array = np.ascontiguousarray(image[..., ::-1])
+        height, width, channels = rgb_array.shape
+        bytes_per_line = channels * width
+        qimage = QImage(
+            rgb_array.data,
+            width,
+            height,
+            bytes_per_line,
+            QImage.Format_RGB888,
+        )
+        pixmap = QPixmap.fromImage(qimage)
 
         self.label.setPixmap(
             pixmap.scaled(

@@ -9,13 +9,13 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
+from cv2.typing import MatLike
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
+from numpy.typing import NDArray
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
-from traits.api import HasTraits, Instance, Tuple, on_trait_change
+from traits.api import HasTraits, Instance, Dict, on_trait_change
 from traitsui.api import Item, View
 
-from sensorium.data_processing.engine.backend_engine import BackendEngine
 from sensorium.visualization.helper import draw_semantic_voxel
 
 
@@ -23,24 +23,16 @@ class VoxelVisualization(HasTraits):
     """Voxel Visualization class."""
 
     scene = Instance(MlabSceneModel, ())
-    seq_frame_id_pair = Tuple(0, 0)
-
-    # Get all necessary data. Must change this to call COMM func instead
-    config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
-    with Path(config_path).open() as stream:
-        backend_config = yaml.safe_load(stream)
-    backend_engine = BackendEngine(data_dir=backend_config['backend_engine']['data_dir'])
+    data = Dict()
 
     @on_trait_change('scene.activated')  # type: ignore[misc]
-    def update_plot(self) -> None:
+    def update_plot(self)-> None:
         """Load the new data and draw the new voxel."""
-        sequence_id, frame_id = self.seq_frame_id_pair
-        data = self.backend_engine.process(sequence_id=sequence_id, frame_id=frame_id)
         draw_semantic_voxel(
-            voxels=data['voxel'],  # type: ignore[arg-type]
-            cam_pose=data['t_velo_2_cam'],  # type: ignore[arg-type]
+            voxels=self.data['voxel'],  # type: ignore[arg-type]
+            cam_pose=self.data['t_velo_2_cam'],  # type: ignore[arg-type]
             vox_origin=np.array([0, -25.6, -2]),
-            fov_mask=data['fov_mask'],  # type: ignore[arg-type]
+            fov_mask=self.data['fov_mask'],  # type: ignore[arg-type]
             scene=self.scene,  # type: ignore[arg-type]
         )
 
@@ -65,14 +57,29 @@ class VoxelWidget(QWidget):
         self.layout_window.setContentsMargins(0, 0, 0, 0)
         self.layout_window.setSpacing(0)
 
-    def update_scene(self, frame_id: int, sequence_id: int = 0) -> None:
+    def update_scene(
+        self,
+        frame_id: int,
+        data: dict[
+        str,
+        (
+            str
+            | list[float]
+            | float
+            | NDArray[np.float64]
+            | NDArray[np.float32]
+            | NDArray[np.bool_]
+            | MatLike
+            | None
+        )],
+    ) -> None:
         """Update the scene with the new image and show to the user."""
         # First check the frame_id is valid
         if frame_id % 5 != 0:
             self.frame_number += 1
             return
 
-        self.visualization = VoxelVisualization(seq_frame_id_pair=(sequence_id, frame_id))
+        self.visualization = VoxelVisualization(data=data)
 
         # Clean up the previous UI and scene
         if hasattr(self, 'ui'):

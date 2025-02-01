@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from sensorium.data_processing.engine.backend_engine import BackendEngine
 from sensorium.visualization.camera_visualization import CameraWidget
 from sensorium.visualization.lidar_visualization import PointcloudVis
 from sensorium.visualization.trajectory_visualization import Trajectory
@@ -43,11 +44,14 @@ class VisualisationGui(QMainWindow):
         self._read_config()
         self._init_variables()
 
+        # Initialize data loader
+        self.backend_engine = BackendEngine(data_dir=self.config['backend_engine']['data_dir'])
+
         self._setup_camera_widget()
         self.grid_layout.addLayout(self.camera, 0, 0)
 
         self.pointcloud = PointcloudVis()
-        self.pointcloud.directory = Path(self.config['frontend_engine']['pointcloud_dir'])
+        # self.pointcloud.directory = Path(self.config['frontend_engine']['pointcloud_dir'])
         self.grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
@@ -143,8 +147,13 @@ class VisualisationGui(QMainWindow):
         self.camera2 = CameraWidget()
         self.camera2.img_directory = self.config['frontend_engine']['img3_dir']
 
+        self.label1 = QLabel('Left Camera')
+        self.label2 = QLabel('Right Camera')
+
         self.camera = QVBoxLayout()
+        self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera2)
+        self.camera.addWidget(self.label1)
         self.camera.addWidget(self.camera1)
 
     def update_frame(self, frame: int) -> None:
@@ -173,20 +182,22 @@ class VisualisationGui(QMainWindow):
 
     def update_scene(self) -> None:
         """Ladet neue Bilder."""
-        self.camera1.show_image(self.framenumber)
-        self.camera2.show_image(self.framenumber)
-        self.trajectory.draw_line(self.framenumber)
-        self.pointcloud.update_scene(self.framenumber)
-        self.voxel.update_scene(self.framenumber, self.seq_id)
+        data = self.backend_engine.process(self.seq_id, self.framenumber)
+        self.camera1.show_image(data['image_2'])
+        self.camera2.show_image(data['image_3'])
+        self.trajectory.draw_line(data['trajectory'], self.framenumber)
+        self.pointcloud.update_scene(self.framenumber, data['lidar_pc'])
+        self.voxel.update_scene(self.framenumber, data)
         self.update_frame(1)
 
     def load_frame(self) -> None:
         """Ladet neue Bilder."""
-        self.camera1.show_image(self.framenumber)
-        self.camera2.show_image(self.framenumber)
-        self.trajectory.draw_line(self.framenumber)
-        self.pointcloud.update_scene(self.framenumber)
-        self.voxel.update_scene(self.framenumber, self.seq_id)
+        data = self.backend_engine.process(self.seq_id, self.framenumber)
+        self.camera1.show_image(data['image_2'])
+        self.camera2.show_image(data['image_3'])
+        self.trajectory.draw_line(data['trajectory'], self.framenumber)
+        self.pointcloud.update_scene(self.framenumber, data['lidar_pc'])
+        self.voxel.update_scene(self.framenumber, data)
 
 
 if __name__ == '__main__':

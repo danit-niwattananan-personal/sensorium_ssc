@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+from numpy.typing import NDArray
 from PySide6 import QtGui, QtWidgets
 
 # from sensorium.launch.launch import LaunchWindow  # noqa: ERA001
@@ -61,12 +62,14 @@ class Trajectory(QtWidgets.QWidget):
     #     z = data_list['z']  # noqa: ERA001
     #     return np.column_stack((x, y, z))  # noqa: ERA001
 
-    def draw_line(self, frame_id: int) -> None:
+    def draw_line(self, xyz: NDArray[np.float64], frame_id: int) -> None:
         """."""
-        coords = self.get_coordinates()
+        # coords = self.get_coordinates()
         scale_factor = 1
-        coords = coords * scale_factor
-        current_point = coords[frame_id]
+        current_point = xyz * scale_factor
+        current_point[1] = -current_point[1] # Mirror the y axis
+        # coords = coords * scale_factor
+        # current_point = coords[frame_id]
         if self.previous_point is not None:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
             line = QtWidgets.QGraphicsLineItem(

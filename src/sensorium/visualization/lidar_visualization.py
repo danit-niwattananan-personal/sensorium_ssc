@@ -9,6 +9,7 @@ from typing import cast
 import numpy as np
 import pygfx as gfx  # type: ignore[import-untyped]
 import yaml
+from cv2.typing import MatLike
 from PySide6 import QtWidgets
 from wgpu.gui.qt import WgpuCanvas  # type: ignore[import-untyped]
 
@@ -98,10 +99,10 @@ class PointcloudVis(QtWidgets.QWidget):
             color_map_array[int(key)] = value
         return np.asarray(color_map_array[semantic_ids], dtype=np.float32)
 
-    def update_scene(self, frame_id: int) -> None:
+    def update_scene(self, frame_id: int, lidar_data: MatLike) -> None:
         """Method to update the scene with the current frame."""
         # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
-        positions = np.ascontiguousarray(self.load_positions(frame_id), dtype=np.float32)
+        positions = np.ascontiguousarray(lidar_data, dtype=np.float32)
         colors = np.ascontiguousarray(self.load_colors_gradient(positions), dtype=np.float32)
         sizes = np.ascontiguousarray(
             np.ones(positions.shape[0], dtype=np.float32) * 0.03, dtype=np.float32
