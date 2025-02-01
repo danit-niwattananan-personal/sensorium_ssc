@@ -8,6 +8,7 @@ from typing import cast
 import numpy as np
 import pygfx as gfx  # type: ignore[import-untyped]
 import yaml
+from cv2.typing import MatLike
 from PySide6 import QtWidgets
 from wgpu.gui.qt import WgpuCanvas  # type: ignore[import-untyped]
 

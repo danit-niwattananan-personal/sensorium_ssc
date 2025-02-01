@@ -154,6 +154,7 @@ class VisualisationGui(QMainWindow):
         self.label2 = QLabel('Left camera')
         self.label3 = QLabel('Right camera')
         self.camera = QVBoxLayout()
+        self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera2)
         self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera3)
