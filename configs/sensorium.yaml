@@ -1,7 +1,7 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 backend_engine:
-  data_dir: C:\Users\Oatty\Desktop\workspaces\semantic_kitti-small\dataset # like /home/jovyan/kitti_dummy/dataset
+  data_dir: /home/mehin/dummy pyt/kitti_dummy/dataset# like /home/jovyan/kitti_dummy/dataset
   # declare more parameters here to be used in the backend
 
 frontend_engine:

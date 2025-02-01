@@ -29,7 +29,7 @@ class ClientManager:
         uri = f'ws://{ip}:{port}'
         try:
             print(f'Connecting to {uri}...')
-            self._client = await websockets.connect(uri)
+            self._client = await websockets.connect(uri)  # type: ignore[assignment]
             print('Client connected.')
         except WebSocketException as e:
             msg = f'Failed to connect to {uri}: {e!s}'

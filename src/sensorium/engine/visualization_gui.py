@@ -175,7 +175,7 @@ class VisualisationGui(QMainWindow):
         """Ladet neue Bilder."""
         self.camera1.show_image(self.framenumber)
         self.camera2.show_image(self.framenumber)
-        self.trajectory.draw_line(self.framenumber)
+        self.trajectory.draw_line(self.seq_id, self.framenumber)
         self.pointcloud.update_scene(self.framenumber)
         self.voxel.update_scene(self.framenumber, self.seq_id)
         self.update_frame(1)

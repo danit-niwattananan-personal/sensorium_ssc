@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from qasync import QEventLoop
+from qasync import QEventLoop  # type: ignore[import-untyped]
 
 from sensorium.communication.client_comm import connect_client, disconnect_client
 from sensorium.communication.server_comm import get_server_control_functions
@@ -46,7 +46,7 @@ class LaunchWindow(QMainWindow):
 
         self.start_server_func: Callable[[int], None] | None
         self.stop_server_func: Callable[[], Awaitable[None]] | None
-        self.start_server_func, self.stop_server_func = get_server_control_functions()
+        self.start_server_func, self.stop_server_func = get_server_control_functions()  # type: ignore[assignment]
 
     def setup(self) -> None:
         """Sets up the GUI layout for selecting server or client."""
@@ -131,7 +131,7 @@ class LaunchWindow(QMainWindow):
         if port.isdigit():
             self.log(f'Starting server on port {port}')
             if callable(self.start_server_func):
-                server_task: asyncio.Task = asyncio.create_task(self.start_server_func(int(port)))
+                server_task: asyncio.Task = asyncio.create_task(self.start_server_func(int(port)))  # type: ignore[array-item]
                 self.current_task = server_task
                 self.stop_server_button.setEnabled(True)
                 self.connect_button.setEnabled(False)
@@ -144,8 +144,8 @@ class LaunchWindow(QMainWindow):
         """Stop the server."""
         if callable(self.stop_server_func):
             self.log('Stopping server...')
-            stop_task: asyncio.Task = asyncio.create_task(self.stop_server_func())
-            self.current_task = stop_task  # Store reference
+            stop_task: asyncio.Task = asyncio.create_task(self.stop_server_func())  # type: ignore[call-arg]
+            self.current_task = stop_task
             self.stop_server_button.setEnabled(False)
             self.connect_button.setEnabled(True)
             self.log('Server stopped.')
@@ -190,7 +190,7 @@ class LaunchWindow(QMainWindow):
         self.main_window.show()
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
 

@@ -90,7 +90,7 @@ def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes:
 async def start_server(port: int, stop_event: asyncio.Event) -> None:
     """Start the WebSocket server."""
     print(f'Starting server on ws://localhost:{port}')
-    server = await websockets.serve(handle_client, 'localhost', port)
+    server = await websockets.serve(handle_client, 'localhost', port)  # type: ignore[arg-type]
 
     try:
         await stop_event.wait()

@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 from PySide6 import QtGui, QtWidgets
 
-# from sensorium.launch.launch import LaunchWindow  # noqa: ERA001
+from sensorium.communication.client_comm import get_trajectory_data
 
 
 class Trajectory(QtWidgets.QWidget):
@@ -61,12 +61,12 @@ class Trajectory(QtWidgets.QWidget):
     #     z = data_list['z']  # noqa: ERA001
     #     return np.column_stack((x, y, z))  # noqa: ERA001
 
-    def draw_line(self, frame_id: int) -> None:
+    def draw_line(self, seq_id: int, frame_id: int) -> None:
         """."""
-        coords = self.get_coordinates()
+        coords = get_trajectory_data(seq_id, frame_id)
         scale_factor = 1
         coords = coords * scale_factor
-        current_point = coords[frame_id]
+        # current_point = coords[frame_id]
         if self.previous_point is not None:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
             line = QtWidgets.QGraphicsLineItem(
