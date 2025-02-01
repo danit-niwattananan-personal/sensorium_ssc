@@ -3,7 +3,6 @@
 """Test module for LiDAR visualization."""
 
 import os
-from unittest.mock import patch
 
 import numpy as np
 import pygfx as gfx  # type: ignore[import-untyped]
@@ -38,20 +37,16 @@ def test_update_scene(pointcloud_vis: PointcloudVis) -> None:
     pointcloud_vis.setup_canvas()
     frame_id = 0
     mock_positions = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 2.0]], dtype=np.float32)
-    mock_colors = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], dtype=np.float32)
     mock_sizes = np.array([0.03, 0.03], dtype=np.float32)
+    pointcloud_vis.update_scene(frame_id, mock_positions)
 
-    with (
-        patch.object(pointcloud_vis, 'load_positions', return_value=mock_positions),
-        patch.object(pointcloud_vis, 'load_colors_gradient', return_value=mock_colors),
-    ):
-        pointcloud_vis.update_scene(frame_id)
-
-        # Verify that the point cloud geometry is updated correctly
-        assert pointcloud_vis.pcd is not None
-        assert np.array_equal(pointcloud_vis.pcd.geometry.positions.data, mock_positions)
-        assert np.array_equal(pointcloud_vis.pcd.geometry.colors.data, mock_colors)
-        assert np.array_equal(pointcloud_vis.pcd.geometry.sizes.data, mock_sizes)
+    assert pointcloud_vis.pcd is not None
+    assert np.array_equal(pointcloud_vis.pcd.geometry.positions.data, mock_positions)
+    assert np.array_equal(
+        pointcloud_vis.pcd.geometry.colors.data, pointcloud_vis.load_colors_gradient(mock_positions)
+    )
+    print(pointcloud_vis.pcd.geometry.sizes.data)
+    assert np.array_equal(pointcloud_vis.pcd.geometry.sizes.data, mock_sizes)
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
