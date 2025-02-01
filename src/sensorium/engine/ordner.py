@@ -24,8 +24,8 @@ class ButtonPanel(QWidget):
         layout.addWidget(self.info_label)
 
         for i in range(10):
-            button = QPushButton(f'Sequenz {i}', self)
-            button.setStyleSheet("""
+            self.button = QPushButton(f'Sequenz {i}', self)
+            self.button.setStyleSheet("""
                 QPushButton {
                     background-color: lightgray;
                     padding: 10px;
@@ -43,8 +43,8 @@ class ButtonPanel(QWidget):
                     border: 1px solid gray;
                 }
             """)
-            button.clicked.connect(self.update_seq)
-            layout.addWidget(button)
+            self.button.clicked.connect(self.update_seq)
+            layout.addWidget(self.button)
 
         self.setLayout(layout)
 
