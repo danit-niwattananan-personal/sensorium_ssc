@@ -6,14 +6,13 @@ import os
 
 os.environ['ETS_TOOLKIT'] = 'qt'
 import sys
-from pathlib import Path
 
 import numpy as np
 from cv2.typing import MatLike
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
 from numpy.typing import NDArray
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
-from traits.api import HasTraits, Instance, Dict, on_trait_change
+from traits.api import Dict, HasTraits, Instance, on_trait_change
 from traitsui.api import Item, View
 
 from sensorium.visualization.helper import draw_semantic_voxel
@@ -23,16 +22,16 @@ class VoxelVisualization(HasTraits):
     """Voxel Visualization class."""
 
     scene = Instance(MlabSceneModel, ())
-    data = Dict()
+    data = Dict() # type: ignore[var-annotated]
 
     @on_trait_change('scene.activated')  # type: ignore[misc]
     def update_plot(self)-> None:
         """Load the new data and draw the new voxel."""
         draw_semantic_voxel(
-            voxels=self.data['voxel'],  # type: ignore[arg-type]
-            cam_pose=self.data['t_velo_2_cam'],  # type: ignore[arg-type]
+            voxels=self.data['voxel'],
+            cam_pose=self.data['t_velo_2_cam'],
             vox_origin=np.array([0, -25.6, -2]),
-            fov_mask=self.data['fov_mask'],  # type: ignore[arg-type]
+            fov_mask=self.data['fov_mask'],
             scene=self.scene,  # type: ignore[arg-type]
         )
 

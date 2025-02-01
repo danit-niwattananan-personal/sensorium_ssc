@@ -3,9 +3,7 @@
 """Camera Visualization."""
 
 import sys
-from pathlib import Path
 
-import cv2  # noqa: F401
 import numpy as np
 from cv2.typing import MatLike
 from PySide6.QtCore import Qt
@@ -20,14 +18,12 @@ class CameraWidget(QMainWindow):
         """."""
         super().__init__()
         self.img_directory = ''
-        # sample_img = cv2.imread(self.img_directory + '/' + '0000000000.png')  # noqa: ERA001
         self._height, self._width = 375, 1242
         self.setup_lable()
 
     def setup_lable(self) -> None:
         """."""
-        scale_factor = 0.8
-        # width = int(self._width * scale_factor)
+        scale_factor = 1
         width = self._width
         height = int(self._height * scale_factor)
         self.setWindowTitle('Video')
@@ -46,7 +42,7 @@ class CameraWidget(QMainWindow):
             width,
             height,
             bytes_per_line,
-            QImage.Format_RGB888,
+            QImage.Format.Format_RGB888,
         )
         pixmap = QPixmap.fromImage(qimage)
 
