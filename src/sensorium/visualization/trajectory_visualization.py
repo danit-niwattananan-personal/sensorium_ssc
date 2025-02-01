@@ -33,6 +33,7 @@ class Trajectory(QtWidgets.QWidget):
         print(self.trajectory_file_path)
 
         self.previous_point = np.zeros(3)
+        self.last_frame = 0
 
         self.current_position_marker = self.scene.addEllipse(
             0,
@@ -64,13 +65,10 @@ class Trajectory(QtWidgets.QWidget):
 
     def draw_line(self, xyz: NDArray[np.float64], frame_id: int) -> None:
         """."""
-        # coords = self.get_coordinates()
         scale_factor = 1
         current_point = xyz * scale_factor
         current_point[1] = -current_point[1] # Mirror the y axis
-        # coords = coords * scale_factor
-        # current_point = coords[frame_id]
-        if self.previous_point is not None:
+        if self.previous_point is not None and frame_id == self.last_frame + 1:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
             line = QtWidgets.QGraphicsLineItem(
                 self.previous_point[0],
@@ -80,6 +78,8 @@ class Trajectory(QtWidgets.QWidget):
             )
             line.setPen(pen)
             self.scene.addItem(line)
+        self.previous_point = current_point
+        self.last_frame = frame_id
 
         if self.current_position_marker:
             self.scene.removeItem(self.current_position_marker)
@@ -93,8 +93,6 @@ class Trajectory(QtWidgets.QWidget):
             QtGui.QPen(QtGui.QColor(255, 0, 0)),
             QtGui.QBrush(QtGui.QColor(255, 0, 0)),
         )
-
-        self.previous_point = current_point
 
 
 if __name__ == '__main__':
