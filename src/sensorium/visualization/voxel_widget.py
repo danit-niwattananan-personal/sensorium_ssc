@@ -24,7 +24,7 @@ class VoxelVisualization(HasTraits):
     data = Dict()  # type: ignore[var-annotated]
 
     @on_trait_change('scene.activated')  # type: ignore[misc]
-    def update_plot(self) -> None:
+    def update_plot(self)-> None:
         """Load the new data and draw the new voxel."""
         draw_semantic_voxel(
             voxels=self.data['voxel'],
