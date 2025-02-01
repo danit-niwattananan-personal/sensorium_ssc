@@ -22,7 +22,5 @@ def test_update_scene(qtbot: QtBot) -> None:
 
     qtbot.addWidget(ordner)
     with patch('sensorium.engine.ordner.ButtonPanel.update_seq') as mock_update_seq:
-        qtbot.mouseClick(ordner.button, Qt.LeftButton) # type: ignore[attr-defined]
+        qtbot.mouseClick(ordner.button, Qt.LeftButton)  # type: ignore[attr-defined]
         mock_update_seq.assert_called_once()
-
-
