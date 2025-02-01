@@ -34,6 +34,7 @@ class Trajectory(QtWidgets.QWidget):
 
         self.previous_point = np.zeros(3)
         self.last_frame = 0
+        self.current_sequence_id = 0
 
         self.current_position_marker = self.scene.addEllipse(
             0,
@@ -63,8 +64,15 @@ class Trajectory(QtWidgets.QWidget):
     #     z = data_list['z']  # noqa: ERA001
     #     return np.column_stack((x, y, z))  # noqa: ERA001
 
-    def draw_line(self, xyz: NDArray[np.float64], frame_id: int) -> None:
+    def draw_line(self, xyz: NDArray[np.float64], frame_id: int, sequence_id: int) -> None:
         """."""
+        # If sequence is changed, reset the previous point anc clear all lines
+        is_sequence_changed = sequence_id != self.current_sequence_id
+        if is_sequence_changed:
+            self.current_sequence_id = sequence_id
+            self.previous_point = np.zeros(3)
+            self.last_frame = 0
+            self.scene.clear()
         scale_factor = 1
         current_point = xyz * scale_factor
         current_point[1] = -current_point[1] # Mirror the y axis
@@ -81,7 +89,7 @@ class Trajectory(QtWidgets.QWidget):
         self.previous_point = current_point
         self.last_frame = frame_id
 
-        if self.current_position_marker:
+        if self.current_position_marker and not is_sequence_changed:
             self.scene.removeItem(self.current_position_marker)
 
         circle_radius = 2
@@ -93,6 +101,8 @@ class Trajectory(QtWidgets.QWidget):
             QtGui.QPen(QtGui.QColor(255, 0, 0)),
             QtGui.QBrush(QtGui.QColor(255, 0, 0)),
         )
+
+        self.current_sequence_id = sequence_id
 
 
 if __name__ == '__main__':
