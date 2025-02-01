@@ -1,5 +1,3 @@
-# sensorium/communication/server_comm.py
-
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 
