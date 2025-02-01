@@ -9,6 +9,7 @@ import sys
 
 import numpy as np
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
+from numpy.typing import NDArray
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 from traits.api import Dict, HasTraits, Instance, on_trait_change
 from traitsui.api import Item, View
@@ -24,7 +25,7 @@ class VoxelVisualization(HasTraits):
     data = Dict()  # type: ignore[var-annotated]
 
     @on_trait_change('scene.activated')  # type: ignore[misc]
-    def update_plot(self) -> None:
+    def update_plot(self)-> None:
         """Load the new data and draw the new voxel."""
         draw_semantic_voxel(
             voxels=self.data['voxel'],

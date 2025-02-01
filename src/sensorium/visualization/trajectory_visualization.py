@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+from numpy.typing import NDArray
 from PySide6 import QtGui, QtWidgets
 
 from sensorium.communication.client_comm import get_trajectory_data
