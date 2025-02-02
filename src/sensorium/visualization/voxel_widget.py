@@ -9,7 +9,6 @@ import sys
 
 import numpy as np
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
-from numpy.typing import NDArray
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 from traits.api import Dict, HasTraits, Instance, on_trait_change
 from traitsui.api import Item, View
