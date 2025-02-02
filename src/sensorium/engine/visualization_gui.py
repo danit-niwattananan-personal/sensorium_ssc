@@ -1,7 +1,6 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 """."""
-
 import asyncio
 import sys
 import time
@@ -118,7 +117,55 @@ class VisualisationGui(QMainWindow):
 
         self.animation_timer = QtCore.QTimer(self)
         self.animation_timer.timeout.connect(self.timer_callback)
-        self.animation_timer.setInterval(self.next_frame_time)
+        self.animation_timer.setInterval(self.next_frame_time)  # type: ignore[has-type]
+
+        self.frame_label = QLabel(
+            f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'  # type: ignore[has-type]
+        )
+        main_layout.addWidget(self.frame_label)
+
+        self.button_minus10 = QPushButton('-10 Frames')
+        self.button_minus10.clicked.connect(lambda: asyncio.create_task(self.update_frame(-10)))
+        controlbar.addWidget(self.button_minus10)
+
+        self.button_minus1 = QPushButton('-1 Frame')
+        self.button_minus1.clicked.connect(lambda: asyncio.create_task(self.update_frame(-1)))
+        controlbar.addWidget(self.button_minus1)
+
+        self.button_play_stop = QPushButton('Play')
+        self.button_play_stop.clicked.connect(lambda: asyncio.create_task(self.toggle_play_stop()))
+        controlbar.addWidget(self.button_play_stop)
+
+        self.button_plus1 = QPushButton('+1 Frame')
+        self.button_plus1.clicked.connect(lambda: asyncio.create_task(self.update_frame(1)))
+        controlbar.addWidget(self.button_plus1)
+
+        self.button_plus10 = QPushButton('+10 Frames')
+        self.button_plus10.clicked.connect(lambda: asyncio.create_task(self.update_frame(10)))
+        controlbar.addWidget(self.button_plus10)
+
+        self._grid_layout()
+        main_layout.addLayout(self.grid_layout)
+
+        self.slider = QSlider(QtCore.Qt.Horizontal)  # type: ignore[attr-defined]
+        self.slider.setRange(0, self.maxframe)  # type: ignore[has-type]
+        self.slider.setValue(0)
+        self.slider.valueChanged.connect(lambda: asyncio.create_task(self.set_frame_slider()))
+        main_layout.addWidget(self.slider)
+        main_layout.addLayout(controlbar)
+
+        self.animation_timer.stop()
+        self.loading_frame = False
+        self._update_scene_lock = asyncio.Lock()
+
+    def _init_variables(self) -> None:
+        """Initialize the variables to reduce number of lines in init method."""
+        self.maxframe = int(self.config['frontend_engine']['max_frame'])
+        self.framenumber = 0
+        self.play_en = False
+        self.seq_id = 0
+        self.next_frame_time = int(self.config['frontend_engine']['next_frame_time'])
+        self.fps = int(1000 / self.next_frame_time)
 
     async def set_frame_slider(self) -> None:
         """Sets the Frame if slider is moved."""
@@ -154,7 +201,6 @@ class VisualisationGui(QMainWindow):
         self.label2 = QLabel('Left camera')
         self.label3 = QLabel('Right camera')
         self.camera = QVBoxLayout()
-        self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera2)
         self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera3)
@@ -230,22 +276,7 @@ class VisualisationGui(QMainWindow):
         self.camera3.label.setGeometry(
             0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10)
         )
-        asyncio.create_task(self.load_frame(self.seq_id, self.framenumber))  # noqa: RUF006
-        return super().resizeEvent(event)
-
-    def resizeEvent(self, event: QResizeEvent) -> None: # noqa: N802
-        """If Window size changes, change Widget size."""
-        new_size = event.size()
-        print(f'{new_size}')
-        self.camera1.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10))
-        self.camera1.label.setGeometry(
-            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10)
-        )
-        self.camera2.setGeometry(0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10))
-        self.camera2.label.setGeometry(
-            0, 0, int(new_size.width() / 2), int(new_size.height() / 4 -10)
-        )
-        self.load_frame()
+        self.load_frame(self.seq_id, self.framenumber)
         return super().resizeEvent(event)
 
 
