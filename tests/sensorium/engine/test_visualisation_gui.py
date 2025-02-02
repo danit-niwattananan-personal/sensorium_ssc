@@ -124,6 +124,7 @@ def test_set_frame_slider(qtbot: QtBot) -> None:
     visualisation.slider.setValue(50)
     assert visualisation.framenumber == 50
 
+
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
 def test_toggle_play_stop(qtbot: QtBot) -> None:
     """Testet toggle_play_stop."""
@@ -134,7 +135,7 @@ def test_toggle_play_stop(qtbot: QtBot) -> None:
     assert visualisation.play_en is False
     assert visualisation.button_play_stop.text() == 'Stop'
     assert visualisation.animation_timer.isActive()
-    qtbot.mouseClick(visualisation.button_play_stop, Qt.LeftButton) # type: ignore[attr-defined]
+    qtbot.mouseClick(visualisation.button_play_stop, Qt.LeftButton)  # type: ignore[attr-defined]
     assert visualisation.play_en is True
     assert visualisation.button_play_stop.text() == 'Play'
     assert not visualisation.animation_timer.isActive()

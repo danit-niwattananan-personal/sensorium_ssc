@@ -28,4 +28,3 @@ def test_mainwindow() -> None:
         mock_open_settings.assert_called_once()
         mock_ask_for_frame.assert_called_once()
         mock_ask_for_seq.assert_called_once()
-
