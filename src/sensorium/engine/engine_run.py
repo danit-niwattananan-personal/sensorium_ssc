@@ -8,7 +8,6 @@ import sys
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QApplication,
-    QDialog,
     QHBoxLayout,
     QMainWindow,
     QMenuBar,
@@ -52,23 +51,23 @@ class MainWindow(QMainWindow):
         self.setMenuBar(menu_bar)
 
         settings_menu = menu_bar.addMenu('Einstellungen')
-        settings_action = QAction('Einstellungen öffnen', self)
-        settings_action.setObjectName('action_settings')
-        settings_action.triggered.connect(self.open_settings)
-        settings_menu.addAction(settings_action)
+        self.settings_action = QAction('Einstellungen öffnen', self)
+        self.settings_action.setObjectName('action_settings')
+        self.settings_action.triggered.connect(self.open_settings)
+        settings_menu.addAction(self.settings_action)
 
         ask_data_menu = menu_bar.addMenu('Frame/Sequenz_ID wählen')
-        ask_4_frame = QAction('Spezielle Framenummer laden', self)
-        ask_4_seq_id = QAction('Spezielle Sequenz_ID laden', self)
-        ask_4_frame.triggered.connect(self.ask_for_frame)
-        ask_4_seq_id.triggered.connect(self.ask_for_seq)
-        ask_data_menu.addAction(ask_4_frame)
-        ask_data_menu.addAction(ask_4_seq_id)
+        self.ask_4_frame = QAction('Spezielle Framenummer laden', self)
+        self.ask_4_seq_id = QAction('Spezielle Sequenz_ID laden', self)
+        self.ask_4_frame.triggered.connect(self.ask_for_frame)
+        self.ask_4_seq_id.triggered.connect(self.ask_for_seq)
+        ask_data_menu.addAction(self.ask_4_frame)
+        ask_data_menu.addAction(self.ask_4_seq_id)
 
-    def open_settings(self) -> QDialog:
+    def open_settings(self) -> None:
         """Hier werden die Einstellungen geöffnet."""
         print('Einstellungen geöffnet')
-        return open_settings_window(self.videoplayer)
+        open_settings_window(self.videoplayer)
 
     def ask_for_frame(self) -> None:
         """Load current Frame."""
