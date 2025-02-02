@@ -203,3 +203,6 @@ if __name__ == '__main__':
 
     with loop:
         loop.run_until_complete(app_close_event.wait())
+
+    with loop:
+        loop.run_forever()

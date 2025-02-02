@@ -105,6 +105,7 @@ class VisualisationGui(QMainWindow):
         main_layout.addLayout(controlbar)
 
         self.animation_timer.stop()
+        self.loading_frame = False
         self._update_scene_lock = asyncio.Lock()
 
     def _init_variables(self) -> None:
@@ -146,12 +147,11 @@ class VisualisationGui(QMainWindow):
 
     def _setup_camera_widget(self) -> None:
         """Setup the camera widget."""
-        self.camera2 = CameraWidget(camera_id='camera2')
-        self.camera3 = CameraWidget(camera_id='camera3')
+        self.camera2 = CameraWidget(camera_id='camera2')  # left
+        self.camera3 = CameraWidget(camera_id='camera3')  # right
         self.label2 = QLabel('Left camera')
         self.label3 = QLabel('Right camera')
         self.camera = QVBoxLayout()
-        self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera2)
         self.camera.addWidget(self.label2)
         self.camera.addWidget(self.camera3)
