@@ -58,7 +58,7 @@ class VisualisationGui(QMainWindow):
 
         self.trajectory = Trajectory()
         self.trajectory.trajectory_file_path = Path(
-            self.config['frontend_engine']['trajectory_dir']
+            self.config['frontend_engine_rw']['trajectory_dir']
         )
         self.grid_layout.addWidget(self.trajectory, 1, 0)
 
@@ -127,7 +127,7 @@ class VisualisationGui(QMainWindow):
             await self.load_frame(self.seq_id, self.framenumber)
 
     def _grid_layout(self) -> None:
-        """self.grid_layout."""
+        """Sets the layout of the grid_layout."""
         self.grid_layout.setColumnMinimumWidth(0, 300)
         self.grid_layout.setColumnMinimumWidth(1, 500)
         self.grid_layout.setRowMinimumHeight(0, 400)
