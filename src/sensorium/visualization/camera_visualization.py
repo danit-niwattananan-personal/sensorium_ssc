@@ -5,19 +5,23 @@
 import sys
 
 import numpy as np
-from cv2.typing import MatLike
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
 
+from sensorium.communication.client_comm import get_camera2_data, get_camera3_data
+
+CAMERA2_SHAPE = (370, 1226, 3)
+CAMERA3_SHAPE = (370, 1226, 3)
 
 class CameraWidget(QMainWindow):
     """."""
 
-    def __init__(self) -> None:
+    def __init__(self, camera_id: str) -> None:
         """."""
         super().__init__()
         self.img_directory = ''
+        self.camera_id = camera_id
         self._height, self._width = 375, 1242
         self.setup_lable()
 
@@ -31,9 +35,19 @@ class CameraWidget(QMainWindow):
         self.label = QLabel(self)
         self.label.setGeometry(0, 0, width, height)
 
-    def show_image(self, image_data: MatLike) -> None:
+    async def show_image(self, seq_id: int, frame_id: int) -> None:
         """."""
-        image = np.ascontiguousarray(image_data)
+        if self.camera_id == 'camera2':
+            raw_data = await get_camera2_data(seq_id, frame_id)
+            image = raw_data.reshape(CAMERA2_SHAPE).astype(np.uint8)
+        elif self.camera_id == 'camera3':
+            raw_data = await get_camera3_data(seq_id, frame_id)
+            image = raw_data.reshape(CAMERA3_SHAPE).astype(np.uint8)
+        else:
+            message = 'Invalid camera_id'
+            raise ValueError(message)
+
+        image = np.ascontiguousarray(image)
         rgb_array = np.ascontiguousarray(image[..., ::-1])
         height, width, channels = rgb_array.shape
         bytes_per_line = channels * width

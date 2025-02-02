@@ -8,13 +8,12 @@ os.environ['ETS_TOOLKIT'] = 'qt'
 import sys
 
 import numpy as np
-from cv2.typing import MatLike
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
-from numpy.typing import NDArray
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 from traits.api import Dict, HasTraits, Instance, on_trait_change
 from traitsui.api import Item, View
 
+from sensorium.communication.client_comm import get_voxel_data
 from sensorium.visualization.helper import draw_semantic_voxel
 
 
@@ -56,28 +55,23 @@ class VoxelWidget(QWidget):
         self.layout_window.setContentsMargins(0, 0, 0, 0)
         self.layout_window.setSpacing(0)
 
-    def update_scene(
-        self,
-        frame_id: int,
-        data: dict[
-            str,
-            (
-                str
-                | list[float]
-                | float
-                | NDArray[np.float64]
-                | NDArray[np.float32]
-                | NDArray[np.bool_]
-                | MatLike
-                | None
-            ),
-        ],
-    ) -> None:
+    async def update_scene(self, seq_id: int, frame_id: int) -> None:
         """Update the scene with the new image and show to the user."""
         # First check the frame_id is valid
         if frame_id % 5 != 0:
             self.frame_number += 1
             return
+        try:
+            voxel, fov_mask, t_velo_2_cam = await get_voxel_data(seq_id, frame_id)
+        except ValueError as e:
+            print(f'Error getting voxel data: {e}')
+            return
+
+        data = {
+            'voxel': voxel,
+            'fov_mask': fov_mask,
+            't_velo_2_cam': t_velo_2_cam,
+        }
 
         self.visualization = VoxelVisualization(data=data)
 

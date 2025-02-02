@@ -6,10 +6,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-from numpy.typing import NDArray
 from PySide6 import QtGui, QtWidgets
 
-# from sensorium.launch.launch import LaunchWindow  # noqa: ERA001
+from sensorium.communication.client_comm import get_trajectory_data
 
 
 class Trajectory(QtWidgets.QWidget):
@@ -64,17 +63,18 @@ class Trajectory(QtWidgets.QWidget):
     #     z = data_list['z']  # noqa: ERA001
     #     return np.column_stack((x, y, z))  # noqa: ERA001
 
-    def draw_line(self, xyz: NDArray[np.float64], frame_id: int, sequence_id: int) -> None:
+    async def draw_line(self, seq_id: int, frame_id: int) -> None:
         """."""
         # If sequence is changed, reset the previous point anc clear all lines
-        is_sequence_changed = sequence_id != self.current_sequence_id
+        is_sequence_changed = seq_id != self.current_sequence_id
         if is_sequence_changed:
-            self.current_sequence_id = sequence_id
+            self.current_sequence_id = seq_id
             self.previous_point = np.zeros(3)
             self.last_frame = 0
             self.scene.clear()
         scale_factor = 1
-        current_point = xyz * scale_factor
+        coords = await get_trajectory_data(seq_id, frame_id)
+        current_point = coords * scale_factor
         current_point[1] = -current_point[1]  # Mirror the y axis
         if self.previous_point is not None and frame_id == self.last_frame + 1:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
@@ -102,7 +102,7 @@ class Trajectory(QtWidgets.QWidget):
             QtGui.QBrush(QtGui.QColor(255, 0, 0)),
         )
 
-        self.current_sequence_id = sequence_id
+        self.current_sequence_id = seq_id
 
 
 if __name__ == '__main__':

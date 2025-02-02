@@ -23,7 +23,7 @@ class ButtonPanel(QWidget):
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.info_label)
 
-        for i in range(19):
+        for i in range(16):
             button = QPushButton(f'Sequenz {i}', self)
             button.setStyleSheet("""
                 QPushButton {
