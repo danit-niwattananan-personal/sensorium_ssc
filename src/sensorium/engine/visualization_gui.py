@@ -47,12 +47,12 @@ class VisualisationGui(QMainWindow):
         self.grid_layout.addLayout(self.camera, 0, 0)
 
         self.pointcloud = PointcloudVis()
-        self.pointcloud.directory = Path(self.config['frontend_engine']['pointcloud_dir'])
+        self.pointcloud.directory = Path(self.config['frontend_engine_rw']['pointcloud_dir'])
         self.grid_layout.addWidget(self.pointcloud, 0, 1)
 
         self.trajectory = Trajectory()
         self.trajectory.trajectory_file_path = Path(
-            self.config['frontend_engine']['trajectory_dir']
+            self.config['frontend_engine_rw']['trajectory_dir']
         )
         self.grid_layout.addWidget(self.trajectory, 1, 0)
 
@@ -119,7 +119,7 @@ class VisualisationGui(QMainWindow):
             self.load_frame()
 
     def _grid_layout(self) -> None:
-        """self.grid_layout."""
+        """Sets the layout of the grid_layout."""
         self.grid_layout.setColumnMinimumWidth(0, 300)
         self.grid_layout.setColumnMinimumWidth(1, 500)
         self.grid_layout.setRowMinimumHeight(0, 230)
@@ -139,9 +139,9 @@ class VisualisationGui(QMainWindow):
     def _setup_camera_widget(self) -> None:
         """Setup the camera widget."""
         self.camera1 = CameraWidget()
-        self.camera1.img_directory = self.config['frontend_engine']['img2_dir']
+        self.camera1.img_directory = self.config['frontend_engine_rw']['img2_dir']
         self.camera2 = CameraWidget()
-        self.camera2.img_directory = self.config['frontend_engine']['img3_dir']
+        self.camera2.img_directory = self.config['frontend_engine_rw']['img3_dir']
 
         self.camera = QVBoxLayout()
         self.camera.addWidget(self.camera2)
