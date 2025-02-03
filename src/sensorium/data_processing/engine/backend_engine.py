@@ -200,16 +200,15 @@ class BackendEngine:
             except FileNotFoundError:
                 self.problem_load_voxel = True
                 voxel_data = np.asarray(self.buf_mem['voxel'])
-                if self.verbose:
-                    print(f"""
-                    voxel frame {start_frame_id} loaded successfully: {not self.problem_load_voxel}
-                    """)
 
         except ValueError:
             # If no, assign None to voxel_related data
             voxel_data = None
 
         if self.verbose:
+            print(f"""
+                voxel frame {start_frame_id} loaded successfully: {not self.problem_load_voxel}
+                """)
             print('=' * 40)
 
         return {
