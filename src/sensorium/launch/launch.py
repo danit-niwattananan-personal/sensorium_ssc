@@ -34,7 +34,7 @@ class LaunchWindow(QMainWindow):
     def __init__(self) -> None:
         """Initialize the main window."""
         super().__init__()
-        self.setWindowTitle('WebSocket File Transfer')
+        self.setWindowTitle('Communication')
         self.setGeometry(300, 300, 400, 200)
 
         self.main_layout = QVBoxLayout()
