@@ -1,21 +1,31 @@
-# Copyright 2024 Projektpraktikum Python.
+# Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
-"""Test camera visualization."""
+"""Test module for Camera visualization."""
+
+from unittest.mock import patch
 
 import numpy as np
+import pytest
 from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 
-from sensorium.visualization.camera_visualization import (
-    CameraWidget,
-)
+from sensorium.visualization.camera_visualization import CAMERA2_SHAPE, CameraWidget
+
+MOCK_CAMERA_DATA = np.zeros(np.prod(CAMERA2_SHAPE), dtype=np.uint8)
 
 
-def test_show_image(qtbot: QtBot) -> None:
-    """Test the show_image method of CameraWidget."""
-    height, width, channels = 375, 1242, 3
-    rng = np.random.default_rng()
-    mock_image = rng.integers(0, 255, size=(height, width, channels), dtype=np.uint8)
-    widget = CameraWidget()
-    qtbot.addWidget(widget)
+@pytest.mark.asyncio
+async def test_show_image(qtbot: QtBot) -> None:
+    """."""
+    with patch(
+        'sensorium.visualization.camera_visualization.get_camera2_data',
+        return_value=MOCK_CAMERA_DATA,
+    ):
+        widget = CameraWidget(camera_id='camera2')
+        qtbot.addWidget(widget)
 
-    widget.show_image(mock_image)
+        await widget.show_image(seq_id=0, frame_id=0)
+
+        assert widget.label.pixmap() is not None
+
+        pixmap = widget.label.pixmap()
+        assert not pixmap.isNull()
