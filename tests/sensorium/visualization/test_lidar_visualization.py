@@ -103,9 +103,9 @@ def test_load_colors_gradient() -> None:
     Returns:
         None.
     """
-    vis = PointcloudVis()
+    pointcloud_vis = PointcloudVis()
     positions, _ = MOCK_LIDAR_DATA
-    colors = vis.load_colors_gradient(positions)
+    colors = pointcloud_vis.load_colors_gradient(positions)
     assert colors.shape == (positions.shape[0], 3)
     assert np.all(colors[:, 0] == 1)
     assert np.all(colors[:, 2] == 0)
