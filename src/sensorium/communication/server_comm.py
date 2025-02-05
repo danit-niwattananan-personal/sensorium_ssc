@@ -19,9 +19,6 @@ from sensorium.data_processing.engine.backend_engine import BackendEngine
 
 connected_clients: list[WebSocketServerProtocol] = []
 
-# data_directory = '/home/mehin/dummy pyt/kitti_dummy/dataset'
-# backend_engine = BackendEngine(data_dir=data_directory, verbose=True)
-
 config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
 with Path(config_path).open() as stream:
     backend_config = yaml.safe_load(stream)
@@ -34,14 +31,14 @@ async def handle_client(websocket: WebSocketServerProtocol) -> None:
     try:
         async for message in websocket:
             try:
-                print(f'Received message: {message}')
+                print(f'Received: {message.decode() if isinstance(message, bytes) else message}')
                 request = json.loads(message)
                 sensor_type = request.get('sensor_type')
                 seq_id = int(request.get('seq_id', -1))
                 frame_id = int(request.get('frame_id', -1))
 
                 response = create_response(sensor_type, seq_id, frame_id)
-                await websocket.send(response)         #encode
+                await websocket.send(response)
             except (ValueError, KeyError, TypeError) as e:
                 error_msg = {'error': f'Invalid request: {e!s}'}
                 await websocket.send(error_msg)
@@ -50,25 +47,30 @@ async def handle_client(websocket: WebSocketServerProtocol) -> None:
         print('Client disconnected.')
 
 
-def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes:
+def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes: #noqa: C901
     """Fetch and format data from BackendEngine as raw bytes."""
-    print(f'Processing request for sensor type: {sensor_type}, seq_id: {seq_id}, frame_id: {frame_id}')
+    print(
+        f'Processing request for sensor type: {sensor_type}, '
+        f'seq_id: {seq_id}, frame_id: {frame_id}'
+    )
     data = backend_engine.process(seq_id, frame_id)
 
     try:
         if sensor_type == 'camera2':
             image_2 = data.get('image_2')
-            image_2 = image_2[:370, :1226, :]
+
             if isinstance(image_2, np.ndarray):
+                image_2 = image_2[:370, :1226, :]
                 return bz2.compress(image_2.tobytes())
             msg = 'Invalid data type for image_2'
             raise ValueError(msg)
 
         if sensor_type == 'camera3':
             image_3 = data.get('image_3')
-            image_3 = image_3[:370, :1226, :]
+
             if isinstance(image_3, np.ndarray):
-                return bz2.compress(image_3.tobytes())
+                    image_3 = image_3[:370, :1226, :]
+                    return bz2.compress(image_3.tobytes())
             msg = 'Invalid data type for image_3'
             raise ValueError(msg)
 

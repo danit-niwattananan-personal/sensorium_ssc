@@ -104,7 +104,6 @@ class VisualisationGui(QMainWindow):
         main_layout.addLayout(controlbar)
 
         self.animation_timer.stop()
-        self.loading_frame = False
         self._update_scene_lock = asyncio.Lock()
 
     def _init_variables(self) -> None:
@@ -115,6 +114,7 @@ class VisualisationGui(QMainWindow):
         self.seq_id = 0
         self.next_frame_time = int(self.config['frontend_engine']['next_frame_time'])
         self.fps = int(1000 / self.next_frame_time)
+        self.loading_frame = False
 
     async def set_frame_slider(self) -> None:
         """Sets the Frame if slider is moved."""
@@ -145,8 +145,8 @@ class VisualisationGui(QMainWindow):
 
     def _setup_camera_widget(self) -> None:
         """Setup the camera widget."""
-        self.camera2 = CameraWidget(camera_id='camera2')  # left
-        self.camera3 = CameraWidget(camera_id='camera3')  # right
+        self.camera2 = CameraWidget(camera_id='camera2')
+        self.camera3 = CameraWidget(camera_id='camera3')
         self.label2 = QLabel('Left camera')
         self.label3 = QLabel('Right camera')
         self.camera = QVBoxLayout()
@@ -209,7 +209,7 @@ class VisualisationGui(QMainWindow):
     def timer_callback(self) -> None:
         """Callback function for the timer."""
         if not self._update_scene_lock.locked():
-            asyncio.create_task(self.update_scene())
+            asyncio.create_task(self.update_scene()) # noqa: RUF006
         else:
             print('Update in progress; skipping new update.')
 
@@ -225,7 +225,7 @@ class VisualisationGui(QMainWindow):
         self.camera3.label.setGeometry(
             0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10)
         )
-        self.load_frame(self.seq_id, self.framenumber)
+        asyncio.create_task(self.load_frame(self.seq_id, self.framenumber)) # noqa: RUF006
         return super().resizeEvent(event)
 
 

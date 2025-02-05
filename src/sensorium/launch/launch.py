@@ -131,7 +131,8 @@ class LaunchWindow(QMainWindow):
         if port.isdigit():
             self.log(f'Starting server on port {port}')
             if callable(self.start_server_func):
-                server_task: asyncio.Task = asyncio.create_task(self.start_server_func(int(port)))
+                server_task: asyncio.Task[None] = asyncio.create_task(
+                    self.start_server_func(int(port)))  # type: ignore[arg-type]
                 self.current_task = server_task
                 self.stop_server_button.setEnabled(True)
                 self.connect_button.setEnabled(False)
@@ -144,7 +145,7 @@ class LaunchWindow(QMainWindow):
         """Stop the server."""
         if callable(self.stop_server_func):
             self.log('Stopping server...')
-            stop_task: asyncio.Task = asyncio.create_task(self.stop_server_func())
+            stop_task: asyncio.Task[None] = asyncio.create_task(self.stop_server_func()) #type: ignore[arg-type]
             self.current_task = stop_task
             self.stop_server_button.setEnabled(False)
             self.connect_button.setEnabled(True)
@@ -193,9 +194,11 @@ if __name__ == '__main__':
     app = QApplication(sys.argv) if not QApplication.instance() else QApplication.instance()
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
+    app_close_event = asyncio.Event()
+    app.aboutToQuit.connect(app_close_event.set) #type: ignore[union-attr]
 
     window = LaunchWindow()
     window.show()
 
     with loop:
-        loop.run_forever()
+        loop.run_until_complete(app_close_event.wait())
