@@ -93,6 +93,7 @@ def test_animate(pointcloud_vis: PointcloudVis) -> None:
     assert pointcloud_vis.renderer is not None
 
 
+@pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
 def test_load_colors_gradient() -> None:
     """Test the load_colors_gradient mehtod to ensure the right format.
 
