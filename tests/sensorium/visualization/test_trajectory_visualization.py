@@ -36,9 +36,6 @@ async def test_draw_line(qtbot: QtBot) -> None:
 
     Args:
         qtbot: Fixture to interact with widget.
-
-    Returns:
-        None.
     """
     with patch(
         'sensorium.visualization.trajectory_visualization.get_trajectory_data',

@@ -18,11 +18,7 @@ class PointcloudVis(QtWidgets.QWidget):
     """Widget for visualizing the LiDAR pointcloud scene."""
 
     def __init__(self) -> None:
-        """Initialize the PointcloudVis class.
-
-        Returns:
-            None.
-        """
+        """Initialize the PointcloudVis class."""
         super().__init__(None)
         self.resize(640, 480)
         self.pcd = None
@@ -39,9 +35,6 @@ class PointcloudVis(QtWidgets.QWidget):
 
         This method initializes the canvas, renderer, scene, and camera, and then
         adds the canvas widget to the layout.
-
-        Returns:
-            None.
         """
         self.canvas = WgpuCanvas(parent=self)
         self.renderer = gfx.WgpuRenderer(self.canvas)
@@ -56,13 +49,27 @@ class PointcloudVis(QtWidgets.QWidget):
             layout.addWidget(self.canvas)
 
     def get_colormap(self) -> dict[str, list[float]]:
-        """."""
+        """Reads out the semantic-kitti-all.yaml file to create a dictionary with the color map.
+
+        Returns:
+            data: dict[str, list[float]]: Dictionary with the color map.
+
+        Note: This function is not used in the current implementation.
+        It is for get testing on a local machine without the server.
+        """
         with Path(self.config_file).open('r', encoding='utf-8') as file:
             data = yaml.safe_load(file)
         return cast(dict[str, list[float]], data['color_map'])
 
     def load_positions(self, frame_id: int) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
-        """Loads the coordinates for the positions of the points from one .bin file."""
+        """Loads the coordinates for the positions of the points from one .bin file.
+
+        Args:
+            frame_id: Frame number.
+
+        Note: This function is not used in the current implementation.
+        It is for get testing on a local machine without the server.
+        """
         path = self.directory / f'{frame_id:06d}.bin'
         points = np.fromfile(path, np.float32).reshape(-1, 4)
         return points[:, :3]
@@ -94,7 +101,17 @@ class PointcloudVis(QtWidgets.QWidget):
     def load_colors_ground_truth(
         self, frame_id: int
     ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
-        """."""
+        """Reads the labes from the .label file and assigns the corresponding color to each point.
+
+        The Points are colored based on their ground truth semantic data.
+
+        Returns:
+            np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
+            Array with the rgb values of the points.
+
+        Note: This function is not used in the current implementation.
+        It is for get testing on a local machine without the server.
+        """
         path = self.label_directory / f'{frame_id:06d}.label'
         ids = np.fromfile(path, dtype=np.uint32)
         semantic_ids = ids & 0xFFFF
@@ -107,7 +124,15 @@ class PointcloudVis(QtWidgets.QWidget):
         return np.asarray(color_map_array[semantic_ids], dtype=np.float32)
 
     async def update_scene(self, seq_id: int, frame_id: int) -> None:
-        """."""
+        """Creates a pointcloud based on LiDAR data and adds it to the wgpu canvas.
+
+        Args:
+            seq_id: Sequence number.
+            frame_id: Frame number.
+
+        Note: get_lidar_data returns both the positions of the point and their ground truth colors.
+        Currently the colors are assigned via a gradient based on the z-values of the points.
+        """
         # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
         points, _ = await get_lidar_data(seq_id, frame_id)
         positions = np.ascontiguousarray(points, dtype=np.float32)
@@ -131,7 +156,7 @@ class PointcloudVis(QtWidgets.QWidget):
         self.canvas.update()
 
     def animate(self) -> None:
-        """."""
+        """Renders the scene."""
         self.renderer.render(self.scene, self.camera)
 
 

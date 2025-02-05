@@ -15,7 +15,11 @@ MOCK_CAMERA_DATA = np.zeros(np.prod(CAMERA2_SHAPE), dtype=np.uint8)
 
 @pytest.mark.asyncio
 async def test_show_image(qtbot: QtBot) -> None:
-    """."""
+    """Test show_image method of CameraWidget.
+
+    Args:
+        qtbot: Pytest-qt fixture to handle Qt events.
+    """
     with patch(
         'sensorium.visualization.camera_visualization.get_camera2_data',
         return_value=MOCK_CAMERA_DATA,

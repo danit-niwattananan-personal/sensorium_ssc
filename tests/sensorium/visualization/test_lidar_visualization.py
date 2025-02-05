@@ -37,9 +37,6 @@ def test_setup_canvas_initialization(pointcloud_vis: PointcloudVis) -> None:
 
     Args:
         pointcloud_vis: Instance of the PointcloudVis class.
-
-    Returns:
-        None.
     """
     pointcloud_vis.setup_scene()
     assert isinstance(pointcloud_vis.canvas, WgpuCanvas)
@@ -56,9 +53,6 @@ async def test_update_scene(pointcloud_vis: PointcloudVis) -> None:
     Args:
         pointcloud_vis: Instance of the PointcloudVis class.
         mock_positions: Numpy array of mock positions.
-
-    Returns:
-        None.
     """
     with patch(
         'sensorium.visualization.lidar_visualization.get_lidar_data', return_value=MOCK_LIDAR_DATA
@@ -84,9 +78,6 @@ def test_animate(pointcloud_vis: PointcloudVis) -> None:
 
     Args:
         pointcloud_vis: Instance of the PointcloudVis class.
-
-    Returns:
-        None.
     """
     pointcloud_vis.setup_scene()
     pointcloud_vis.animate()
@@ -99,9 +90,6 @@ def test_load_colors_gradient() -> None:
 
     Args:
         mock_lidar_data: Numpy array of mock positions.
-
-    Returns:
-        None.
     """
     pointcloud_vis = PointcloudVis()
     positions, _ = MOCK_LIDAR_DATA

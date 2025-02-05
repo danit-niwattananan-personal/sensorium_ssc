@@ -19,11 +19,7 @@ class CameraWidget(QMainWindow):
     """Widget fo Visualizing camera data."""
 
     def __init__(self, camera_id: str) -> None:
-        """Initializes the Camera Widget.
-
-        Returns:
-            None.
-        """
+        """Initializes the Camera Widget."""
         super().__init__()
         self.img_directory = ''
         self.camera_id = camera_id
@@ -31,11 +27,7 @@ class CameraWidget(QMainWindow):
         self.setup_lable()
 
     def setup_lable(self) -> None:
-        """Setup up the lable required to display the image.
-
-        Returns:
-            None.
-        """
+        """Setup up the lable required to display the image."""
         scale_factor = 1
         width = self._width
         height = int(self._height * scale_factor)
@@ -50,9 +42,6 @@ class CameraWidget(QMainWindow):
         Args:
             seq_id: Sequence number.
             frame_id: Frame number.
-
-        Returns:
-            None.
         """
         if self.camera_id == 'camera2':
             raw_data = await get_camera2_data(seq_id, frame_id)

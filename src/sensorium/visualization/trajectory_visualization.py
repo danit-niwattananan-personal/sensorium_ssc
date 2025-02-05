@@ -54,7 +54,7 @@ class Trajectory(QtWidgets.QWidget):
             An Array of the coordinates of the trajectory.
 
         Note: This function is not used in the current implementation.
-        It is for testing on a local machine without the server.
+        It is for get testing on a local machine without the server.
         """
         with Path(self.trajectory_file_path).open() as f:
             coord_dict = [json.loads(line.strip()) for line in f]
@@ -73,9 +73,6 @@ class Trajectory(QtWidgets.QWidget):
         Args:
             seq_id: The sequence number.
             frame_id: The frame number.
-
-        Returns:
-            None.
         """
         # If sequence is changed, reset the previous point anc clear all lines
         is_sequence_changed = seq_id != self.current_sequence_id
