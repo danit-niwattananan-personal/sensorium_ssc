@@ -14,11 +14,16 @@ from sensorium.communication.client_comm import get_camera2_data, get_camera3_da
 CAMERA2_SHAPE = (370, 1226, 3)
 CAMERA3_SHAPE = (370, 1226, 3)
 
+
 class CameraWidget(QMainWindow):
-    """."""
+    """Widget fo Visualizing camera data."""
 
     def __init__(self, camera_id: str) -> None:
-        """."""
+        """Initializes the Camera Widget.
+
+        Returns:
+            None.
+        """
         super().__init__()
         self.img_directory = ''
         self.camera_id = camera_id
@@ -26,7 +31,11 @@ class CameraWidget(QMainWindow):
         self.setup_lable()
 
     def setup_lable(self) -> None:
-        """."""
+        """Setup up the lable required to display the image.
+
+        Returns:
+            None.
+        """
         scale_factor = 1
         width = self._width
         height = int(self._height * scale_factor)
@@ -36,7 +45,15 @@ class CameraWidget(QMainWindow):
         self.label.setGeometry(0, 0, width, height)
 
     async def show_image(self, seq_id: int, frame_id: int) -> None:
-        """."""
+        """Creates an image from the raw data of the according frame and shows it in the label.
+
+        Args:
+            seq_id: Sequence number.
+            frame_id: Frame number.
+
+        Returns:
+            None.
+        """
         if self.camera_id == 'camera2':
             raw_data = await get_camera2_data(seq_id, frame_id)
             image = raw_data.reshape(CAMERA2_SHAPE).astype(np.uint8)
@@ -71,7 +88,7 @@ class CameraWidget(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = CameraWidget()
+    window = CameraWidget(camera_id='camera2')
     window.img_directory = (
         r'C:\Users\wich_\Desktop\2011_09_26\2011_09_26_drive_0035_sync\image_00\data'
     )

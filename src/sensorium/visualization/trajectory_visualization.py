@@ -12,11 +12,14 @@ from sensorium.communication.client_comm import get_trajectory_data
 
 
 class Trajectory(QtWidgets.QWidget):
-    """."""
+    """Widget for visualizing the trajectory of the car."""
 
-    # def __init__(self, launch_window: LaunchWindow) -> None:
     def __init__(self) -> None:
-        """Initialize the Trajectory widget."""
+        """Initializes the Trajectory widget.
+
+        Returns:
+            None.
+        """
         super().__init__(None)
         self.resize(500, 500)
         # self.launch_window = launch_window  # noqa: ERA001
@@ -45,7 +48,14 @@ class Trajectory(QtWidgets.QWidget):
         )
 
     def get_coordinates(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
-        """."""
+        """Get the coordinates from a trajectory.json or .txt file.
+
+        Returns:
+            An Array of the coordinates of the trajectory.
+
+        Note: This function is not used in the current implementation.
+        It is for testing on a local machine without the server.
+        """
         with Path(self.trajectory_file_path).open() as f:
             coord_dict = [json.loads(line.strip()) for line in f]
         x = np.array([coord['x'] for coord in coord_dict])
@@ -53,18 +63,20 @@ class Trajectory(QtWidgets.QWidget):
         z = np.array([coord['z'] for coord in coord_dict])
         return np.column_stack((x, y, z))
 
-    # def get_traj_data(
-    #     self, frame_id: int, seq_id: int
-    # ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
-    #     """."""
-    #     data_list = self.launch_window.get_traj_data(frame_id, seq_id)  # noqa: ERA001
-    #     x = data_list['x']  # noqa: ERA001
-    #     y = data_list['y']  # noqa: ERA001
-    #     z = data_list['z']  # noqa: ERA001
-    #     return np.column_stack((x, y, z))  # noqa: ERA001
-
     async def draw_line(self, seq_id: int, frame_id: int) -> None:
-        """."""
+        """Visualizing the Trajectory of the car.
+
+        Draws a line between the points pf the previous time frame and the current time frame
+        and updates a marker representing the current position of the car
+        relative to the starting point.
+
+        Args:
+            seq_id: The sequence number.
+            frame_id: The frame number.
+
+        Returns:
+            None.
+        """
         # If sequence is changed, reset the previous point anc clear all lines
         is_sequence_changed = seq_id != self.current_sequence_id
         if is_sequence_changed:

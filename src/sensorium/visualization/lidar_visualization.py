@@ -16,10 +16,14 @@ from sensorium.communication.client_comm import get_lidar_data
 
 
 class PointcloudVis(QtWidgets.QWidget):
-    """Widget for visualizing and controlling the LiDAR pointcloud scene."""
+    """Widget for visualizing the LiDAR pointcloud scene."""
 
     def __init__(self) -> None:
-        """Initialize the PointcloudVis class."""
+        """Initialize the PointcloudVis class.
+
+        Returns:
+            None.
+        """
         super().__init__(None)
         self.resize(640, 480)
         self.pcd = None
@@ -27,14 +31,21 @@ class PointcloudVis(QtWidgets.QWidget):
         self.directory = Path()
         self.label_directory = Path()
 
-        self.setup_canvas()
+        self.setup_scene()
         self.frame_count = 0
         self.start_time = time.time()
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-    def setup_canvas(self) -> None:
-        """."""
+    def setup_scene(self) -> None:
+        """Setup up of the scene where the pointcloud is rendered.
+
+        This method initializes the canvas, renderer, scene, and camera, and then
+        adds the canvas widget to the layout.
+
+        Returns:
+            None.
+        """
         self.canvas = WgpuCanvas(parent=self)
         self.renderer = gfx.WgpuRenderer(self.canvas)
         self.scene = gfx.Scene()
