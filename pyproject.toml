@@ -39,6 +39,7 @@ dependencies = [
     "configobj>=5.0.9",
     "mayavi",
     "traits-stubs>=6.4.0",
+    "pytest-asyncio>=0.25.3",
 ]
 dynamic = ["version"]
 keywords = []
