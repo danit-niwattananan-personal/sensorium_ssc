@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Visualization of the LiDAR pointcloud scene."""
 
-import time
 from pathlib import Path
 from typing import cast
 
@@ -32,8 +31,6 @@ class PointcloudVis(QtWidgets.QWidget):
         self.label_directory = Path()
 
         self.setup_scene()
-        self.frame_count = 0
-        self.start_time = time.time()
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
@@ -110,7 +107,7 @@ class PointcloudVis(QtWidgets.QWidget):
         return np.asarray(color_map_array[semantic_ids], dtype=np.float32)
 
     async def update_scene(self, seq_id: int, frame_id: int) -> None:
-        """Method to update the scene with the current frame."""
+        """."""
         # positions, colors = get_lidar_data(frame_id, seq_id)  # noqa: ERA001
         points, _ = await get_lidar_data(seq_id, frame_id)
         positions = np.ascontiguousarray(points, dtype=np.float32)
@@ -132,17 +129,9 @@ class PointcloudVis(QtWidgets.QWidget):
             )
             self.scene.add(self.pcd)
         self.canvas.update()
-        current_time = time.time()
-        elapsed_time = current_time - self.start_time
-        if elapsed_time >= 5.0:
-            fps = self.frame_count / elapsed_time
-            print(f'FPS: {fps:.2f} Frame:{frame_id}')
-            self.frame_count = 0
-            self.start_time = current_time
 
     def animate(self) -> None:
         """."""
-        self.frame_count += 1
         self.renderer.render(self.scene, self.camera)
 
 
