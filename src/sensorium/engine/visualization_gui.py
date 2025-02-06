@@ -1,6 +1,7 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 """."""
+
 import asyncio
 import sys
 import time
@@ -276,7 +277,7 @@ class VisualisationGui(QMainWindow):
         self.camera3.label.setGeometry(
             0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10)
         )
-        self.load_frame(self.seq_id, self.framenumber)
+        asyncio.create_task(self.load_frame(self.seq_id, self.framenumber))  # noqa: RUF006
         return super().resizeEvent(event)
 
 
