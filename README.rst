@@ -30,7 +30,7 @@ Installation
 
 Prerequisites
 ------------
-- uv Python package manager. Follow the official `uv documentation <https://docs.astral.sh/uv/getting-started/installation/#standalone-installer>` for installation instructions.
+- uv Python package manager. Follow the official `uv documentation <https://docs.astral.sh/uv/getting-started/installation/#standalone-installer>`_ for installation instructions.
 - conda might disrupt the environment during creating the .venv environment with uv. Please deactivate conda before running uv.
 
 Setup
