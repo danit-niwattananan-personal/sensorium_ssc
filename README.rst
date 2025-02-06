@@ -112,6 +112,7 @@ Setup Development Environment
 Clone the repository and setup your local checkout:
 
 .. code-block:: bash
+
    uv sync
 
 Testing
@@ -133,4 +134,4 @@ The entrypoint to the local documentation build should be available under ``publ
 Issues
 ------
 
-If you encounter any issues, please report them to the `issue tracker <https://gitlab.lrz.de/ldv/teaching/python/2024/b/-/issues>`.
+If you encounter any issues, please report them to the `issue tracker <https://gitlab.lrz.de/ldv/teaching/python/2024/b/-/issues>`_.
