@@ -47,7 +47,7 @@ async def handle_client(websocket: WebSocketServerProtocol) -> None:
         print('Client disconnected.')
 
 
-def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes: #noqa: C901
+def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes:  # noqa: C901
     """Fetch and format data from BackendEngine as raw bytes."""
     print(
         f'Processing request for sensor type: {sensor_type}, '
@@ -69,8 +69,8 @@ def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes: #noq
             image_3 = data.get('image_3')
 
             if isinstance(image_3, np.ndarray):
-                    image_3 = image_3[:370, :1226, :]
-                    return bz2.compress(image_3.tobytes())
+                image_3 = image_3[:370, :1226, :]
+                return bz2.compress(image_3.tobytes())
             msg = 'Invalid data type for image_3'
             raise ValueError(msg)
 
@@ -86,13 +86,17 @@ def create_response(sensor_type: str, seq_id: int, frame_id: int) -> bytes: #noq
             voxel = data.get('voxel')
             fov_mask = data.get('fov_mask')
             t_velo_2_cam = data.get('t_velo_2_cam')
-            if (isinstance(voxel, np.ndarray) and
-                isinstance(fov_mask, np.ndarray) and
-                isinstance(t_velo_2_cam, np.ndarray)):
+            if (
+                isinstance(voxel, np.ndarray)
+                and isinstance(fov_mask, np.ndarray)
+                and isinstance(t_velo_2_cam, np.ndarray)
+            ):
                 combined = (
-                    voxel.tobytes() + b'__SPLIT__' +
-                    fov_mask.tobytes() + b'__SPLIT__' +
-                    t_velo_2_cam.tobytes()
+                    voxel.tobytes()
+                    + b'__SPLIT__'
+                    + fov_mask.tobytes()
+                    + b'__SPLIT__'
+                    + t_velo_2_cam.tobytes()
                 )
                 return gzip.compress(combined)
             msg = 'Invalid data type for voxel/fov_mask/t_velo_2_cam'
@@ -169,4 +173,3 @@ def get_server_control_functions() -> tuple[Callable[[int], None], Callable[[], 
             raise
 
     return start, stop
-

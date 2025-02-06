@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Alles für die Sequenzauswahl."""
+
 import asyncio
 
 from PySide6.QtCore import Qt
@@ -58,7 +59,7 @@ class ButtonPanel(QWidget):
         if self.videoplayer.seq_id != button_number:
             self.videoplayer.seq_id = button_number
             self.videoplayer.framenumber = 0
-            asyncio.create_task(self.videoplayer.update_frame(0)) # noqa: RUF006
+            asyncio.create_task(self.videoplayer.update_frame(0))  # noqa: RUF006
 
 
 if __name__ == '__main__':

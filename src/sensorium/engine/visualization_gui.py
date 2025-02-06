@@ -1,6 +1,7 @@
 # Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
 """."""
+
 import asyncio
 import sys
 import time
@@ -199,7 +200,7 @@ class VisualisationGui(QMainWindow):
                 self.camera3.show_image(seq_id, frame_id),
                 self.trajectory.draw_line(seq_id, frame_id),
                 self.pointcloud.update_scene(seq_id, frame_id),
-                self.voxel.update_scene(seq_id, frame_id)
+                self.voxel.update_scene(seq_id, frame_id),
             )
         except (RuntimeError, ValueError) as e:
             print(f'Error in process_frame: {e}')
@@ -209,7 +210,7 @@ class VisualisationGui(QMainWindow):
     def timer_callback(self) -> None:
         """Callback function for the timer."""
         if not self._update_scene_lock.locked():
-            asyncio.create_task(self.update_scene()) # noqa: RUF006
+            asyncio.create_task(self.update_scene())  # noqa: RUF006
         else:
             print('Update in progress; skipping new update.')
 
@@ -225,7 +226,7 @@ class VisualisationGui(QMainWindow):
         self.camera3.label.setGeometry(
             0, 0, int(new_size.width() / 2), int(new_size.height() / 4 - 10)
         )
-        asyncio.create_task(self.load_frame(self.seq_id, self.framenumber)) # noqa: RUF006
+        asyncio.create_task(self.load_frame(self.seq_id, self.framenumber))  # noqa: RUF006
         return super().resizeEvent(event)
 
 
