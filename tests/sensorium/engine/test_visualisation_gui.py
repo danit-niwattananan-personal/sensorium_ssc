@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Test GUI."""
 
+import asyncio
 import os
 from pathlib import Path
 from unittest.mock import patch
@@ -36,31 +37,33 @@ def test_visualitsation_gui(qtbot: QtBot) -> None:
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
-def test_update_frame() -> None:
+@pytest.mark.asyncio
+async def test_update_frame() -> None:
     """Testet update_frame."""
     # Load the config for max_frame
     config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
-    with Path(config_path).open() as stream:
-        config = yaml.safe_load(stream)
+    config_content = await asyncio.to_thread(config_path.read_text)
+    config = yaml.safe_load(config_content)
     max_frame = config['frontend_engine']['max_frame']
 
     # Test if the frame number is increased by 1
     visualisation = VisualisationGui()
     visualisation.framenumber = 1
-    visualisation.update_frame(1)
+    await visualisation.update_frame(1)
     assert visualisation.framenumber == 2
 
     # Test if the frame number is set to 0 if it is less than 0
-    visualisation.update_frame(-10)
+    await visualisation.update_frame(-10)
     assert visualisation.framenumber == 0
 
     # Test if the frame number is set to 0 if it is greater than max_frame
-    visualisation.update_frame(max_frame + 1)
+    await visualisation.update_frame(max_frame + 1)
     assert visualisation.framenumber == 0
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
-def test_update_scene(qtbot: QtBot) -> None:
+@pytest.mark.asyncio
+async def test_update_scene(qtbot: QtBot) -> None:
     """Testet update_scene."""
     visualisation = VisualisationGui()
     qtbot.addWidget(visualisation)
@@ -80,16 +83,17 @@ def test_update_scene(qtbot: QtBot) -> None:
         ) as mock_update_frame,
         patch('sensorium.visualization.voxel_widget.VoxelWidget.update_scene') as mock_update_voxel,
     ):
-        visualisation.update_scene()
-        mock_update_camera.assert_called_with(1)
-        mock_update_trajectory.assert_called_once_with(1)
-        mock_update_pointcloud.assert_called_once_with(1)
-        mock_update_voxel.assert_called_once_with(1, 0)
+        await visualisation.update_scene()
+        mock_update_camera.assert_called_with(0, 1)
+        mock_update_trajectory.assert_called_once_with(0, 1)
+        mock_update_pointcloud.assert_called_once_with(0, 1)
+        mock_update_voxel.assert_called_once_with(0, 1)
         mock_update_frame.assert_called_once_with(1)
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
-def test_load_frame(qtbot: QtBot) -> None:
+@pytest.mark.asyncio
+async def test_load_frame(qtbot: QtBot) -> None:
     """Testet load_frame."""
     visualisation = VisualisationGui()
     qtbot.addWidget(visualisation)
@@ -106,32 +110,34 @@ def test_load_frame(qtbot: QtBot) -> None:
         ) as mock_update_pointcloud,
         patch('sensorium.visualization.voxel_widget.VoxelWidget.update_scene') as mock_update_voxel,
     ):
-        visualisation.load_frame()
-        mock_update_camera.assert_called_with(1)
-        mock_update_trajectory.assert_called_once_with(1)
-        mock_update_pointcloud.assert_called_once_with(1)
-        mock_update_voxel.assert_called_once_with(1, 0)
+        await visualisation.load_frame(0, 1)
+        mock_update_camera.assert_called_with(0, 1)
+        mock_update_trajectory.assert_called_once_with(0, 1)
+        mock_update_pointcloud.assert_called_once_with(0, 1)
+        mock_update_voxel.assert_called_once_with(0, 1)
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
-def test_set_frame_slider(qtbot: QtBot) -> None:
+@pytest.mark.asyncio
+async def test_set_frame_slider(qtbot: QtBot) -> None:
     """Testet set_frame_slider."""
     visualisation = VisualisationGui()
     qtbot.addWidget(visualisation)
     visualisation.framenumber = 30
-    visualisation.set_frame_slider()
+    await visualisation.set_frame_slider()
     assert visualisation.framenumber == visualisation.slider.value()
     visualisation.slider.setValue(50)
     assert visualisation.framenumber == 50
 
 
 @pytest.mark.skipif(bool(os.getenv('CI')), reason='no windowing system available in CI')
-def test_toggle_play_stop(qtbot: QtBot) -> None:
+@pytest.mark.asyncio
+async def test_toggle_play_stop(qtbot: QtBot) -> None:
     """Testet toggle_play_stop."""
     visualisation = VisualisationGui()
     qtbot.addWidget(visualisation)
     visualisation.play_en = True
-    visualisation.toggle_play_stop()
+    await visualisation.toggle_play_stop()
     assert visualisation.play_en is False
     assert visualisation.button_play_stop.text() == 'Stop'
     assert visualisation.animation_timer.isActive()
