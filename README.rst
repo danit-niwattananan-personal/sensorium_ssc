@@ -99,8 +99,10 @@ then select the server option and specify the port number through which data wil
    uv run src/sensorium/launch/launch.py # use \ for windows paths
 then select the client option and specify the server IP address and port number. If the server and client are running on the same machine, use ``localhost`` as the IP address.
 
-3. After the connection is established, click ``Open Engine`` to start the visualization GUI windows. To start streaming, double-click the ``Play`` button.
+3. After the connection is established, click ``Open Engine`` to start the visualization GUI windows. To start streaming, double-click the ``Play`` button. It should look like this.
 
+.. image:: assets/demo.png
+   :alt: Sensorium Demo
 
 Development
 ==========
