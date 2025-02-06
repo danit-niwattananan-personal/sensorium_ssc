@@ -6,16 +6,14 @@ import os
 
 os.environ['ETS_TOOLKIT'] = 'qt'
 import sys
-from pathlib import Path
 
 import numpy as np
-import yaml
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
-from traits.api import HasTraits, Instance, Tuple, on_trait_change
+from traits.api import Dict, HasTraits, Instance, on_trait_change
 from traitsui.api import Item, View
 
-from sensorium.data_processing.engine.backend_engine import BackendEngine
+from sensorium.communication.client_comm import get_voxel_data
 from sensorium.visualization.helper import draw_semantic_voxel
 
 
@@ -23,24 +21,16 @@ class VoxelVisualization(HasTraits):
     """Voxel Visualization class."""
 
     scene = Instance(MlabSceneModel, ())
-    seq_frame_id_pair = Tuple(0, 0)
-
-    # Get all necessary data. Must change this to call COMM func instead
-    config_path = Path.cwd() / 'configs' / 'sensorium.yaml'
-    with Path(config_path).open() as stream:
-        backend_config = yaml.safe_load(stream)
-    backend_engine = BackendEngine(data_dir=backend_config['backend_engine']['data_dir'])
+    data = Dict()  # type: ignore[var-annotated]
 
     @on_trait_change('scene.activated')  # type: ignore[misc]
     def update_plot(self) -> None:
         """Load the new data and draw the new voxel."""
-        sequence_id, frame_id = self.seq_frame_id_pair
-        data = self.backend_engine.process(sequence_id=sequence_id, frame_id=frame_id)
         draw_semantic_voxel(
-            voxels=data['voxel'],  # type: ignore[arg-type]
-            cam_pose=data['t_velo_2_cam'],  # type: ignore[arg-type]
+            voxels=self.data['voxel'],
+            cam_pose=self.data['t_velo_2_cam'],
             vox_origin=np.array([0, -25.6, -2]),
-            fov_mask=data['fov_mask'],  # type: ignore[arg-type]
+            fov_mask=self.data['fov_mask'],
             scene=self.scene,  # type: ignore[arg-type]
         )
 
@@ -65,14 +55,25 @@ class VoxelWidget(QWidget):
         self.layout_window.setContentsMargins(0, 0, 0, 0)
         self.layout_window.setSpacing(0)
 
-    def update_scene(self, frame_id: int, sequence_id: int = 0) -> None:
+    async def update_scene(self, seq_id: int, frame_id: int) -> None:
         """Update the scene with the new image and show to the user."""
         # First check the frame_id is valid
         if frame_id % 5 != 0:
             self.frame_number += 1
             return
+        try:
+            voxel, fov_mask, t_velo_2_cam = await get_voxel_data(seq_id, frame_id)
+        except ValueError as e:
+            print(f'Error getting voxel data: {e}')
+            return
 
-        self.visualization = VoxelVisualization(seq_frame_id_pair=(sequence_id, frame_id))
+        data = {
+            'voxel': voxel,
+            'fov_mask': fov_mask,
+            't_velo_2_cam': t_velo_2_cam,
+        }
+
+        self.visualization = VoxelVisualization(data=data)
 
         # Clean up the previous UI and scene
         if hasattr(self, 'ui'):

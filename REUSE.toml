@@ -10,6 +10,12 @@ SPDX-FileCopyrightText = "2004 KITTI"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
+path = ["assets/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 Projektpraktikum Python"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
 path = [".gitignore", ".gitlab/**", "uv.lock", "**.toml", "**.yml"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2024 Projektpraktikum Python"

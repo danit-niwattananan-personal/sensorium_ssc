@@ -1,36 +1,35 @@
-# Copyright 2024 Projektpraktikum Python.
+# Copyright 2024  Projektpraktikum Python.
 # SPDX-License-Identifier: Apache-2.0
-"""Test camera visualization."""
+"""Test module for Camera visualization."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import numpy as np
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+import pytest
 from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 
-from sensorium.visualization.camera_visualization import (
-    CameraWidget,
-)
+from sensorium.visualization.camera_visualization import CAMERA2_SHAPE, CameraWidget
+
+MOCK_CAMERA_DATA = np.zeros(np.prod(CAMERA2_SHAPE), dtype=np.uint8)
 
 
-def test_show_image(qtbot: QtBot) -> None:
-    """Test the show_image method of CameraWidget."""
-    mock_img = np.zeros((375, 1242, 3), dtype=np.uint8)
-    with patch('cv2.imread', return_value=mock_img):
-        camera_widget = CameraWidget()
-        qtbot.addWidget(camera_widget)
-        frame_id = 0
+@pytest.mark.asyncio
+async def test_show_image(qtbot: QtBot) -> None:
+    """Test show_image method of CameraWidget.
 
-        with patch('sensorium.visualization.camera_visualization.QPixmap') as mock_pixmap:
-            mock_pixmap_instance = Mock(spec=QPixmap)
-            mock_pixmap_instance.scaled.return_value = QPixmap()
-            mock_pixmap.return_value = mock_pixmap_instance
+    Args:
+        qtbot: Pytest-qt fixture to handle Qt events.
+    """
+    with patch(
+        'sensorium.visualization.camera_visualization.get_camera2_data',
+        return_value=MOCK_CAMERA_DATA,
+    ):
+        widget = CameraWidget(camera_id='camera2')
+        qtbot.addWidget(widget)
 
-            camera_widget.show_image(frame_id)
+        await widget.show_image(seq_id=0, frame_id=0)
 
-            mock_pixmap_instance.scaled.assert_called_once_with(
-                camera_widget.label.width(),
-                camera_widget.label.height(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-            )
+        assert widget.label.pixmap() is not None
+
+        pixmap = widget.label.pixmap()
+        assert not pixmap.isNull()

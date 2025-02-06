@@ -3,6 +3,8 @@
 
 """Alles für die Sequenzauswahl."""
 
+import asyncio
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -23,7 +25,7 @@ class ButtonPanel(QWidget):
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.info_label)
 
-        for i in range(10):
+        for i in range(16):
             self.button = QPushButton(f'Sequenz {i}', self)
             self.button.setStyleSheet("""
                 QPushButton {
@@ -57,7 +59,7 @@ class ButtonPanel(QWidget):
         if self.videoplayer.seq_id != button_number:
             self.videoplayer.seq_id = button_number
             self.videoplayer.framenumber = 0
-            self.videoplayer.update_frame(0)
+            asyncio.create_task(self.videoplayer.update_frame(0))  # noqa: RUF006
 
 
 if __name__ == '__main__':

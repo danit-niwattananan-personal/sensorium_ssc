@@ -30,7 +30,7 @@ dependencies = [
     "pyside6>=6.8.1",
     "pytest-qt>=4.4.0",
     "types-pyyaml>=6.0.12.20241230",
-    "protobuf>=4.21.0",
+    "qasync>=0.27.1",
     "websockets>=11.0",
     "pygfx>=0.6.0",
     "wgpu>=0.19.3",
@@ -39,6 +39,7 @@ dependencies = [
     "configobj>=5.0.9",
     "mayavi",
     "traits-stubs>=6.4.0",
+    "pytest-asyncio>=0.25.3",
 ]
 dynamic = ["version"]
 keywords = []

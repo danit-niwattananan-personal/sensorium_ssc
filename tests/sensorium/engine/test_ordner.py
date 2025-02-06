@@ -39,6 +39,6 @@ def test_update_seq(qtbot: QtBot) -> None:
         vizualisation.seq_id = 4
         vizualisation.framenumber = 10
         qtbot.mouseClick(ordner.button, Qt.LeftButton)  # type: ignore[attr-defined]
-        assert vizualisation.seq_id == 9
+        assert vizualisation.seq_id == 15
         assert vizualisation.framenumber == 0
         mock_update_frame.assert_called_once_with(0)

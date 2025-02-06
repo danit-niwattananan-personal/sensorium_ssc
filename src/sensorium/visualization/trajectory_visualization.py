@@ -8,15 +8,18 @@ from pathlib import Path
 import numpy as np
 from PySide6 import QtGui, QtWidgets
 
-# from sensorium.launch.launch import LaunchWindow  # noqa: ERA001
+from sensorium.communication.client_comm import get_trajectory_data
 
 
 class Trajectory(QtWidgets.QWidget):
-    """."""
+    """Widget for visualizing the trajectory of the car."""
 
-    # def __init__(self, launch_window: LaunchWindow) -> None:
     def __init__(self) -> None:
-        """Initialize the Trajectory widget."""
+        """Initializes the Trajectory widget.
+
+        Returns:
+            None.
+        """
         super().__init__(None)
         self.resize(500, 500)
         # self.launch_window = launch_window  # noqa: ERA001
@@ -32,6 +35,8 @@ class Trajectory(QtWidgets.QWidget):
         print(self.trajectory_file_path)
 
         self.previous_point = np.zeros(3)
+        self.last_frame = 0
+        self.current_sequence_id = 0
 
         self.current_position_marker = self.scene.addEllipse(
             0,
@@ -43,7 +48,14 @@ class Trajectory(QtWidgets.QWidget):
         )
 
     def get_coordinates(self) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
-        """."""
+        """Get the coordinates from a trajectory.json or .txt file.
+
+        Returns:
+            An Array of the coordinates of the trajectory.
+
+        Note: This function is not used in the current implementation.
+        It is for get testing on a local machine without the server.
+        """
         with Path(self.trajectory_file_path).open() as f:
             coord_dict = [json.loads(line.strip()) for line in f]
         x = np.array([coord['x'] for coord in coord_dict])
@@ -51,23 +63,29 @@ class Trajectory(QtWidgets.QWidget):
         z = np.array([coord['z'] for coord in coord_dict])
         return np.column_stack((x, y, z))
 
-    # def get_traj_data(
-    #     self, frame_id: int, seq_id: int
-    # ) -> np.ndarray[tuple[int, ...], np.dtype[np.float32]]:
-    #     """."""
-    #     data_list = self.launch_window.get_traj_data(frame_id, seq_id)  # noqa: ERA001
-    #     x = data_list['x']  # noqa: ERA001
-    #     y = data_list['y']  # noqa: ERA001
-    #     z = data_list['z']  # noqa: ERA001
-    #     return np.column_stack((x, y, z))  # noqa: ERA001
+    async def draw_line(self, seq_id: int, frame_id: int) -> None:
+        """Visualizing the Trajectory of the car.
 
-    def draw_line(self, frame_id: int) -> None:
-        """."""
-        coords = self.get_coordinates()
+        Draws a line between the points pf the previous time frame and the current time frame
+        and updates a marker representing the current position of the car
+        relative to the starting point.
+
+        Args:
+            seq_id: The sequence number.
+            frame_id: The frame number.
+        """
+        # If sequence is changed, reset the previous point anc clear all lines
+        is_sequence_changed = seq_id != self.current_sequence_id
+        if is_sequence_changed:
+            self.current_sequence_id = seq_id
+            self.previous_point = np.zeros(3)
+            self.last_frame = 0
+            self.scene.clear()
         scale_factor = 1
-        coords = coords * scale_factor
-        current_point = coords[frame_id]
-        if self.previous_point is not None:
+        coords = await get_trajectory_data(seq_id, frame_id)
+        current_point = coords * scale_factor
+        current_point[1] = -current_point[1]  # Mirror the y axis
+        if self.previous_point is not None and frame_id == self.last_frame + 1:
             pen = QtGui.QPen(QtGui.QColor(100, 100, 200), 1)
             line = QtWidgets.QGraphicsLineItem(
                 self.previous_point[0],
@@ -77,8 +95,10 @@ class Trajectory(QtWidgets.QWidget):
             )
             line.setPen(pen)
             self.scene.addItem(line)
+        self.previous_point = current_point
+        self.last_frame = frame_id
 
-        if self.current_position_marker:
+        if self.current_position_marker and not is_sequence_changed:
             self.scene.removeItem(self.current_position_marker)
 
         circle_radius = 2
@@ -91,7 +111,7 @@ class Trajectory(QtWidgets.QWidget):
             QtGui.QBrush(QtGui.QColor(255, 0, 0)),
         )
 
-        self.previous_point = current_point
+        self.current_sequence_id = seq_id
 
 
 if __name__ == '__main__':
