@@ -46,29 +46,7 @@ class VisualisationGui(QMainWindow):
 
         self._read_config()
         self._init_variables()
-
-        # Initialize data loader
-        self.backend_engine = BackendEngine(data_dir=self.config['backend_engine']['data_dir'])
-
-        self._setup_camera_widget()
-        self.grid_layout.addLayout(self.camera, 0, 0)
-
-        self.pointcloud = PointcloudVis()
-        self.grid_layout.addWidget(self.pointcloud, 0, 1)
-
-        self.trajectory = Trajectory()
-        self.trajectory.trajectory_file_path = Path(
-            self.config['frontend_engine_rw']['trajectory_dir']
-        )
-        self.grid_layout.addWidget(self.trajectory, 1, 0)
-
-        self.voxel = VoxelWidget()
-        self.grid_layout.addWidget(self.voxel, 1, 1)
-
-        self.animation_timer = QtCore.QTimer(self)
-        self.animation_timer.timeout.connect(self.timer_callback)
-        self.animation_timer.setInterval(self.next_frame_time)  # type: ignore[has-type]
-
+        self._setup_widgets()
         self.frame_label = QLabel(
             f'Frame: {self.framenumber}, Sequence: {self.seq_id} und FPS: {self.fps}'  # type: ignore[has-type]
         )
@@ -104,7 +82,7 @@ class VisualisationGui(QMainWindow):
         main_layout.addWidget(self.slider)
         main_layout.addLayout(controlbar)
 
-        self.animation_timer.stop()
+        self.animation_timer.stop()  # type: ignore[has-type]
         self.loading_frame = False
         self._update_scene_lock = asyncio.Lock()
 
@@ -117,6 +95,30 @@ class VisualisationGui(QMainWindow):
         self.next_frame_time = int(self.config['frontend_engine']['next_frame_time'])
         self.fps = int(1000 / self.next_frame_time)
         self.loading_frame = False
+
+    def _setup_widgets(self) -> None:
+        """Setup the widgets."""
+        # Initialize data loader
+        self.backend_engine = BackendEngine(data_dir=self.config['backend_engine']['data_dir'])
+
+        self._setup_camera_widget()
+        self.grid_layout.addLayout(self.camera, 0, 0)
+
+        self.pointcloud = PointcloudVis()
+        self.grid_layout.addWidget(self.pointcloud, 0, 1)
+
+        self.trajectory = Trajectory()
+        self.trajectory.trajectory_file_path = Path(
+            self.config['frontend_engine_rw']['trajectory_dir']
+        )
+        self.grid_layout.addWidget(self.trajectory, 1, 0)
+
+        self.voxel = VoxelWidget()
+        self.grid_layout.addWidget(self.voxel, 1, 1)
+
+        self.animation_timer = QtCore.QTimer(self)
+        self.animation_timer.timeout.connect(self.timer_callback)
+        self.animation_timer.setInterval(self.next_frame_time)
 
     async def set_frame_slider(self) -> None:
         """Sets the Frame if slider is moved."""
