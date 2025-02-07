@@ -58,6 +58,7 @@ def dummy_process_lidar(seq_id: int, frame_id: int) -> dict[str, NDArray[np.floa
     dummy_labels: NDArray[np.float32] = np.full((10, 1), 2.0, dtype=np.float32)
     return {'lidar_pc': dummy_pc, 'lidar_pc_labels': dummy_labels}
 
+
 def dummy_process_voxel(
     seq_id: int, frame_id: int
 ) -> dict[str, NDArray[np.uint8 | np.bool_ | np.float64]]:
