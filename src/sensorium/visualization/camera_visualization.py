@@ -11,8 +11,8 @@ from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
 
 from sensorium.communication.client_comm import get_camera2_data, get_camera3_data
 
-CAMERA2_SHAPE = (370, 1226, 3)
-CAMERA3_SHAPE = (370, 1226, 3)
+CAMERA2_SHAPE = (375, 1242, 3)
+CAMERA3_SHAPE = (375, 1242, 3)
 
 
 class CameraWidget(QMainWindow):
