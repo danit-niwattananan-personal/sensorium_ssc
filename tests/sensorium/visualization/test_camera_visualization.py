@@ -33,3 +33,9 @@ async def test_show_image(qtbot: QtBot) -> None:
 
         pixmap = widget.label.pixmap()
         assert not pixmap.isNull()
+
+        widget = CameraWidget(camera_id='invalid_camera')
+        qtbot.addWidget(widget)
+
+        with pytest.raises(ValueError, match='Invalid camera_id'):
+            await widget.show_image(seq_id=0, frame_id=0)
