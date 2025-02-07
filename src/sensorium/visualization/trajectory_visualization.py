@@ -15,14 +15,9 @@ class Trajectory(QtWidgets.QWidget):
     """Widget for visualizing the trajectory of the car."""
 
     def __init__(self) -> None:
-        """Initializes the Trajectory widget.
-
-        Returns:
-            None.
-        """
+        """Initializes the Trajectory widget."""
         super().__init__(None)
         self.resize(500, 500)
-        # self.launch_window = launch_window  # noqa: ERA001
         self.view = QtWidgets.QGraphicsView()
         self.scene = QtWidgets.QGraphicsScene()
         self.view.setScene(self.scene)

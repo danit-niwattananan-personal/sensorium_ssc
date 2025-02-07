@@ -19,7 +19,11 @@ class CameraWidget(QMainWindow):
     """Widget fo Visualizing camera data."""
 
     def __init__(self, camera_id: str) -> None:
-        """Initializes the Camera Widget."""
+        """Initializes the Camera Widget.
+
+        Args:
+            camera_id: id to sepcify if it is camera 2 or 3 of the car.
+        """
         super().__init__()
         self.img_directory = ''
         self.camera_id = camera_id

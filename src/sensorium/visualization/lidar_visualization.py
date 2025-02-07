@@ -51,6 +51,9 @@ class PointcloudVis(QtWidgets.QWidget):
     def get_colormap(self) -> dict[str, list[float]]:
         """Reads out the semantic-kitti-all.yaml file to create a dictionary with the color map.
 
+        Args:
+            None.
+
         Returns:
             data: dict[str, list[float]]: Dictionary with the color map.
 
