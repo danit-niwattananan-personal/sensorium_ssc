@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
+import qimage2ndarray  # type: ignore[import-untyped]
 from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 
 from sensorium.visualization.camera_visualization import CAMERA2_SHAPE, CameraWidget
@@ -29,10 +30,13 @@ async def test_show_image(qtbot: QtBot) -> None:
 
         await widget.show_image(seq_id=0, frame_id=0)
 
-        assert widget.label.pixmap() is not None
-
         pixmap = widget.label.pixmap()
         assert not pixmap.isNull()
+        assert (pixmap.height(), pixmap.width()) == CAMERA2_SHAPE[:2]
+
+        # qimage2ndarray extenion used to convert QImage to a numpy array
+        img_array = qimage2ndarray.rgb_view(pixmap.toImage())
+        assert img_array.shape == CAMERA2_SHAPE
 
         widget = CameraWidget(camera_id='invalid_camera')
         qtbot.addWidget(widget)
