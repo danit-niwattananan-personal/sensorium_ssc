@@ -75,12 +75,12 @@ class LaunchWindow(QMainWindow):
         self.main_layout.addWidget(self.connect_button)
 
         self.disconnect_button = QPushButton('Disconnect')
-        self.disconnect_button.setEnabled(False)
+        self.disconnect_button.setVisible(False)
         self.disconnect_button.clicked.connect(self.disconnect_client)
         self.main_layout.addWidget(self.disconnect_button)
 
         self.stop_server_button = QPushButton('Stop server')
-        self.stop_server_button.setEnabled(False)
+        self.stop_server_button.setVisible(False)
         self.stop_server_button.clicked.connect(self.stop_server)
         self.main_layout.addWidget(self.stop_server_button)
 
@@ -117,6 +117,8 @@ class LaunchWindow(QMainWindow):
         self.port_field.setPlaceholderText('Port Number')
         self.ip_field.show()
         self.port_field.show()
+        self.disconnect_button.setVisible(True)
+        self.disconnect_button.setEnabled(False)
 
     def start_process(self) -> None:
         """Start the server or client process based on user input."""
@@ -135,7 +137,7 @@ class LaunchWindow(QMainWindow):
                     self.start_server_func(int(port))  # type: ignore[arg-type]
                 )
                 self.current_task = server_task
-                self.stop_server_button.setEnabled(True)
+                self.stop_server_button.setVisible(True)
                 self.connect_button.setEnabled(False)
             else:
                 self.log('Error: Server start function is not callable or available.')
