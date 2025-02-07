@@ -1594,6 +1594,18 @@ wheels = [
 ]
 
 [[package]]
+name = "qimage2ndarray"
+version = "1.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c5/c5/9c5630bcda3e2dd8445dd5c663e938451967c84d7f8707816ca9f00824db/qimage2ndarray-1.10.0.tar.gz", hash = "sha256:3725102446dc8a696b2ec775b1d2af43b13af6a7f9ebee8a37115bb9543a2c58", size = 200439 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/79/d3ce0ec91c3c761e04d0210d5544073ba3d38a4d6538e2ba58b45e33275c/qimage2ndarray-1.10.0-py3-none-any.whl", hash = "sha256:4c1c2a4ef2f72a7943392ee76305da87831274b9a10f00ccf624a54cb335ec6d", size = 12590 },
+]
+
+[[package]]
 name = "referencing"
 version = "0.35.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1869,6 +1881,7 @@ dependencies = [
     { name = "pytest-asyncio" },
     { name = "pytest-qt" },
     { name = "qasync" },
+    { name = "qimage2ndarray" },
     { name = "traits-stubs" },
     { name = "types-pyyaml" },
     { name = "websockets" },
@@ -1901,6 +1914,7 @@ requires-dist = [
     { name = "pytest-asyncio", specifier = ">=0.25.3" },
     { name = "pytest-qt", specifier = ">=4.4.0" },
     { name = "qasync", specifier = ">=0.27.1" },
+    { name = "qimage2ndarray", specifier = ">=1.10.0" },
     { name = "traits-stubs", specifier = ">=6.4.0" },
     { name = "types-pyyaml", specifier = ">=6.0.12.20241230" },
     { name = "websockets", specifier = ">=11.0" },
