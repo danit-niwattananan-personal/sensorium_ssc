@@ -10,7 +10,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: ${{ env.IMAGE }}
+    container: "ghcr.io/astral-sh/uv:python3.12-bookworm"
     
     env:
       QT_QPA_PLATFORM: "offscreen"
@@ -75,7 +75,7 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-    container: ${{ env.IMAGE }}
+    container: "ghcr.io/astral-sh/uv:python3.12-bookworm"
 
     steps:
       - uses: actions/checkout@v4
