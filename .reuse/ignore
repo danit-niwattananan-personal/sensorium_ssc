@@ -1,4 +1,0 @@
-# Ignore UV cache directory that contains third-party packages with their own licenses
-.uv_cache/
-.mypy_cache/
-.venv/
