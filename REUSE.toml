@@ -26,3 +26,12 @@ path = ["**.rst", "**/**.rst"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2024 Projektpraktikum Python"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = [
+    ".venv/**",
+    ".uv_cache/**",
+    ".mypy_cache/**"
+]
+SPDX-FileCopyrightText = "NONE"
+SPDX-License-Identifier = "CC0-1.0"
