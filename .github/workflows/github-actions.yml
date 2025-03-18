@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  IMAGE: "ghcr.io/astral-sh/uv:python3.12-bookworm"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: "ghcr.io/astral-sh/uv:python3.12-bookworm"
+    
+    env:
+      QT_QPA_PLATFORM: "offscreen"
+      MYPY_CACHE_DIR: ${{ github.workspace }}/.mypy_cache
+      UV_CACHE_DIR: ${{ github.workspace }}/.uv_cache
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # - name: Check REUSE License compliance
+      #   run: uv run python -m reuse lint
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            .mypy_cache
+            .uv_cache
+          key: ${{ runner.os }}-checks-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-checks-
+
+      - name: Install system dependencies
+        run: |
+          apt-get update && apt-get install -y libdbus-1-3 libegl1 libgl1 libxkbcommon0
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Run tests
+        run: uv run python -m pytest --cov --cov-report=term --cov-report=xml --junit-xml=report.xml
+
+      - name: Run type checking
+        run: uv run python -m mypy --no-error-summary docs src tests
+
+      - name: Run Ruff checks
+        run: |
+          uv run python -m ruff check docs src tests
+          uv run python -m ruff format --diff docs src tests
+
+      - name: Build documentation
+        run: uv run sphinx-build docs public
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: public
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: report.xml
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    container: "ghcr.io/astral-sh/uv:python3.12-bookworm"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            .mypy_cache
+            .uv_cache
+          key: ${{ runner.os }}-checks-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-checks-
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Build package
+        run: uv build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
