@@ -1,9 +1,9 @@
-.. image:: ../../../badges/master/pipeline.svg
-   :target: ../../../-/commits/master
+.. image:: https://github.com/danit-niwattananan-personal/sensorium_ssc/actions/workflows/github-actions.yml/badge.svg
+   :target: https://github.com/danit-niwattananan-personal/sensorium_ssc/actions
    :alt: pipeline status
 
-.. image:: ../../../badges/master/coverage.svg
-   :target: ../../../-/commits/master
+.. image:: https://codecov.io/gh/danit-niwattananan-personal/sensorium_ssc/graph/badge.svg?token=Z22I1ZQPKT 
+   :target: https://codecov.io/gh/danit-niwattananan-personal/sensorium_ssc
    :alt: coverage report
 
 .. image:: https://img.shields.io/badge/License-Apache_2.0-blue.svg
@@ -42,7 +42,7 @@ Setup
 
    uv sync
 
-2. Download the dataset to be visualized. Currently (06.02.2025), the repository only supports the semantic kitti dataset. After downloading it, organize the data in the following manner:
+2. Download the dataset to be visualized. Currently (18.03.2025), the repository only supports the semantic kitti dataset. After downloading it, organize the data in the following manner:
 
 .. code-block:: bash
 
@@ -77,7 +77,7 @@ Setup
 
 3. Declare the path to the dataset folder in the ``configs/sensorium.yaml`` file:
 
-.. code-block:: yaml
+.. code-block:: bash
    data_dir: /path/to/dataset
 
 Usage
@@ -118,7 +118,17 @@ Clone the repository and setup your local checkout:
 Testing
 ---------
 
-The project uses pytest as its test runner, run the testsuite by simply invoking ``uv run pytest``.
+The project uses pytest as its test runner, run the testsuite by simply invoking ``uv run pytest``. Since the project also employs CI pipeline to test and build the source code, you can check whether pipeline will pass with following commands at the project root before committing your changes:
+
+.. code-block:: bash
+
+   uv run python -m ruff format --diff docs src tests
+   uv run python -m pytest --cov --cov-report=term
+   uv run python -m mypy docs src tests
+   uv run ruff check
+   uv run reuse lint
+
+Type hinting and code checking are performed with `Ruff <https://marketplace.cursorapi.com/items?itemName=charliermarsh.ruff>`_ and `Mypy <https://marketplace.cursorapi.com/items?itemName=ms-python.mypy-type-checker>`_. Installing the extensions in VSCode for automatic type-checking and formatting is recommended.
 
 Documentation
 -------------------
@@ -134,4 +144,4 @@ The entrypoint to the local documentation build should be available under ``publ
 Issues
 ------
 
-If you encounter any issues, please report them to the `issue tracker <https://gitlab.lrz.de/ldv/teaching/python/2024/b/-/issues>`_.
+If you encounter any issues, please report them to the `issue tracker <https://github.com/danit-niwattananan-personal/sensorium_ssc/issues>`_.
