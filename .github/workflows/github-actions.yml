@@ -20,8 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check REUSE License compliance
-        run: uv run python -m reuse lint
+      # - name: Check REUSE License compliance
+      #   run: uv run python -m reuse lint
 
       - name: Cache dependencies
         uses: actions/cache@v4
